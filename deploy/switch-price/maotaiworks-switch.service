@@ -1,0 +1,18 @@
+[Unit]
+Description=maotaiworks.com Switch eShop 低价查询 API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/maotaiworks/switch-price
+Environment=PORT=3193
+Environment=SWITCH_DATA_DIR=/var/lib/maotaiworks/switch
+Environment=SWITCH_DELAY_MS=180
+ExecStart=/usr/bin/node /opt/maotaiworks/switch-price/server.mjs
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

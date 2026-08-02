@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="九猫库 — 个人开发者的软件和游戏小站。"
+    />
+    <meta name="theme-color" content="#0E1210" />
+    <title>九猫库 · maotaiworks.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=ZCOOL+XiaoWei&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="brand-block">
+        <a class="brand-mark" href="/">九猫库</a>
+        <p class="brand-domain">maotaiworks.com</p>
+      </div>
+      <nav class="site-nav" aria-label="分类筛选" id="category-nav">
+        <button type="button" class="cat-btn is-active" data-filter="all">全部</button>
+        <button type="button" class="cat-btn" data-filter="software">软件</button>
+        <button type="button" class="cat-btn" data-filter="game">游戏</button>
+        <button type="button" class="cat-btn" data-filter="other">其他</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <h1 id="hero-title" class="hero-title reveal">九猫库</h1>
+        <p class="hero-lead reveal">
+          个人开发者的软件和游戏小站
+        </p>
+      </section>
+
+      <section id="catalog" class="catalog" aria-label="作品列表">
+        <div id="catalog-list" class="item-list" role="list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-left">
+        <p class="footer-brand">九猫库</p>
+        <p class="visitor-count" id="visitor-count" hidden>累计访客 —</p>
+      </div>
+      <p class="footer-meta">
+        <a href="/legal/#terms">使用条款</a>
+        <span aria-hidden="true">·</span>
+        <a href="/legal/#privacy">隐私说明</a>
+        <span aria-hidden="true">·</span>
+        <a href="/legal/#credits">开源致谢</a>
+        <span aria-hidden="true">·</span>
+        <span>© <span id="year"></span> 九猫库</span>
+      </p>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+[Unit]
+Description=maotaiworks.com App Store 价格前10 API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/maotaiworks/store-price
+Environment=PORT=3192
+Environment=STORE_DATA_DIR=/var/lib/maotaiworks/store
+Environment=SCRAPE_DELAY_MS=900
+ExecStart=/usr/bin/node /opt/maotaiworks/store-price/server.mjs
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

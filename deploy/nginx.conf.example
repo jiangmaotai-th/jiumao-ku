@@ -1,0 +1,129 @@
+# 九猫库 · maotaiworks.com
+# 用法：复制到 /etc/nginx/sites-available/maotaiworks.com 并软链到 sites-enabled
+# 将 root 改成你服务器上 dist 目录的实际路径
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name maotaiworks.com www.maotaiworks.com;
+
+    # 用 certbot 自动跳转到 HTTPS 时可删掉下面整段，或保留 redirect：
+    return 301 https://maotaiworks.com$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name maotaiworks.com www.maotaiworks.com;
+
+    # ssl_certificate     /etc/letsencrypt/live/maotaiworks.com/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/maotaiworks.com/privkey.pem;
+    # include /etc/letsencrypt/options-ssl-nginx.conf;
+
+    root /var/www/maotaiworks/dist;
+    index index.html;
+
+    # 静态资源长期缓存（Vite 带 hash 的文件）
+    location /assets/ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # 安装包：按文件名下载，短缓存便于更新版本
+    location /downloads/ {
+        expires 1h;
+        add_header Cache-Control "public";
+        try_files $uri =404;
+    }
+
+    # MoyeeConverte 网页版（SPA）
+    location /moyee/ {
+        try_files $uri $uri/ /moyee/index.html;
+    }
+
+    # 魔书 · 电子书互转（SPA）
+    location /ebook/ {
+        try_files $uri $uri/ /ebook/index.html;
+    }
+
+    # 小午的图片转换 · 网页版（SPA）
+    location /image/ {
+        try_files $uri $uri/ /image/index.html;
+    }
+
+    # HTML 不缓存，避免 SPA 仍指向旧 JS
+    location ~* \.html$ {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        try_files $uri =404;
+    }
+
+    # App Store 低价查询器（SPA）
+    location /store/ {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        try_files $uri $uri/ /store/index.html;
+    }
+
+    # App Store 低价查询 API（见 deploy/store-price）
+    location /api/store/ {
+        proxy_pass http://127.0.0.1:3192/api/store/;
+        proxy_http_version 1.1;
+        proxy_read_timeout 120s;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Switch 低价查询器（SPA）
+    location /switch/ {
+        try_files $uri $uri/ /switch/index.html;
+    }
+
+    # Switch eShop 低价查询 API（见 deploy/switch-price）
+    location /api/switch/ {
+        proxy_pass http://127.0.0.1:3193/api/switch/;
+        proxy_http_version 1.1;
+        proxy_read_timeout 120s;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 访客计数（本地 Node 服务，见 deploy/visitor-counter）
+    location /api/visit {
+        proxy_pass http://127.0.0.1:3190;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # 电子书 AZW3/MOBI（Calibre，见 deploy/ebook-convert）
+    location /api/ebook-convert {
+        client_max_body_size 42m;
+        proxy_pass http://127.0.0.1:3191;
+        proxy_http_version 1.1;
+        proxy_request_buffering on;
+        proxy_read_timeout 600s;
+        proxy_send_timeout 600s;
+        proxy_send_timeout 180s;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # 安全头（可按需调整）
+    add_header X-Content-Type-Options nosniff;
+    add_header X-Frame-Options SAMEORIGIN;
+    add_header Referrer-Policy strict-origin-when-cross-origin;
+}

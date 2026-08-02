@@ -1,0 +1,17 @@
+[Unit]
+Description=maotaiworks.com visitor counter
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/maotaiworks/visitor-counter
+Environment=PORT=3190
+Environment=VISITOR_DATA=/var/lib/maotaiworks/visitors.json
+ExecStart=/usr/bin/node /opt/maotaiworks/visitor-counter/server.mjs
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

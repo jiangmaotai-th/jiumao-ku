@@ -1,0 +1,11 @@
+[Unit]
+Description=maotaiworks.com AI subscription price daily refresh
+After=network.target maotaiworks-store.service
+Requires=maotaiworks-store.service
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+# force=1：全量重抓 App Store + 重建网页/桌面价
+ExecStart=/usr/bin/curl -sS -X POST "http://127.0.0.1:3192/api/store/refresh-seeds?force=1"

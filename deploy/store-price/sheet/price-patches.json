@@ -1,0 +1,219 @@
+{
+  "chatgpt": {
+    "pricingUrl": "https://openai.com/chatgpt/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "go_monthly": {
+        "amount": 5,
+        "currency": "USD",
+        "label": "Go 月付"
+      },
+      "plus_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Plus 月付"
+      },
+      "pro_5x_monthly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Pro 5x 月付"
+      },
+      "pro_monthly": {
+        "amount": 200,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "business_monthly": {
+        "amount": 25,
+        "currency": "USD",
+        "label": "Business 月付/席"
+      },
+      "business_yearly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Business 年付折合月价/席"
+      }
+    }
+  },
+  "claude": {
+    "pricingUrl": "https://claude.com/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "pro_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "max_monthly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Max 5x 月付"
+      },
+      "max_20x_monthly": {
+        "amount": 200,
+        "currency": "USD",
+        "label": "Max 20x 月付"
+      },
+      "team_monthly": {
+        "amount": 25,
+        "currency": "USD",
+        "label": "Team 月付/席"
+      }
+    }
+  },
+  "gemini-advanced": {
+    "pricingUrl": "https://one.google.com/ai",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "ai_plus_monthly": {
+        "amount": 7.99,
+        "currency": "USD",
+        "label": "Google AI Plus"
+      },
+      "advanced_monthly": {
+        "amount": 19.99,
+        "currency": "USD",
+        "label": "AI Pro"
+      },
+      "spark_monthly": {
+        "amount": 99.99,
+        "currency": "USD",
+        "label": "Gemini Spark"
+      },
+      "ai_ultra_monthly": {
+        "amount": 199.99,
+        "currency": "USD",
+        "label": "Google AI Ultra"
+      }
+    }
+  },
+  "grok-premium": {
+    "pricingUrl": "https://x.ai/grok",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "premium_monthly": {
+        "amount": 30,
+        "currency": "USD",
+        "label": "SuperGrok"
+      },
+      "premium_yearly": {
+        "amount": 25,
+        "currency": "USD",
+        "label": "SuperGrok 年付折合月价"
+      },
+      "heavy_monthly": {
+        "amount": 300,
+        "currency": "USD",
+        "label": "SuperGrok Heavy"
+      }
+    }
+  },
+  "zhipu-glm": {
+    "pricingUrl": "https://chatglm.cn",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "plus_monthly": {
+        "amount": 49,
+        "currency": "CNY",
+        "label": "智谱会员月付（公开入口）"
+      },
+      "coding_lite_monthly": {
+        "amount": 118,
+        "currency": "CNY",
+        "label": "Coding Plan Lite（7/31 后标价）"
+      },
+      "coding_pro_monthly": {
+        "amount": 538,
+        "currency": "CNY",
+        "label": "Coding Plan Pro（7/31 后标价）"
+      },
+      "coding_max_monthly": {
+        "amount": 1078,
+        "currency": "CNY",
+        "label": "Coding Plan Max（7/31 后标价）"
+      }
+    }
+  },
+  "doubao": {
+    "pricingUrl": "https://www.doubao.com",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "pro_standard_monthly": {
+        "amount": 68,
+        "currency": "CNY",
+        "label": "标准版"
+      },
+      "pro_enhanced_monthly": {
+        "amount": 200,
+        "currency": "CNY",
+        "label": "加强版"
+      },
+      "pro_advanced_monthly": {
+        "amount": 500,
+        "currency": "CNY",
+        "label": "专业版"
+      }
+    }
+  },
+  "cursor": {
+    "pricingUrl": "https://cursor.com/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "pro_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_plus_monthly": {
+        "amount": 60,
+        "currency": "USD",
+        "label": "Pro+ 月付"
+      },
+      "ultra_monthly": {
+        "amount": 200,
+        "currency": "USD",
+        "label": "Ultra 月付"
+      }
+    }
+  },
+  "github-copilot": {
+    "pricingUrl": "https://github.com/features/copilot#pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "pro_monthly": {
+        "amount": 10,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_plus_monthly": {
+        "amount": 39,
+        "currency": "USD",
+        "label": "Pro+ 月付"
+      },
+      "business_monthly": {
+        "amount": 19,
+        "currency": "USD",
+        "label": "Business 月付/席"
+      },
+      "enterprise_monthly": {
+        "amount": 39,
+        "currency": "USD",
+        "label": "Enterprise 月付/席"
+      }
+    }
+  },
+  "sora": {
+    "pricingUrl": null,
+    "status": "missing",
+    "note": "⚠️ 2026-03-24 全面关停（App+API+内嵌全部终止）",
+    "plans": {}
+  }
+}

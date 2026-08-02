@@ -1,0 +1,29 @@
+[Unit]
+Description=maotaiworks.com Calibre ebook convert API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/maotaiworks/ebook-convert
+Environment=PORT=3191
+Environment=MAX_UPLOAD_BYTES=41943040
+Environment=EBOOK_CONVERT=/usr/bin/ebook-convert
+Environment=OCRMYPDF=/usr/bin/ocrmypdf
+Environment=PDFTOTEXT=/usr/bin/pdftotext
+Environment=PDFINFO=/usr/bin/pdfinfo
+Environment=OCR_LANG=chi_sim+eng
+Environment=OCR_MAX_PAGES=80
+Environment=OCR_TIMEOUT_MS=420000
+ExecStart=/usr/bin/node /opt/maotaiworks/ebook-convert/server.mjs
+Restart=always
+RestartSec=2
+
+# Calibre needs a writable config/cache home
+Environment=HOME=/var/lib/maotaiworks
+Environment=XDG_CONFIG_HOME=/var/lib/maotaiworks/.config
+Environment=XDG_CACHE_HOME=/var/lib/maotaiworks/.cache
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Daily midnight refresh of AI subscription prices (Asia/Shanghai)
+
+[Timer]
+# 每天 00:00（上海时区）强制刷新最新价格
+OnCalendar=*-*-* 00:00:00
+Timezone=Asia/Shanghai
+Persistent=true
+Unit=maotaiworks-store-refresh.service
+
+[Install]
+WantedBy=timers.target

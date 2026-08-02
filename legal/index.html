@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="九猫库 — 使用条款、隐私说明与开源致谢。" />
+    <meta name="theme-color" content="#0E1210" />
+    <title>法律与声明 · 九猫库</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=ZCOOL+XiaoWei&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="brand-block">
+        <a class="brand-mark" href="/">九猫库</a>
+        <p class="brand-domain">maotaiworks.com</p>
+      </div>
+      <nav class="legal-nav" aria-label="声明导航">
+        <a href="#copyright">版权</a>
+        <a href="#terms">使用条款</a>
+        <a href="#privacy">隐私</a>
+        <a href="#credits">开源致谢</a>
+      </nav>
+    </header>
+
+    <main class="legal-main">
+      <h1 class="legal-title">法律与声明</h1>
+      <p class="legal-lead">适用于九猫库网站及旗下工具（含魔叶 Converte、魔书等网页版与提供下载的软件）。</p>
+      <p class="legal-updated">最近更新：2026-08-01</p>
+
+      <section id="copyright" class="legal-section">
+        <h2>版权声明</h2>
+        <p>© <span id="year">2026</span> 九猫库（maotaiworks.com）。保留所有权利。</p>
+        <p>
+          本站品牌名称、产品名称（如魔叶 Converte、魔书、魔窗、魔译）、界面设计、文案与原创代码，除另有说明外，版权归站方所有。未经书面许可，不得擅自复制、镜像或用于商业发行。
+        </p>
+        <p>用户通过本站工具转换、生成的文件内容，版权归原权利人或用户本人所有，站方不主张该等内容的权利。</p>
+      </section>
+
+      <section id="terms" class="legal-section">
+        <h2>使用条款</h2>
+        <ol>
+          <li>本站工具按「现状」提供，主要用于格式转换、压缩等个人或合理使用场景，不对特定结果作保证。</li>
+          <li>请确保你对上传或本地处理的文件拥有相应权利，或已获合法授权。禁止将本站用于侵犯他人著作权、传播违法违规内容。</li>
+          <li>转换质量受源文件、编码、扫描清晰度、浏览器性能等因素影响；扫描版 PDF 的 OCR 可能出现错字或版式偏差。</li>
+          <li>网页版能力可能与桌面版不同；大文件可能受设备内存与浏览器限制。</li>
+          <li>站方有权调整、暂停或下线部分功能。因使用本站造成的间接损失，在法律允许范围内不承担责任。</li>
+          <li>继续使用本站，即表示你了解并同意本条款与隐私说明。</li>
+        </ol>
+      </section>
+
+      <section id="privacy" class="legal-section">
+        <h2>隐私说明</h2>
+        <h3>本地处理（默认）</h3>
+        <p>
+          魔叶网页版的音视频转换/压缩，以及魔书对 EPUB、PDF、TXT、DOCX 等常规格式的转换，默认在浏览器本地完成，文件不会上传到服务器。
+        </p>
+        <h3>需要短暂上传的情形</h3>
+        <ul>
+          <li>魔书：涉及 MOBI / AZW3 的互转，经服务器使用 Calibre 转换。</li>
+          <li>魔书：检测到扫描版 PDF（几乎无文字层）并转为 EPUB / MOBI / AZW3 / TXT 时，经服务器 OCR 后再转换。</li>
+        </ul>
+        <p>上述上传文件仅用于完成当次任务，处理结束后删除，不作长期存储，也不用于训练模型或对外提供。</p>
+        <h3>其他数据</h3>
+        <ul>
+          <li>站点可能统计累计访客等匿名访问量，用于了解流量，不用于识别个人身份。</li>
+          <li>服务器访问日志可能短暂保留常规运维所需信息（如时间、IP、路径），用于排障与安全，不会出售给第三方。</li>
+        </ul>
+        <p>若你不希望文件离开本机，请避免使用需要服务器处理的格式方向，或改用桌面版本地功能。</p>
+      </section>
+
+      <section id="credits" class="legal-section">
+        <h2>开源致谢</h2>
+        <p>本站部分能力基于以下开源项目（及其依赖）。感谢作者与社区。完整许可证以各项目官方仓库为准。</p>
+        <ul class="credit-list">
+          <li><strong>FFmpeg</strong>（LGPL/GPL）— 音视频处理；网页版经 ffmpeg.wasm</li>
+          <li><strong>ffmpeg.wasm</strong> — 浏览器内 FFmpeg</li>
+          <li><strong>Calibre</strong>（GPL）— 电子书转换（ebook-convert）</li>
+          <li><strong>Tesseract OCR</strong> / <strong>OCRmyPDF</strong> — 扫描版 PDF 文字识别</li>
+          <li><strong>PDF.js</strong>、<strong>pdf-lib</strong> — PDF 读取与生成</li>
+          <li><strong>JSZip</strong>、<strong>Mammoth</strong> — EPUB/ZIP 与 DOCX 文本提取</li>
+          <li><strong>React</strong>、<strong>Vite</strong> 等前端工具链</li>
+        </ul>
+        <p>第三方商标（如各视频平台名称）归其权利人所有，本站仅作格式/规格说明用途。</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-left">
+        <p class="footer-brand">九猫库</p>
+      </div>
+      <p class="footer-meta">
+        <a href="/">返回首页</a>
+        <span aria-hidden="true">·</span>
+        <span>© <span id="year-foot">2026</span> 保留所有权利</span>
+      </p>
+    </footer>
+
+    <script type="module" src="/src/legal/main.ts"></script>
+  </body>
+</html>

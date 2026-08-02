@@ -1048,6 +1048,15 @@
         "label": "AI Ultra 20x"
       },
       "locals": {}
+    },
+    "advanced_yearly": {
+      "base": {
+        "amount": 16.67,
+        "currency": "USD",
+        "priceFormatted": "$16.67",
+        "label": "AI Pro 年付折合月价（$199.99/年）"
+      },
+      "locals": {}
     }
   },
   "perplexity-pro": {
@@ -1142,6 +1151,24 @@
         "label": "Microsoft 365 Premium 年付折合月价"
       },
       "locals": {}
+    },
+    "m365_personal_yearly": {
+      "base": {
+        "amount": 8.33,
+        "currency": "USD",
+        "priceFormatted": "$8.33",
+        "label": "Microsoft 365 Personal 年付折合月价"
+      },
+      "locals": {}
+    },
+    "m365_family_yearly": {
+      "base": {
+        "amount": 10.83,
+        "currency": "USD",
+        "priceFormatted": "$10.83",
+        "label": "Microsoft 365 Family 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "grok-premium": {
@@ -1209,6 +1236,42 @@
         "label": "Premium / Power 月付"
       },
       "locals": {}
+    },
+    "starter_yearly": {
+      "base": {
+        "amount": 4.16,
+        "currency": "USD",
+        "priceFormatted": "$4.16",
+        "label": "Starter 年付折合月价"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 16.66,
+        "currency": "USD",
+        "priceFormatted": "$16.66",
+        "label": "Standard 年付折合月价"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 41.66,
+        "currency": "USD",
+        "priceFormatted": "$41.66",
+        "label": "Pro 年付折合月价"
+      },
+      "locals": {}
+    },
+    "premium_yearly": {
+      "base": {
+        "amount": 83.33,
+        "currency": "USD",
+        "priceFormatted": "$83.33",
+        "label": "Premium 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "midjourney": {
@@ -1247,6 +1310,42 @@
         "label": "Mega"
       },
       "locals": {}
+    },
+    "basic_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Basic 年付折合月价"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 24.0,
+        "currency": "USD",
+        "priceFormatted": "$24.00",
+        "label": "Standard 年付折合月价"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 48.0,
+        "currency": "USD",
+        "priceFormatted": "$48.00",
+        "label": "Pro 年付折合月价"
+      },
+      "locals": {}
+    },
+    "mega_yearly": {
+      "base": {
+        "amount": 96.0,
+        "currency": "USD",
+        "priceFormatted": "$96.00",
+        "label": "Mega 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "notion-ai": {
@@ -1283,6 +1382,33 @@
         "currency": "USD",
         "priceFormatted": "$20.00",
         "label": "Business 年付折合月价/席"
+      },
+      "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Plus 年付折合月价"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 15.0,
+        "currency": "USD",
+        "priceFormatted": "$15.00",
+        "label": "Business 年付折合月价"
+      },
+      "locals": {}
+    },
+    "ai_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Notion AI add-on 年付折合月价"
       },
       "locals": {}
     }
@@ -1473,6 +1599,15 @@
         "currency": "CNY",
         "priceFormatted": "¥1078",
         "label": "Coding Plan Max（7/31 后标价）"
+      },
+      "locals": {}
+    },
+    "vip_year_card": {
+      "base": {
+        "amount": 33.25,
+        "currency": "CNY",
+        "priceFormatted": "¥33.25",
+        "label": "年卡折合月价（年付 ¥399）"
       },
       "locals": {}
     }
@@ -1701,6 +1836,42 @@
         "label": "Business 年付折合月价"
       },
       "locals": {}
+    },
+    "starter_yearly": {
+      "base": {
+        "amount": 4.15,
+        "currency": "USD",
+        "priceFormatted": "$4.15",
+        "label": "Starter 年付折合月价"
+      },
+      "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 18.33,
+        "currency": "USD",
+        "priceFormatted": "$18.33",
+        "label": "Creator 年付折合月价"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 82.5,
+        "currency": "USD",
+        "priceFormatted": "$82.50",
+        "label": "Pro 年付折合月价"
+      },
+      "locals": {}
+    },
+    "scale_yearly": {
+      "base": {
+        "amount": 275.0,
+        "currency": "USD",
+        "priceFormatted": "$275.00",
+        "label": "Scale 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "suno": {
@@ -1832,6 +2003,24 @@
         "label": "Team"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 6.39,
+        "currency": "USD",
+        "priceFormatted": "$6.39",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 7.99,
+        "currency": "USD",
+        "priceFormatted": "$7.99",
+        "label": "SVIP/Standard 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "character-ai-plus": {
@@ -1919,6 +2108,15 @@
         "currency": "USD",
         "priceFormatted": "$20.00",
         "label": "Team 月付/席"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 9.0,
+        "currency": "USD",
+        "priceFormatted": "$9.00",
+        "label": "Pro 年付（与月付同价按年结算常见）"
       },
       "locals": {}
     }
@@ -2174,6 +2372,15 @@
         "label": "Teams 全量席位月付"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 16.0,
+        "currency": "USD",
+        "priceFormatted": "$16.00",
+        "label": "Pro 年付折合月价（约八折，相对 $20）"
+      },
+      "locals": {}
     }
   },
   "claude-code": {
@@ -2252,6 +2459,15 @@
         "label": "Agentic 年付折合月价"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 9.0,
+        "currency": "USD",
+        "priceFormatted": "$9.00",
+        "label": "Pro 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "replit-core": {
@@ -2292,6 +2508,15 @@
         "label": "Q Developer Pro"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 19.0,
+        "currency": "USD",
+        "priceFormatted": "$19.00",
+        "label": "Q Developer Pro 年付（常见按年结算）"
+      },
+      "locals": {}
     }
   },
   "sourcegraph-cody": {
@@ -2310,6 +2535,15 @@
         "currency": "USD",
         "priceFormatted": "$49.00",
         "label": "Enterprise 公开入门参考"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 9.0,
+        "currency": "USD",
+        "priceFormatted": "$9.00",
+        "label": "Cody Pro 年付（常见）"
       },
       "locals": {}
     }
@@ -2410,6 +2644,24 @@
         "label": "Business 月付/席"
       },
       "locals": {}
+    },
+    "premium_yearly": {
+      "base": {
+        "amount": 16.67,
+        "currency": "USD",
+        "priceFormatted": "$16.67",
+        "label": "Premium 年付折合月价"
+      },
+      "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 25.0,
+        "currency": "USD",
+        "priceFormatted": "$25.00",
+        "label": "Plus 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "bolt-new": {
@@ -2497,6 +2749,24 @@
         "label": "Firefly Premium"
       },
       "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 7.99,
+        "currency": "USD",
+        "priceFormatted": "$7.99",
+        "label": "Firefly Standard 年付折合月价"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 15.99,
+        "currency": "USD",
+        "priceFormatted": "$15.99",
+        "label": "Firefly Pro 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "leonardo-ai": {
@@ -2524,6 +2794,33 @@
         "currency": "USD",
         "priceFormatted": "$60.00",
         "label": "Maestro"
+      },
+      "locals": {}
+    },
+    "apprentice_yearly": {
+      "base": {
+        "amount": 10.0,
+        "currency": "USD",
+        "priceFormatted": "$10.00",
+        "label": "Apprentice 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "artisan_yearly": {
+      "base": {
+        "amount": 24.0,
+        "currency": "USD",
+        "priceFormatted": "$24.00",
+        "label": "Artisan 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "maestro_yearly": {
+      "base": {
+        "amount": 48.0,
+        "currency": "USD",
+        "priceFormatted": "$48.00",
+        "label": "Maestro 年付折合月价（约）"
       },
       "locals": {}
     }
@@ -2631,6 +2928,33 @@
         "label": "Business 月付"
       },
       "locals": {}
+    },
+    "basic_yearly": {
+      "base": {
+        "amount": 7.2,
+        "currency": "USD",
+        "priceFormatted": "$7.20",
+        "label": "Basic 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 28.0,
+        "currency": "USD",
+        "priceFormatted": "$28.00",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "max_yearly": {
+      "base": {
+        "amount": 56.0,
+        "currency": "USD",
+        "priceFormatted": "$56.00",
+        "label": "Max 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "magnific-ai": {
@@ -2649,6 +2973,15 @@
         "currency": "USD",
         "priceFormatted": "$99.00",
         "label": "Business"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 31.2,
+        "currency": "USD",
+        "priceFormatted": "$31.20",
+        "label": "Pro 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -2769,6 +3102,15 @@
         "label": "Turbo"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 12.0,
+        "currency": "USD",
+        "priceFormatted": "$12.00",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "recraft-ai": {
@@ -2787,6 +3129,15 @@
         "currency": "USD",
         "priceFormatted": "$50.00",
         "label": "Team / Business 入门"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 20.0,
+        "currency": "USD",
+        "priceFormatted": "$20.00",
+        "label": "Pro 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -2816,6 +3167,33 @@
         "currency": "USD",
         "priceFormatted": "$76.00",
         "label": "Fancy"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Standard 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 22.4,
+        "currency": "USD",
+        "priceFormatted": "$22.40",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "fancy_yearly": {
+      "base": {
+        "amount": 60.8,
+        "currency": "USD",
+        "priceFormatted": "$60.80",
+        "label": "Unlimited 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -2872,6 +3250,33 @@
         "currency": "USD",
         "priceFormatted": "$250.00",
         "label": "Ultra 年付折合月价"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 7.99,
+        "currency": "USD",
+        "priceFormatted": "$7.99",
+        "label": "Plus/Standard 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 23.99,
+        "currency": "USD",
+        "priceFormatted": "$23.99",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "premier_yearly": {
+      "base": {
+        "amount": 79.99,
+        "currency": "USD",
+        "priceFormatted": "$79.99",
+        "label": "Unlimited/Premier 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -2980,6 +3385,33 @@
         "label": "Ultimate"
       },
       "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "标准版 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "premium_yearly": {
+      "base": {
+        "amount": 28.0,
+        "currency": "USD",
+        "priceFormatted": "$28.00",
+        "label": "专业版 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "ultimate_yearly": {
+      "base": {
+        "amount": 79.2,
+        "currency": "USD",
+        "priceFormatted": "$79.20",
+        "label": "旗舰版 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "synthesia": {
@@ -3047,6 +3479,24 @@
         "label": "Advanced"
       },
       "locals": {}
+    },
+    "lite_yearly": {
+      "base": {
+        "amount": 4.79,
+        "currency": "USD",
+        "priceFormatted": "$4.79",
+        "label": "Lite 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 23.2,
+        "currency": "USD",
+        "priceFormatted": "$23.20",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "colossyan": {
@@ -3067,6 +3517,24 @@
         "label": "Business"
       },
       "locals": {}
+    },
+    "starter_yearly": {
+      "base": {
+        "amount": 21.6,
+        "currency": "USD",
+        "priceFormatted": "$21.60",
+        "label": "Starter 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 60.8,
+        "currency": "USD",
+        "priceFormatted": "$60.80",
+        "label": "Business 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "invideo-ai": {
@@ -3085,6 +3553,24 @@
         "currency": "USD",
         "priceFormatted": "$60.00",
         "label": "Max"
+      },
+      "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 15.0,
+        "currency": "USD",
+        "priceFormatted": "$15.00",
+        "label": "Plus 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "max_yearly": {
+      "base": {
+        "amount": 36.0,
+        "currency": "USD",
+        "priceFormatted": "$36.00",
+        "label": "Max 年付折合月价（约）"
       },
       "locals": {}
     }
@@ -3221,6 +3707,24 @@
         "label": "Business"
       },
       "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 12.0,
+        "currency": "USD",
+        "priceFormatted": "$12.00",
+        "label": "Creator 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 15.0,
+        "currency": "USD",
+        "priceFormatted": "$15.00",
+        "label": "Pro 年付折合月价（约）"
+      },
+      "locals": {}
     }
   },
   "pixverse": {
@@ -3266,6 +3770,51 @@
         "currency": "USD",
         "priceFormatted": "$99.00",
         "label": "团队至尊版"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "标准版 年付折合月价"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 24.0,
+        "currency": "USD",
+        "priceFormatted": "$24.00",
+        "label": "专业版 年付折合月价"
+      },
+      "locals": {}
+    },
+    "premium_yearly": {
+      "base": {
+        "amount": 48.0,
+        "currency": "USD",
+        "priceFormatted": "$48.00",
+        "label": "尊享版 年付折合月价"
+      },
+      "locals": {}
+    },
+    "ultimate_yearly": {
+      "base": {
+        "amount": 149.0,
+        "currency": "USD",
+        "priceFormatted": "$149.00",
+        "label": "至尊版 年付折合月价"
+      },
+      "locals": {}
+    },
+    "team_ultimate_yearly": {
+      "base": {
+        "amount": 79.0,
+        "currency": "USD",
+        "priceFormatted": "$79.00",
+        "label": "团队至尊版 年付折合月价"
       },
       "locals": {}
     }
@@ -3326,6 +3875,15 @@
         "label": "旗舰档"
       },
       "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 25.0,
+        "currency": "CNY",
+        "priceFormatted": "¥25",
+        "label": "清影会员年付折合月价（常见档）"
+      },
+      "locals": {}
     }
   },
   "udio": {
@@ -3384,6 +3942,24 @@
         "label": "Pro"
       },
       "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 11.0,
+        "currency": "EUR",
+        "priceFormatted": "€11.00",
+        "label": "Standard 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 33.0,
+        "currency": "EUR",
+        "priceFormatted": "€33.00",
+        "label": "Pro 年付折合月价（约）"
+      },
+      "locals": {}
     }
   },
   "boomy": {
@@ -3402,6 +3978,24 @@
         "currency": "USD",
         "priceFormatted": "$29.99",
         "label": "Pro"
+      },
+      "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 7.99,
+        "currency": "USD",
+        "priceFormatted": "$7.99",
+        "label": "Creator 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 23.99,
+        "currency": "USD",
+        "priceFormatted": "$23.99",
+        "label": "Pro 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -3424,6 +4018,24 @@
         "label": "Artist"
       },
       "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 13.59,
+        "currency": "USD",
+        "priceFormatted": "$13.59",
+        "label": "Creator 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "artist_yearly": {
+      "base": {
+        "amount": 23.99,
+        "currency": "USD",
+        "priceFormatted": "$23.99",
+        "label": "Artist 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "mubert": {
@@ -3442,6 +4054,24 @@
         "currency": "USD",
         "priceFormatted": "$39.00",
         "label": "Pro"
+      },
+      "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 11.2,
+        "currency": "USD",
+        "priceFormatted": "$11.20",
+        "label": "Creator 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 31.2,
+        "currency": "USD",
+        "priceFormatted": "$31.20",
+        "label": "Pro 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -3473,6 +4103,24 @@
         "label": "Enterprise 入门"
       },
       "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 23.2,
+        "currency": "USD",
+        "priceFormatted": "$23.20",
+        "label": "Creator 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 79.2,
+        "currency": "USD",
+        "priceFormatted": "$79.20",
+        "label": "Business 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "play-ht": {
@@ -3491,6 +4139,24 @@
         "currency": "USD",
         "priceFormatted": "$99.00",
         "label": "Unlimited"
+      },
+      "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 31.2,
+        "currency": "USD",
+        "priceFormatted": "$31.20",
+        "label": "Creator 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "unlimited_yearly": {
+      "base": {
+        "amount": 79.2,
+        "currency": "USD",
+        "priceFormatted": "$79.20",
+        "label": "Unlimited 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -3533,6 +4199,24 @@
         "label": "Pro 年付折合月价/席"
       },
       "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 39.0,
+        "currency": "USD",
+        "priceFormatted": "$39.00",
+        "label": "Creator 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 59.0,
+        "currency": "USD",
+        "priceFormatted": "$59.00",
+        "label": "Pro 年付折合月价（约）"
+      },
+      "locals": {}
     }
   },
   "copy-ai": {
@@ -3551,6 +4235,15 @@
         "currency": "USD",
         "priceFormatted": "$249.00",
         "label": "Agents 入门公开档"
+      },
+      "locals": {}
+    },
+    "chat_yearly": {
+      "base": {
+        "amount": 24.0,
+        "currency": "USD",
+        "priceFormatted": "$24.00",
+        "label": "Chat 年付折合月价（约）"
       },
       "locals": {}
     }
@@ -3580,6 +4273,24 @@
         "currency": "USD",
         "priceFormatted": "$249.00",
         "label": "Professional"
+      },
+      "locals": {}
+    },
+    "lite_yearly": {
+      "base": {
+        "amount": 39.0,
+        "currency": "USD",
+        "priceFormatted": "$39.00",
+        "label": "Lite 年付折合月价（约）"
+      },
+      "locals": {}
+    },
+    "standard_yearly": {
+      "base": {
+        "amount": 79.0,
+        "currency": "USD",
+        "priceFormatted": "$79.00",
+        "label": "Standard 年付折合月价（约）"
       },
       "locals": {}
     }
@@ -3640,6 +4351,42 @@
         "label": "Business 月付"
       },
       "locals": {}
+    },
+    "starter_yearly": {
+      "base": {
+        "amount": 7.49,
+        "currency": "USD",
+        "priceFormatted": "$7.49",
+        "label": "Starter 年付折合月价"
+      },
+      "locals": {}
+    },
+    "individual_yearly": {
+      "base": {
+        "amount": 8.74,
+        "currency": "EUR",
+        "priceFormatted": "€8.74",
+        "label": "Advanced/Individual 年付折合月价"
+      },
+      "locals": {}
+    },
+    "team_yearly": {
+      "base": {
+        "amount": 28.74,
+        "currency": "EUR",
+        "priceFormatted": "€28.74",
+        "label": "Team 年付折合月价"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 57.49,
+        "currency": "EUR",
+        "priceFormatted": "€57.49",
+        "label": "Ultimate/Business 年付折合月价"
+      },
+      "locals": {}
     }
   },
   "gamma": {
@@ -3669,6 +4416,24 @@
         "label": "Ultra / 更高档公开入口"
       },
       "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Plus 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 16.0,
+        "currency": "USD",
+        "priceFormatted": "$16.00",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "tome": {
@@ -3687,6 +4452,15 @@
         "currency": "USD",
         "priceFormatted": "$40.00",
         "label": "Business"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 16.0,
+        "currency": "USD",
+        "priceFormatted": "$16.00",
+        "label": "Pro 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -3709,6 +4483,15 @@
         "label": "Team"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 10.0,
+        "currency": "USD",
+        "priceFormatted": "$10.00",
+        "label": "Pro 年付折合月价（约）"
+      },
+      "locals": {}
     }
   },
   "taskade-ai": {
@@ -3729,6 +4512,15 @@
         "label": "Business"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "coda-ai": {
@@ -3747,6 +4539,24 @@
         "currency": "USD",
         "priceFormatted": "$30.00",
         "label": "Team"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "team_yearly": {
+      "base": {
+        "amount": 24.0,
+        "currency": "USD",
+        "priceFormatted": "$24.00",
+        "label": "Team 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -3883,6 +4693,24 @@
         "label": "Team"
       },
       "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Plus 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 39.2,
+        "currency": "USD",
+        "priceFormatted": "$39.20",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "consensus": {
@@ -3932,6 +4760,15 @@
         "label": "Team"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 15.0,
+        "currency": "USD",
+        "priceFormatted": "$15.00",
+        "label": "Pro 年付折合月价（约）"
+      },
+      "locals": {}
     }
   },
   "figma-ai": {
@@ -3950,6 +4787,24 @@
         "currency": "USD",
         "priceFormatted": "$55.00",
         "label": "Organization 全功能席位"
+      },
+      "locals": {}
+    },
+    "professional_yearly": {
+      "base": {
+        "amount": 12.0,
+        "currency": "USD",
+        "priceFormatted": "$12.00",
+        "label": "Professional 年付折合月价"
+      },
+      "locals": {}
+    },
+    "organization_yearly": {
+      "base": {
+        "amount": 45.0,
+        "currency": "USD",
+        "priceFormatted": "$45.00",
+        "label": "Organization 年付折合月价"
       },
       "locals": {}
     }
@@ -3979,6 +4834,33 @@
         "currency": "USD",
         "priceFormatted": "$69.99",
         "label": "Creative Cloud Pro"
+      },
+      "locals": {}
+    },
+    "photography_yearly": {
+      "base": {
+        "amount": 14.99,
+        "currency": "USD",
+        "priceFormatted": "$14.99",
+        "label": "Photography 年付折合月价"
+      },
+      "locals": {}
+    },
+    "all_apps_yearly": {
+      "base": {
+        "amount": 54.99,
+        "currency": "USD",
+        "priceFormatted": "$54.99",
+        "label": "All Apps 年付折合月价"
+      },
+      "locals": {}
+    },
+    "all_apps_pro_yearly": {
+      "base": {
+        "amount": 64.99,
+        "currency": "USD",
+        "priceFormatted": "$64.99",
+        "label": "Creative Cloud Pro 年付折合月价"
       },
       "locals": {}
     }
@@ -4059,6 +4941,24 @@
         "label": "Scale"
       },
       "locals": {}
+    },
+    "basic_yearly": {
+      "base": {
+        "amount": 8.0,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Basic 年付折合月价（约八折）"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 24.0,
+        "currency": "USD",
+        "priceFormatted": "$24.00",
+        "label": "Pro 年付折合月价（约八折）"
+      },
+      "locals": {}
     }
   },
   "galileo-ai": {
@@ -4077,6 +4977,15 @@
         "currency": "USD",
         "priceFormatted": "$72.00",
         "label": "Business"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 28.8,
+        "currency": "USD",
+        "priceFormatted": "$28.80",
+        "label": "Pro 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -4417,7 +5326,7 @@
         "amount": 17.0,
         "currency": "USD",
         "priceFormatted": "$17.00",
-        "label": "Pro 年付折合月价"
+        "label": "Pro 年付折合月价（$200/年）"
       },
       "locals": {}
     },
@@ -4456,6 +5365,15 @@
         "currency": "USD",
         "priceFormatted": "$200.00",
         "label": "Ultra 月付"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 16.0,
+        "currency": "USD",
+        "priceFormatted": "$16.00",
+        "label": "Pro 年付折合月价（$192/年）"
       },
       "locals": {}
     }
@@ -4503,6 +5421,15 @@
         "currency": "USD",
         "priceFormatted": "$100.00",
         "label": "Max 月付"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 8.33,
+        "currency": "USD",
+        "priceFormatted": "$8.33",
+        "label": "Pro 年付折合月价（$100/年）"
       },
       "locals": {}
     }

@@ -54,6 +54,7 @@ export const PLAN_EXPANSIONS = {
     plans: {
       ai_plus_monthly: usd(4.99, 'Google AI Plus 公开标价'),
       advanced_monthly: usd(19.99, 'AI Pro 公开标价'),
+      advanced_yearly: usd(16.67, 'AI Pro 年付折合月价（$199.99/年）'),
       spark_monthly: usd(99.99, 'AI Ultra 5x 公开标价'),
       ai_ultra_monthly: usd(199.99, 'AI Ultra 20x 公开标价'),
     },
@@ -345,12 +346,16 @@ export const PLAN_EXPANSIONS = {
     },
   },
   midjourney: {
-    pricingUrl: 'https://docs.midjourney.com/hc/en-us/articles/27870432059405-Compare-Plans',
+    pricingUrl: 'https://docs.midjourney.com/hc/en-us/articles/27870484040333-Comparing-Midjourney-Plans',
     plans: {
-      basic_monthly: usd(10, 'Basic'),
-      standard_monthly: usd(30, 'Standard'),
-      pro_monthly: usd(60, 'Pro'),
-      mega_monthly: usd(120, 'Mega'),
+      basic_monthly: usd(10, 'Basic 月付'),
+      basic_yearly: usd(8, 'Basic 年付折合月价'),
+      standard_monthly: usd(30, 'Standard 月付'),
+      standard_yearly: usd(24, 'Standard 年付折合月价'),
+      pro_monthly: usd(60, 'Pro 月付'),
+      pro_yearly: usd(48, 'Pro 年付折合月价'),
+      mega_monthly: usd(120, 'Mega 月付'),
+      mega_yearly: usd(96, 'Mega 年付折合月价'),
     },
   },
 
@@ -790,10 +795,15 @@ export const PLAN_EXPANSIONS = {
     pricingUrl: 'https://pixverse.ai/pricing',
     plans: {
       standard_monthly: usd(10, '标准版'),
+      standard_yearly: usd(8, '标准版 年付折合月价'),
       pro_monthly: usd(30, '专业版'),
+      pro_yearly: usd(24, '专业版 年付折合月价'),
       premium_monthly: usd(60, '尊享版'),
+      premium_yearly: usd(48, '尊享版 年付折合月价'),
       ultimate_monthly: usd(199, '至尊版'),
+      ultimate_yearly: usd(149, '至尊版 年付折合月价'),
       team_ultimate_monthly: usd(99, '团队至尊版'),
+      team_ultimate_yearly: usd(79, '团队至尊版 年付折合月价'),
     },
   },
   'hailuo-video': {

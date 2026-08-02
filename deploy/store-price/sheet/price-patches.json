@@ -64,12 +64,22 @@
       "team_monthly": {
         "amount": 25,
         "currency": "USD",
-        "label": "Team 月付/席"
+        "label": "Team Standard 月付/席"
       },
       "team_yearly": {
         "amount": 20,
         "currency": "USD",
-        "label": "Team 年付折合月价/席"
+        "label": "Team Standard 年付折合月价/席"
+      },
+      "team_premium_monthly": {
+        "amount": 125,
+        "currency": "USD",
+        "label": "Team Premium 月付/席"
+      },
+      "team_premium_yearly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Team Premium 年付折合月价/席"
       }
     }
   },
@@ -174,7 +184,7 @@
   "cursor": {
     "pricingUrl": "https://cursor.com/pricing",
     "status": "priced",
-    "note": "",
+    "note": "公开页未标个人年付折合金额",
     "plans": {
       "pro_monthly": {
         "amount": 20,
@@ -190,6 +200,16 @@
         "amount": 200,
         "currency": "USD",
         "label": "Ultra 月付"
+      },
+      "teams_standard_monthly": {
+        "amount": 40,
+        "currency": "USD",
+        "label": "Teams Standard 月付/席"
+      },
+      "teams_premium_monthly": {
+        "amount": 120,
+        "currency": "USD",
+        "label": "Teams Premium 月付/席"
       }
     }
   },
@@ -485,22 +505,167 @@
       "basic_monthly": {
         "amount": 9,
         "currency": "USD",
-        "label": "Basic"
+        "label": "Basic 月付"
       },
       "pro_monthly": {
         "amount": 35,
         "currency": "USD",
-        "label": "Pro"
+        "label": "Pro 月付"
       },
       "max_monthly": {
         "amount": 70,
         "currency": "USD",
-        "label": "Max"
+        "label": "Max 月付"
       },
       "business_monthly": {
         "amount": 200,
         "currency": "USD",
         "label": "Business 月付"
+      },
+      "basic_yearly": {
+        "amount": 5.25,
+        "currency": "USD",
+        "label": "Basic 年付折合月价"
+      },
+      "pro_yearly": {
+        "amount": 21,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
+      "max_yearly": {
+        "amount": 63,
+        "currency": "USD",
+        "label": "Max 年付折合月价"
+      },
+      "business_yearly": {
+        "amount": 160,
+        "currency": "USD",
+        "label": "Business 年付折合月价"
+      }
+    }
+  },
+  "pika": {
+    "pricingUrl": "https://pika.art/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "standard_monthly": {
+        "amount": 10,
+        "currency": "USD",
+        "label": "Standard 月付"
+      },
+      "standard_yearly": {
+        "amount": 8,
+        "currency": "USD",
+        "label": "Standard 年付折合月价"
+      },
+      "pro_monthly": {
+        "amount": 35,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_yearly": {
+        "amount": 28,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
+      "fancy_monthly": {
+        "amount": 95,
+        "currency": "USD",
+        "label": "Fancy 月付"
+      },
+      "fancy_yearly": {
+        "amount": 76,
+        "currency": "USD",
+        "label": "Fancy 年付折合月价"
+      }
+    }
+  },
+  "descript": {
+    "pricingUrl": "https://www.descript.com/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "hobbyist_monthly": {
+        "amount": 24,
+        "currency": "USD",
+        "label": "Hobbyist 月付"
+      },
+      "hobbyist_yearly": {
+        "amount": 16,
+        "currency": "USD",
+        "label": "Hobbyist 年付折合月价"
+      },
+      "creator_monthly": {
+        "amount": 35,
+        "currency": "USD",
+        "label": "Creator 月付"
+      },
+      "creator_yearly": {
+        "amount": 24,
+        "currency": "USD",
+        "label": "Creator 年付折合月价"
+      },
+      "business_monthly": {
+        "amount": 65,
+        "currency": "USD",
+        "label": "Business 月付"
+      },
+      "business_yearly": {
+        "amount": 50,
+        "currency": "USD",
+        "label": "Business 年付折合月价"
+      }
+    }
+  },
+  "tabnine-pro": {
+    "pricingUrl": "https://www.tabnine.com/pricing",
+    "status": "priced",
+    "note": "旧 Dev/Pro $12 下架",
+    "plans": {
+      "code_assistant_yearly": {
+        "amount": 39,
+        "currency": "USD",
+        "label": "Code Assistant 年付折合月价/席"
+      },
+      "agentic_yearly": {
+        "amount": 59,
+        "currency": "USD",
+        "label": "Agentic Platform 年付折合月价/席"
+      }
+    }
+  },
+  "grammarly-premium": {
+    "pricingUrl": "https://www.grammarly.com/plans",
+    "status": "priced",
+    "note": "Business 档不再展示",
+    "plans": {
+      "premium_monthly": {
+        "amount": 12,
+        "currency": "USD",
+        "label": "Pro 月付（原 Premium）"
+      }
+    }
+  },
+  "huggingface-pro": {
+    "pricingUrl": "https://huggingface.co/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "pro_monthly": {
+        "amount": 9,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "team_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Team 月付/席"
+      },
+      "enterprise_monthly": {
+        "amount": 50,
+        "currency": "USD",
+        "label": "Enterprise 月付/席"
       }
     }
   }

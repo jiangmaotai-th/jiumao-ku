@@ -1151,24 +1151,6 @@
         "label": "Microsoft 365 Premium 年付折合月价"
       },
       "locals": {}
-    },
-    "m365_personal_yearly": {
-      "base": {
-        "amount": 8.33,
-        "currency": "USD",
-        "priceFormatted": "$8.33",
-        "label": "Microsoft 365 Personal 年付折合月价"
-      },
-      "locals": {}
-    },
-    "m365_family_yearly": {
-      "base": {
-        "amount": 10.83,
-        "currency": "USD",
-        "priceFormatted": "$10.83",
-        "label": "Microsoft 365 Family 年付折合月价"
-      },
-      "locals": {}
     }
   },
   "grok-premium": {
@@ -1360,10 +1342,10 @@
     },
     "plus_yearly": {
       "base": {
-        "amount": 10.0,
+        "amount": 10,
         "currency": "USD",
         "priceFormatted": "$10.00",
-        "label": "Plus 年付折合月价/席"
+        "label": "Plus 年付折合月价"
       },
       "locals": {}
     },
@@ -1378,37 +1360,10 @@
     },
     "business_yearly": {
       "base": {
-        "amount": 20.0,
+        "amount": 20,
         "currency": "USD",
         "priceFormatted": "$20.00",
-        "label": "Business 年付折合月价/席"
-      },
-      "locals": {}
-    },
-    "plus_yearly": {
-      "base": {
-        "amount": 8.0,
-        "currency": "USD",
-        "priceFormatted": "$8.00",
-        "label": "Plus 年付折合月价"
-      },
-      "locals": {}
-    },
-    "business_yearly": {
-      "base": {
-        "amount": 15.0,
-        "currency": "USD",
-        "priceFormatted": "$15.00",
         "label": "Business 年付折合月价"
-      },
-      "locals": {}
-    },
-    "ai_yearly": {
-      "base": {
-        "amount": 8.0,
-        "currency": "USD",
-        "priceFormatted": "$8.00",
-        "label": "Notion AI add-on 年付折合月价"
       },
       "locals": {}
     }
@@ -1758,7 +1713,7 @@
     },
     "starter_yearly": {
       "base": {
-        "amount": 5.0,
+        "amount": 5,
         "currency": "USD",
         "priceFormatted": "$5.00",
         "label": "Starter 年付折合月价"
@@ -1834,42 +1789,6 @@
         "currency": "USD",
         "priceFormatted": "$825.00",
         "label": "Business 年付折合月价"
-      },
-      "locals": {}
-    },
-    "starter_yearly": {
-      "base": {
-        "amount": 4.15,
-        "currency": "USD",
-        "priceFormatted": "$4.15",
-        "label": "Starter 年付折合月价"
-      },
-      "locals": {}
-    },
-    "creator_yearly": {
-      "base": {
-        "amount": 18.33,
-        "currency": "USD",
-        "priceFormatted": "$18.33",
-        "label": "Creator 年付折合月价"
-      },
-      "locals": {}
-    },
-    "pro_yearly": {
-      "base": {
-        "amount": 82.5,
-        "currency": "USD",
-        "priceFormatted": "$82.50",
-        "label": "Pro 年付折合月价"
-      },
-      "locals": {}
-    },
-    "scale_yearly": {
-      "base": {
-        "amount": 275.0,
-        "currency": "USD",
-        "priceFormatted": "$275.00",
-        "label": "Scale 年付折合月价"
       },
       "locals": {}
     }
@@ -2645,15 +2564,6 @@
       },
       "locals": {}
     },
-    "premium_yearly": {
-      "base": {
-        "amount": 16.67,
-        "currency": "USD",
-        "priceFormatted": "$16.67",
-        "label": "Premium 年付折合月价"
-      },
-      "locals": {}
-    },
     "plus_yearly": {
       "base": {
         "amount": 25.0,
@@ -3228,7 +3138,7 @@
     },
     "pro_yearly": {
       "base": {
-        "amount": 75.0,
+        "amount": 75,
         "currency": "USD",
         "priceFormatted": "$75.00",
         "label": "Pro 年付折合月价"
@@ -3250,33 +3160,6 @@
         "currency": "USD",
         "priceFormatted": "$250.00",
         "label": "Ultra 年付折合月价"
-      },
-      "locals": {}
-    },
-    "standard_yearly": {
-      "base": {
-        "amount": 7.99,
-        "currency": "USD",
-        "priceFormatted": "$7.99",
-        "label": "Plus/Standard 年付折合月价（约八折）"
-      },
-      "locals": {}
-    },
-    "pro_yearly": {
-      "base": {
-        "amount": 23.99,
-        "currency": "USD",
-        "priceFormatted": "$23.99",
-        "label": "Pro 年付折合月价（约八折）"
-      },
-      "locals": {}
-    },
-    "premier_yearly": {
-      "base": {
-        "amount": 79.99,
-        "currency": "USD",
-        "priceFormatted": "$79.99",
-        "label": "Unlimited/Premier 年付折合月价（约八折）"
       },
       "locals": {}
     }
@@ -4188,24 +4071,6 @@
         "currency": "USD",
         "priceFormatted": "$69.00",
         "label": "Pro 月付/席"
-      },
-      "locals": {}
-    },
-    "pro_yearly": {
-      "base": {
-        "amount": 59.0,
-        "currency": "USD",
-        "priceFormatted": "$59.00",
-        "label": "Pro 年付折合月价/席"
-      },
-      "locals": {}
-    },
-    "creator_yearly": {
-      "base": {
-        "amount": 39.0,
-        "currency": "USD",
-        "priceFormatted": "$39.00",
-        "label": "Creator 年付折合月价（约）"
       },
       "locals": {}
     },

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-08-02 每日核对已更新差异档。切勿填入 App Store PPP。",
+    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-08-02 第二轮每日核对更新差异档。切勿填入 App Store PPP。",
     "updated": "2026-08-02",
     "lastScrapeAt": "2026-08-02T00:54:25.675Z",
     "byProduct": {
@@ -83,9 +83,9 @@
       "huggingface-pro": {
         "status": "confirmed",
         "pricingUrl": "https://huggingface.co/pricing",
-        "source": "scrape:generic-confirm",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastConfirmedAt": "2026-08-02T00:54:46.132Z",
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
         "lastError": null,
         "partial": false
       },
@@ -194,12 +194,14 @@
         "lastConfirmedAt": null
       },
       "tabnine-pro": {
-        "status": "stale",
+        "status": "confirmed",
         "pricingUrl": "https://www.tabnine.com/pricing",
-        "source": "generic:no-match",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastError": "generic_no_amount_match",
-        "lastConfirmedAt": null
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
+        "partial": false,
+        "note": "旧 Dev/Pro $12 已从定价页下架；现为 Code Assistant $39、Agentic $59（年订）"
       },
       "replit-core": {
         "status": "confirmed",
@@ -333,10 +335,10 @@
       "krea-ai": {
         "status": "confirmed",
         "pricingUrl": "https://www.krea.ai/pricing",
-        "source": "daily-verify:2026-08-02",
-        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
         "lastError": null,
-        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
         "partial": false
       },
       "magnific-ai": {
@@ -408,11 +410,11 @@
       "pika": {
         "status": "confirmed",
         "pricingUrl": "https://pika.art/pricing",
-        "source": "scrape:generic-confirm",
-        "updatedAt": "2026-08-02T03:09:22.823Z",
-        "lastConfirmedAt": "2026-08-02T00:55:35.446Z",
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
         "lastError": null,
-        "partial": true
+        "partial": false
       },
       "luma-dream-machine": {
         "status": "confirmed",
@@ -511,9 +513,9 @@
       "descript": {
         "status": "confirmed",
         "pricingUrl": "https://www.descript.com/pricing",
-        "source": "scrape:generic-confirm",
-        "updatedAt": "2026-08-02T03:09:22.823Z",
-        "lastConfirmedAt": "2026-08-02T00:55:59.990Z",
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
         "lastError": null,
         "partial": false
       },
@@ -660,13 +662,14 @@
         "note": "独立 Notion AI add-on 已下架，完整 AI 含于 Business"
       },
       "grammarly-premium": {
-        "status": "live",
+        "status": "confirmed",
         "pricingUrl": "https://www.grammarly.com/plans",
-        "source": "scrape:static-usd",
-        "updatedAt": "2026-08-02T03:09:22.824Z",
-        "lastConfirmedAt": "2026-08-02T00:54:39.833Z",
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "定价页现仅 Free/Pro/Enterprise；独立 Business 档不再展示"
       },
       "jasper": {
         "status": "confirmed",
@@ -978,19 +981,21 @@
       "claude": {
         "status": "confirmed",
         "pricingUrl": "https://claude.com/pricing",
-        "source": "daily-verify:2026-08-02",
-        "updatedAt": "2026-08-02T05:46:45.467Z",
-        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
         "lastError": null,
         "partial": false
       },
       "cursor": {
-        "status": "live",
+        "status": "confirmed",
         "pricingUrl": "https://cursor.com/pricing",
-        "source": "scrape:cursor-pricing",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastConfirmedAt": "2026-08-02T00:54:32.462Z",
-        "lastError": null
+        "source": "daily-verify:2026-08-02-pass2",
+        "updatedAt": "2026-08-02T10:07:04.314Z",
+        "lastConfirmedAt": "2026-08-02T10:07:04.314Z",
+        "lastError": null,
+        "partial": false,
+        "note": "Teams Standard $40 / Premium $120 见 cursor.com/pricing 与 docs/models-and-pricing；年付折合未在公开页标金额，已移除估算档"
       },
       "github-copilot": {
         "status": "confirmed",
@@ -1640,25 +1645,7 @@
         "amount": 12,
         "currency": "USD",
         "priceFormatted": "$12.00",
-        "label": "Premium / Pro 月付入口"
-      },
-      "locals": {}
-    },
-    "premium_yearly": {
-      "base": {
-        "amount": 12,
-        "currency": "USD",
-        "priceFormatted": "$12.00",
-        "label": "年付折合月价（公开入口）"
-      },
-      "locals": {}
-    },
-    "business_monthly": {
-      "base": {
-        "amount": 15,
-        "currency": "USD",
-        "priceFormatted": "$15.00",
-        "label": "Business 月付/席"
+        "label": "Pro 月付（原 Premium）"
       },
       "locals": {}
     }
@@ -2030,12 +2017,12 @@
       },
       "locals": {}
     },
-    "pro_yearly": {
+    "enterprise_monthly": {
       "base": {
-        "amount": 9.0,
+        "amount": 50,
         "currency": "USD",
-        "priceFormatted": "$9.00",
-        "label": "Pro 年付（与月付同价按年结算常见）"
+        "priceFormatted": "$50.00",
+        "label": "Enterprise 月付/席"
       },
       "locals": {}
     }
@@ -2361,30 +2348,21 @@
     }
   },
   "tabnine-pro": {
-    "pro_monthly": {
+    "code_assistant_yearly": {
       "base": {
-        "amount": 12,
+        "amount": 39,
         "currency": "USD",
-        "priceFormatted": "$12.00",
-        "label": "Dev / Pro 公开标价"
+        "priceFormatted": "$39.00",
+        "label": "Code Assistant 年付折合月价/席（官网仅展示年订）"
       },
       "locals": {}
     },
-    "agentic_monthly": {
+    "agentic_yearly": {
       "base": {
         "amount": 59,
         "currency": "USD",
         "priceFormatted": "$59.00",
-        "label": "Agentic 年付折合月价"
-      },
-      "locals": {}
-    },
-    "pro_yearly": {
-      "base": {
-        "amount": 9.0,
-        "currency": "USD",
-        "priceFormatted": "$9.00",
-        "label": "Pro 年付折合月价"
+        "label": "Agentic Platform 年付折合月价/席（官网仅展示年订）"
       },
       "locals": {}
     }
@@ -2808,7 +2786,7 @@
         "amount": 9,
         "currency": "USD",
         "priceFormatted": "$9.00",
-        "label": "Basic"
+        "label": "Basic 月付"
       },
       "locals": {}
     },
@@ -2817,7 +2795,7 @@
         "amount": 35,
         "currency": "USD",
         "priceFormatted": "$35.00",
-        "label": "Pro"
+        "label": "Pro 月付"
       },
       "locals": {}
     },
@@ -2826,13 +2804,13 @@
         "amount": 70,
         "currency": "USD",
         "priceFormatted": "$70.00",
-        "label": "Max"
+        "label": "Max 月付"
       },
       "locals": {}
     },
     "business_monthly": {
       "base": {
-        "amount": 200.0,
+        "amount": 200,
         "currency": "USD",
         "priceFormatted": "$200.00",
         "label": "Business 月付"
@@ -2841,28 +2819,37 @@
     },
     "basic_yearly": {
       "base": {
-        "amount": 7.2,
+        "amount": 5.25,
         "currency": "USD",
-        "priceFormatted": "$7.20",
-        "label": "Basic 年付折合月价（约八折）"
+        "priceFormatted": "$5.25",
+        "label": "Basic 年付折合月价（官网展示，约省40%）"
       },
       "locals": {}
     },
     "pro_yearly": {
       "base": {
-        "amount": 28.0,
+        "amount": 21,
         "currency": "USD",
-        "priceFormatted": "$28.00",
-        "label": "Pro 年付折合月价（约八折）"
+        "priceFormatted": "$21.00",
+        "label": "Pro 年付折合月价（官网展示，约省40%）"
       },
       "locals": {}
     },
     "max_yearly": {
       "base": {
-        "amount": 56.0,
+        "amount": 63,
         "currency": "USD",
-        "priceFormatted": "$56.00",
-        "label": "Max 年付折合月价（约八折）"
+        "priceFormatted": "$63.00",
+        "label": "Max 年付折合月价（官网展示）"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 160,
+        "currency": "USD",
+        "priceFormatted": "$160.00",
+        "label": "Business 年付折合月价（官网展示）"
       },
       "locals": {}
     }
@@ -3058,52 +3045,52 @@
         "amount": 10,
         "currency": "USD",
         "priceFormatted": "$10.00",
-        "label": "Standard"
+        "label": "Standard 月付"
       },
       "locals": {}
     },
     "pro_monthly": {
       "base": {
-        "amount": 28,
+        "amount": 35,
         "currency": "USD",
-        "priceFormatted": "$28.00",
-        "label": "Pro"
+        "priceFormatted": "$35.00",
+        "label": "Pro 月付"
       },
       "locals": {}
     },
     "fancy_monthly": {
       "base": {
-        "amount": 76,
+        "amount": 95,
         "currency": "USD",
-        "priceFormatted": "$76.00",
-        "label": "Fancy"
+        "priceFormatted": "$95.00",
+        "label": "Fancy 月付"
       },
       "locals": {}
     },
     "standard_yearly": {
       "base": {
-        "amount": 8.0,
+        "amount": 8,
         "currency": "USD",
         "priceFormatted": "$8.00",
-        "label": "Standard 年付折合月价（约八折）"
+        "label": "Standard 年付折合月价（官网年付展示）"
       },
       "locals": {}
     },
     "pro_yearly": {
       "base": {
-        "amount": 22.4,
+        "amount": 28,
         "currency": "USD",
-        "priceFormatted": "$22.40",
-        "label": "Pro 年付折合月价（约八折）"
+        "priceFormatted": "$28.00",
+        "label": "Pro 年付折合月价（官网年付展示）"
       },
       "locals": {}
     },
     "fancy_yearly": {
       "base": {
-        "amount": 60.8,
+        "amount": 76,
         "currency": "USD",
-        "priceFormatted": "$60.80",
-        "label": "Unlimited 年付折合月价（约八折）"
+        "priceFormatted": "$76.00",
+        "label": "Fancy 年付折合月价（官网年付展示）"
       },
       "locals": {}
     }
@@ -3530,6 +3517,15 @@
         "currency": "USD",
         "priceFormatted": "$65.00",
         "label": "Business 月付"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 50,
+        "currency": "USD",
+        "priceFormatted": "$50.00",
+        "label": "Business 年付折合月价/席"
       },
       "locals": {}
     }
@@ -5182,7 +5178,7 @@
         "amount": 25,
         "currency": "USD",
         "priceFormatted": "$25.00",
-        "label": "Team 月付/席"
+        "label": "Team Standard 月付/席"
       },
       "locals": {}
     },
@@ -5197,10 +5193,28 @@
     },
     "team_yearly": {
       "base": {
-        "amount": 20.0,
+        "amount": 20,
         "currency": "USD",
         "priceFormatted": "$20.00",
-        "label": "Team 年付折合月价/席"
+        "label": "Team Standard 年付折合月价/席"
+      },
+      "locals": {}
+    },
+    "team_premium_monthly": {
+      "base": {
+        "amount": 125,
+        "currency": "USD",
+        "priceFormatted": "$125.00",
+        "label": "Team Premium 月付/席"
+      },
+      "locals": {}
+    },
+    "team_premium_yearly": {
+      "base": {
+        "amount": 100,
+        "currency": "USD",
+        "priceFormatted": "$100.00",
+        "label": "Team Premium 年付折合月价/席"
       },
       "locals": {}
     }
@@ -5233,12 +5247,21 @@
       },
       "locals": {}
     },
-    "pro_yearly": {
+    "teams_standard_monthly": {
       "base": {
-        "amount": 16.0,
+        "amount": 40,
         "currency": "USD",
-        "priceFormatted": "$16.00",
-        "label": "Pro 年付折合月价（$192/年）"
+        "priceFormatted": "$40.00",
+        "label": "Teams Standard 月付/席"
+      },
+      "locals": {}
+    },
+    "teams_premium_monthly": {
+      "base": {
+        "amount": 120,
+        "currency": "USD",
+        "priceFormatted": "$120.00",
+        "label": "Teams Premium 月付/席"
       },
       "locals": {}
     }

@@ -161,8 +161,11 @@ export const AI_PRODUCTS = [
     desktop: { store: 'mac', skuHints: ['pro', 'max', 'max 20x'] },
   }),
   p('gemini-advanced', 'Gemini Advanced', 'Gemini Advanced', 'chat', 'Google', {
-    appstore: { trackId: 6472530181, planHints: ['advanced', 'gemini', 'google one ai'] },
-    web: { pricingUrl: 'https://one.google.com/ai', planKeys: ['advanced_monthly'] },
+    appstore: { trackId: 6472530181, planHints: ['advanced', 'gemini', 'google one ai', 'ai plus', 'ai pro', 'ultra'] },
+    web: {
+      pricingUrl: 'https://gemini.google/subscriptions',
+      planKeys: ['ai_plus_monthly', 'advanced_monthly', 'spark_monthly', 'ai_ultra_monthly'],
+    },
   }),
   p('grok-premium', 'Grok Premium', 'Grok Premium', 'chat', 'xAI', {
     appstore: { trackId: 333903271, planHints: ['premium', 'grok', 'x premium'] },
@@ -173,9 +176,13 @@ export const AI_PRODUCTS = [
     web: { pricingUrl: 'https://www.perplexity.ai/pro', planKeys: ['pro_monthly'] },
   }),
   p('microsoft-copilot-pro', 'Copilot Pro', 'Copilot Pro', 'chat', 'Microsoft', {
-    appstore: { trackId: 6472532773, planHints: ['copilot pro', 'pro'] },
-    web: { pricingUrl: 'https://www.microsoft.com/copilot', planKeys: ['pro_monthly'] },
-    desktop: { store: 'ms', skuHints: ['copilot pro'] },
+    appstore: { trackId: 6472532773, planHints: ['copilot pro', 'pro', 'premium'] },
+    web: {
+      pricingUrl:
+        'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
+      planKeys: ['m365_premium_monthly', 'm365_personal_monthly', 'm365_family_monthly'],
+    },
+    desktop: { store: 'ms', skuHints: ['copilot pro', 'microsoft 365 premium'] },
   }),
   p('poe-premium', 'Poe Premium', 'Poe Premium', 'chat', 'Quora', {
     appstore: { trackId: 1559745142, planHints: ['premium', 'poe'] },
@@ -265,12 +272,12 @@ export const AI_PRODUCTS = [
   p('github-copilot', 'GitHub Copilot', 'GitHub Copilot', 'coding', 'GitHub', {
     web: {
       pricingUrl: 'https://github.com/features/copilot',
-      planKeys: ['pro_monthly', 'pro_plus_monthly'],
+      planKeys: ['pro_monthly', 'pro_plus_monthly', 'max_monthly'],
     },
     desktop: { store: 'none', skuHints: ['copilot'] },
   }),
   p('windsurf-pro', 'Windsurf Pro', 'Windsurf Pro', 'coding', 'Codeium', {
-    web: { planKeys: ['pro_monthly'] },
+    web: { pricingUrl: 'https://devin.ai/pricing', planKeys: ['pro_monthly', 'max_monthly'] },
   }),
   p('claude-code', 'Claude Code', 'Claude Code', 'coding', 'Anthropic', {
     web: { planKeys: ['code_monthly'] },
@@ -291,7 +298,7 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['pro_monthly'] },
   }),
   p('devin', 'Devin', 'Devin', 'coding', 'Cognition', {
-    web: { planKeys: ['monthly'] },
+    web: { pricingUrl: 'https://devin.ai/pricing', planKeys: ['pro_monthly', 'max_monthly'] },
   }),
   p('augment-code', 'Augment Code', 'Augment Code', 'coding', 'Augment', {
     web: { planKeys: ['pro_monthly'] },
@@ -300,7 +307,7 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['pro_monthly'] },
   }),
   p('v0', 'v0', 'v0（Vercel）', 'coding', 'Vercel', {
-    web: { planKeys: ['premium_monthly'] },
+    web: { pricingUrl: 'https://v0.app/pricing', planKeys: ['plus_monthly', 'business_monthly'] },
   }),
   p('bolt-new', 'Bolt.new', 'Bolt.new', 'coding', 'StackBlitz', {
     web: { planKeys: ['pro_monthly'] },
@@ -344,7 +351,9 @@ export const AI_PRODUCTS = [
   // —— 视频 ——
   p('runway', 'Runway', 'Runway', 'video', 'Runway', { web: { planKeys: ['standard_monthly'] } }),
   p('pika', 'Pika', 'Pika', 'video', 'Pika', { web: { planKeys: ['standard_monthly'] } }),
-  p('luma-dream-machine', 'Luma Dream Machine', 'Luma Dream Machine', 'video', 'Luma', { web: { planKeys: ['standard_monthly'] } }),
+  p('luma-dream-machine', 'Luma Dream Machine', 'Luma Dream Machine', 'video', 'Luma', {
+    web: { pricingUrl: 'https://lumalabs.ai/pricing', planKeys: ['plus_monthly', 'pro_monthly', 'ultra_monthly'] },
+  }),
   p('sora', 'Sora', 'Sora', 'video', 'OpenAI', { web: { planKeys: ['plus_monthly'] } }),
   p('heygen', 'HeyGen', 'HeyGen', 'video', 'HeyGen', { web: { planKeys: ['creator_monthly'] } }),
   p('kling', 'Kling', '可灵（Kling）', 'video', '快手', { web: { planKeys: ['standard_monthly'] } }),
@@ -391,14 +400,19 @@ export const AI_PRODUCTS = [
 
   // —— 写作 / 办公 ——
   p('notion-ai', 'Notion AI', 'Notion AI', 'writing', 'Notion', {
-    appstore: { trackId: 1232780281, planHints: ['ai', 'notion ai', 'plus'] },
-    web: { planKeys: ['ai_monthly'] },
+    appstore: { trackId: 1232780281, planHints: ['ai', 'notion ai', 'plus', 'business'] },
+    web: {
+      pricingUrl: 'https://www.notion.com/pricing',
+      planKeys: ['plus_yearly', 'business_yearly', 'plus_monthly', 'business_monthly'],
+    },
   }),
   p('grammarly-premium', 'Grammarly Premium', 'Grammarly Premium', 'writing', 'Grammarly', {
     appstore: { trackId: 1158872862, planHints: ['premium', 'grammarly'] },
     web: { planKeys: ['premium_monthly'] },
   }),
-  p('jasper', 'Jasper', 'Jasper', 'writing', 'Jasper', { web: { planKeys: ['creator_monthly'] } }),
+  p('jasper', 'Jasper', 'Jasper', 'writing', 'Jasper', {
+    web: { pricingUrl: 'https://www.jasper.ai/pricing', planKeys: ['pro_monthly', 'pro_yearly'] },
+  }),
   p('copy-ai', 'Copy.ai', 'Copy.ai', 'writing', 'Copy.ai', { web: { planKeys: ['pro_monthly'] } }),
   p('writesonic', 'Writesonic', 'Writesonic', 'writing', 'Writesonic', { web: { planKeys: ['pro_monthly'] } }),
   p('quillbot', 'QuillBot', 'QuillBot', 'writing', 'QuillBot', {

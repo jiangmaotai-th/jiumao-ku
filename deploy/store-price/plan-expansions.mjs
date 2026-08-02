@@ -50,12 +50,12 @@ function eur(amount, label) {
 export const PLAN_EXPANSIONS = {
   // —— chat ——
   'gemini-advanced': {
-    pricingUrl: 'https://one.google.com/ai',
+    pricingUrl: 'https://gemini.google/subscriptions',
     plans: {
-      ai_plus_monthly: usd(7.99, 'Google AI Plus 公开标价'),
+      ai_plus_monthly: usd(4.99, 'Google AI Plus 公开标价'),
       advanced_monthly: usd(19.99, 'AI Pro 公开标价'),
-      spark_monthly: usd(99.99, 'Gemini Spark 公开标价（约）'),
-      ai_ultra_monthly: usd(199.99, 'Google AI Ultra 公开标价'),
+      spark_monthly: usd(99.99, 'AI Ultra 5x 公开标价'),
+      ai_ultra_monthly: usd(199.99, 'AI Ultra 20x 公开标价'),
     },
   },
   'grok-premium': {
@@ -76,9 +76,15 @@ export const PLAN_EXPANSIONS = {
     },
   },
   'microsoft-copilot-pro': {
-    pricingUrl: 'https://www.microsoft.com/microsoft-365/copilot/pricing',
+    pricingUrl:
+      'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
     plans: {
-      pro_monthly: usd(20, 'Copilot Pro 个人版'),
+      m365_personal_monthly: usd(9.99, 'Microsoft 365 Personal 月付'),
+      m365_personal_yearly: usd(8.33, 'Microsoft 365 Personal 年付折合月价'),
+      m365_family_monthly: usd(12.99, 'Microsoft 365 Family 月付'),
+      m365_family_yearly: usd(10.83, 'Microsoft 365 Family 年付折合月价'),
+      m365_premium_monthly: usd(19.99, 'Microsoft 365 Premium 月付'),
+      m365_premium_yearly: usd(16.67, 'Microsoft 365 Premium 年付折合月价'),
     },
   },
   'poe-premium': {
@@ -223,11 +229,12 @@ export const PLAN_EXPANSIONS = {
 
   // —— coding ——
   'windsurf-pro': {
-    pricingUrl: 'https://windsurf.com/pricing',
+    pricingUrl: 'https://devin.ai/pricing',
     plans: {
-      pro_monthly: usd(15, 'Pro 月付'),
-      teams_monthly: usd(40, 'Teams 月付/席'),
+      pro_monthly: usd(20, 'Pro 月付'),
       max_monthly: usd(200, 'Max 月付'),
+      teams_base_monthly: usd(80, 'Teams 团队底价月付'),
+      teams_monthly: usd(40, 'Teams 全量席位月付'),
     },
   },
   'jetbrains-ai-pro': {
@@ -261,11 +268,10 @@ export const PLAN_EXPANSIONS = {
     },
   },
   v0: {
-    pricingUrl: 'https://v0.dev/pricing',
+    pricingUrl: 'https://v0.app/pricing',
     plans: {
-      premium_monthly: usd(20, 'Premium 月付'),
-      plus_monthly: usd(30, 'Plus 月付'),
-      business_monthly: usd(100, 'Business 月付'),
+      plus_monthly: usd(30, 'Plus 月付/席'),
+      business_monthly: usd(100, 'Business 月付/席'),
     },
   },
   'bolt-new': {
@@ -326,6 +332,7 @@ export const PLAN_EXPANSIONS = {
       basic_monthly: usd(9, 'Basic'),
       pro_monthly: usd(35, 'Pro'),
       max_monthly: usd(70, 'Max'),
+      business_monthly: usd(200, 'Business 月付'),
     },
   },
   photoroom: {
@@ -368,11 +375,14 @@ export const PLAN_EXPANSIONS = {
     },
   },
   'luma-dream-machine': {
-    pricingUrl: 'https://lumalabs.ai/dream-machine/pricing',
+    pricingUrl: 'https://lumalabs.ai/pricing',
     plans: {
-      standard_monthly: usd(9.99, 'Standard'),
-      pro_monthly: usd(29.99, 'Pro'),
-      premier_monthly: usd(99.99, 'Premier'),
+      plus_monthly: usd(30, 'Plus 月付'),
+      plus_yearly: usd(25, 'Plus 年付折合月价'),
+      pro_monthly: usd(90, 'Pro 月付'),
+      pro_yearly: usd(75, 'Pro 年付折合月价'),
+      ultra_monthly: usd(300, 'Ultra 月付'),
+      ultra_yearly: usd(250, 'Ultra 年付折合月价'),
     },
   },
   heygen: {
@@ -508,10 +518,16 @@ export const PLAN_EXPANSIONS = {
   elevenlabs: {
     pricingUrl: 'https://elevenlabs.io/pricing',
     plans: {
-      starter_monthly: usd(5, 'Starter'),
-      creator_monthly: usd(22, 'Creator'),
-      pro_monthly: usd(99, 'Pro'),
-      scale_monthly: usd(330, 'Scale'),
+      starter_monthly: usd(6, 'Starter 月付'),
+      starter_yearly: usd(5, 'Starter 年付折合月价'),
+      creator_monthly: usd(22, 'Creator 月付'),
+      creator_yearly: usd(18.33, 'Creator 年付折合月价'),
+      pro_monthly: usd(99, 'Pro 月付'),
+      pro_yearly: usd(82.5, 'Pro 年付折合月价'),
+      scale_monthly: usd(299, 'Scale 月付'),
+      scale_yearly: usd(249.17, 'Scale 年付折合月价'),
+      business_monthly: usd(990, 'Business 月付'),
+      business_yearly: usd(825, 'Business 年付折合月价'),
     },
   },
   // —— writing ——
@@ -526,8 +542,8 @@ export const PLAN_EXPANSIONS = {
   jasper: {
     pricingUrl: 'https://www.jasper.ai/pricing',
     plans: {
-      creator_monthly: usd(49, 'Creator'),
-      pro_monthly: usd(69, 'Pro'),
+      pro_monthly: usd(69, 'Pro 月付/席'),
+      pro_yearly: usd(59, 'Pro 年付折合月价/席'),
     },
   },
   'copy-ai': {
@@ -676,10 +692,12 @@ export const PLAN_EXPANSIONS = {
     },
   },
   devin: {
-    pricingUrl: 'https://devin.ai',
+    pricingUrl: 'https://devin.ai/pricing',
     plans: {
-      monthly: usd(500, 'Devin 席位月付公开标价'),
-      core_monthly: usd(20, 'Core / 更低公开入口（如有）'),
+      pro_monthly: usd(20, 'Pro 月付'),
+      max_monthly: usd(200, 'Max 月付'),
+      teams_base_monthly: usd(80, 'Teams 团队底价月付'),
+      teams_seat_monthly: usd(40, 'Teams 全量席位月付'),
     },
   },
   'sourcegraph-cody': {
@@ -845,11 +863,12 @@ export const PLAN_EXPANSIONS = {
     },
   },
   'notion-ai': {
-    pricingUrl: 'https://www.notion.so/pricing',
+    pricingUrl: 'https://www.notion.com/pricing',
     plans: {
-      ai_monthly: usd(10, 'Notion AI add-on'),
-      plus_monthly: usd(10, 'Plus 含 AI 能力参考'),
-      business_monthly: usd(18, 'Business'),
+      plus_monthly: usd(12, 'Plus 月付/席'),
+      plus_yearly: usd(10, 'Plus 年付折合月价/席'),
+      business_monthly: usd(24, 'Business 月付/席'),
+      business_yearly: usd(20, 'Business 年付折合月价/席'),
     },
   },
   tome: {

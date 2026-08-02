@@ -68,7 +68,7 @@ function missing(note) {
 const OFFICIAL_WEB_PRICES_BASE = {
   // —— chat ——
   chatgpt: entry('https://openai.com/chatgpt/pricing', {
-    go_monthly: usd(5, '全球统一标价（公开定价）'),
+    go_monthly: usd(8, '全球统一标价（公开定价）'),
     plus_monthly: usd(20, '全球统一标价（公开定价）'),
     pro_monthly: usd(200, '全球统一标价（公开定价）'),
   }),
@@ -98,9 +98,13 @@ const OFFICIAL_WEB_PRICES_BASE = {
   'perplexity-pro': entry('https://www.perplexity.ai/pro', {
     pro_monthly: usd(20, '全球统一标价（公开定价）'),
   }),
-  'microsoft-copilot-pro': entry('https://www.microsoft.com/microsoft-365/copilot/pricing', {
-    pro_monthly: usd(20, 'Copilot Pro 公开标价'),
-  }),
+  'microsoft-copilot-pro': entry(
+    'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
+    {
+      m365_personal_monthly: usd(9.99, 'Microsoft 365 Personal 月付'),
+      m365_premium_monthly: usd(19.99, 'Microsoft 365 Premium 月付（取代独立 Copilot Pro）'),
+    },
+  ),
   'poe-premium': entry('https://poe.com/premium', {
     premium_monthly: usd(19.99, 'Poe 公开标价'),
   }),

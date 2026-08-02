@@ -31,7 +31,7 @@ export const DEDICATED = [
         source: 'fallback:openai',
         url: 'https://openai.com/chatgpt/pricing',
         plans: {
-          go_monthly: staticUsdProduct('chatgpt', 'go_monthly', 5).plans.go_monthly,
+          go_monthly: staticUsdProduct('chatgpt', 'go_monthly', 8).plans.go_monthly,
           plus_monthly: staticUsdProduct('chatgpt', 'plus_monthly', 20).plans.plus_monthly,
           pro_monthly: staticUsdProduct('chatgpt', 'pro_monthly', 200).plans.pro_monthly,
         },
@@ -140,9 +140,9 @@ export const DEDICATED = [
     run: async () =>
       staticUsdProduct(
         'microsoft-copilot-pro',
-        'pro_monthly',
-        20,
-        'https://www.microsoft.com/copilot',
+        'm365_premium_monthly',
+        19.99,
+        'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
       ),
   },
   {
@@ -158,7 +158,7 @@ export const DEDICATED = [
   {
     id: 'notion',
     run: async () =>
-      staticUsdProduct('notion-ai', 'ai_monthly', 10, 'https://www.notion.so/pricing'),
+      staticUsdProduct('notion-ai', 'plus_yearly', 10, 'https://www.notion.com/pricing'),
   },
   {
     id: 'elevenlabs',
@@ -166,7 +166,7 @@ export const DEDICATED = [
       staticUsdProduct(
         'elevenlabs',
         'starter_monthly',
-        5,
+        6,
         'https://elevenlabs.io/pricing',
       ),
   },

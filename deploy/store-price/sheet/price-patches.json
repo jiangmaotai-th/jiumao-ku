@@ -5,7 +5,7 @@
     "note": "",
     "plans": {
       "go_monthly": {
-        "amount": 5,
+        "amount": 8,
         "currency": "USD",
         "label": "Go 月付"
       },
@@ -46,6 +46,11 @@
         "currency": "USD",
         "label": "Pro 月付"
       },
+      "pro_yearly": {
+        "amount": 17,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
       "max_monthly": {
         "amount": 100,
         "currency": "USD",
@@ -60,18 +65,23 @@
         "amount": 25,
         "currency": "USD",
         "label": "Team 月付/席"
+      },
+      "team_yearly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Team 年付折合月价/席"
       }
     }
   },
   "gemini-advanced": {
-    "pricingUrl": "https://one.google.com/ai",
+    "pricingUrl": "https://gemini.google/subscriptions",
     "status": "priced",
     "note": "",
     "plans": {
       "ai_plus_monthly": {
-        "amount": 7.99,
+        "amount": 4.99,
         "currency": "USD",
-        "label": "Google AI Plus"
+        "label": "AI Plus"
       },
       "advanced_monthly": {
         "amount": 19.99,
@@ -81,12 +91,12 @@
       "spark_monthly": {
         "amount": 99.99,
         "currency": "USD",
-        "label": "Gemini Spark"
+        "label": "AI Ultra 5x"
       },
       "ai_ultra_monthly": {
         "amount": 199.99,
         "currency": "USD",
-        "label": "Google AI Ultra"
+        "label": "AI Ultra 20x"
       }
     }
   },
@@ -198,6 +208,11 @@
         "currency": "USD",
         "label": "Pro+ 月付"
       },
+      "max_monthly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Max 月付"
+      },
       "business_monthly": {
         "amount": 19,
         "currency": "USD",
@@ -215,5 +230,278 @@
     "status": "missing",
     "note": "⚠️ 2026-03-24 全面关停（App+API+内嵌全部终止）",
     "plans": {}
+  },
+  "microsoft-copilot-pro": {
+    "pricingUrl": "https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals",
+    "status": "priced",
+    "note": "独立 Copilot Pro 已停售",
+    "plans": {
+      "m365_personal_monthly": {
+        "amount": 9.99,
+        "currency": "USD",
+        "label": "Microsoft 365 Personal 月付"
+      },
+      "m365_personal_yearly": {
+        "amount": 8.33,
+        "currency": "USD",
+        "label": "Microsoft 365 Personal 年付折合月价"
+      },
+      "m365_family_monthly": {
+        "amount": 12.99,
+        "currency": "USD",
+        "label": "Microsoft 365 Family 月付"
+      },
+      "m365_family_yearly": {
+        "amount": 10.83,
+        "currency": "USD",
+        "label": "Microsoft 365 Family 年付折合月价"
+      },
+      "m365_premium_monthly": {
+        "amount": 19.99,
+        "currency": "USD",
+        "label": "Microsoft 365 Premium 月付"
+      },
+      "m365_premium_yearly": {
+        "amount": 16.67,
+        "currency": "USD",
+        "label": "Microsoft 365 Premium 年付折合月价"
+      }
+    }
+  },
+  "windsurf-pro": {
+    "pricingUrl": "https://devin.ai/pricing",
+    "status": "priced",
+    "note": "windsurf.com/pricing → Devin",
+    "plans": {
+      "pro_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "max_monthly": {
+        "amount": 200,
+        "currency": "USD",
+        "label": "Max 月付"
+      },
+      "teams_base_monthly": {
+        "amount": 80,
+        "currency": "USD",
+        "label": "Teams 团队底价月付"
+      },
+      "teams_monthly": {
+        "amount": 40,
+        "currency": "USD",
+        "label": "Teams 全量席位月付"
+      }
+    }
+  },
+  "devin": {
+    "pricingUrl": "https://devin.ai/pricing",
+    "status": "priced",
+    "note": "旧 $500/席已下架",
+    "plans": {
+      "pro_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "max_monthly": {
+        "amount": 200,
+        "currency": "USD",
+        "label": "Max 月付"
+      },
+      "teams_base_monthly": {
+        "amount": 80,
+        "currency": "USD",
+        "label": "Teams 团队底价月付"
+      },
+      "teams_seat_monthly": {
+        "amount": 40,
+        "currency": "USD",
+        "label": "Teams 全量席位月付"
+      }
+    }
+  },
+  "v0": {
+    "pricingUrl": "https://v0.app/pricing",
+    "status": "priced",
+    "note": "Premium 档已下架",
+    "plans": {
+      "plus_monthly": {
+        "amount": 30,
+        "currency": "USD",
+        "label": "Plus 月付/席"
+      },
+      "business_monthly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Business 月付/席"
+      }
+    }
+  },
+  "luma-dream-machine": {
+    "pricingUrl": "https://lumalabs.ai/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "plus_monthly": {
+        "amount": 30,
+        "currency": "USD",
+        "label": "Plus 月付"
+      },
+      "plus_yearly": {
+        "amount": 25,
+        "currency": "USD",
+        "label": "Plus 年付折合月价"
+      },
+      "pro_monthly": {
+        "amount": 90,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_yearly": {
+        "amount": 75,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
+      "ultra_monthly": {
+        "amount": 300,
+        "currency": "USD",
+        "label": "Ultra 月付"
+      },
+      "ultra_yearly": {
+        "amount": 250,
+        "currency": "USD",
+        "label": "Ultra 年付折合月价"
+      }
+    }
+  },
+  "elevenlabs": {
+    "pricingUrl": "https://elevenlabs.io/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "starter_monthly": {
+        "amount": 6,
+        "currency": "USD",
+        "label": "Starter 月付"
+      },
+      "starter_yearly": {
+        "amount": 5,
+        "currency": "USD",
+        "label": "Starter 年付折合月价"
+      },
+      "creator_monthly": {
+        "amount": 22,
+        "currency": "USD",
+        "label": "Creator 月付"
+      },
+      "creator_yearly": {
+        "amount": 18.33,
+        "currency": "USD",
+        "label": "Creator 年付折合月价"
+      },
+      "pro_monthly": {
+        "amount": 99,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_yearly": {
+        "amount": 82.5,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
+      "scale_monthly": {
+        "amount": 299,
+        "currency": "USD",
+        "label": "Scale 月付"
+      },
+      "scale_yearly": {
+        "amount": 249.17,
+        "currency": "USD",
+        "label": "Scale 年付折合月价"
+      },
+      "business_monthly": {
+        "amount": 990,
+        "currency": "USD",
+        "label": "Business 月付"
+      },
+      "business_yearly": {
+        "amount": 825,
+        "currency": "USD",
+        "label": "Business 年付折合月价"
+      }
+    }
+  },
+  "notion-ai": {
+    "pricingUrl": "https://www.notion.com/pricing",
+    "status": "priced",
+    "note": "独立 AI add-on 已下架",
+    "plans": {
+      "plus_monthly": {
+        "amount": 12,
+        "currency": "USD",
+        "label": "Plus 月付/席"
+      },
+      "plus_yearly": {
+        "amount": 10,
+        "currency": "USD",
+        "label": "Plus 年付折合月价/席"
+      },
+      "business_monthly": {
+        "amount": 24,
+        "currency": "USD",
+        "label": "Business 月付/席"
+      },
+      "business_yearly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Business 年付折合月价/席"
+      }
+    }
+  },
+  "jasper": {
+    "pricingUrl": "https://www.jasper.ai/pricing",
+    "status": "priced",
+    "note": "Creator 档不再展示",
+    "plans": {
+      "pro_monthly": {
+        "amount": 69,
+        "currency": "USD",
+        "label": "Pro 月付/席"
+      },
+      "pro_yearly": {
+        "amount": 59,
+        "currency": "USD",
+        "label": "Pro 年付折合月价/席"
+      }
+    }
+  },
+  "krea-ai": {
+    "pricingUrl": "https://www.krea.ai/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "basic_monthly": {
+        "amount": 9,
+        "currency": "USD",
+        "label": "Basic"
+      },
+      "pro_monthly": {
+        "amount": 35,
+        "currency": "USD",
+        "label": "Pro"
+      },
+      "max_monthly": {
+        "amount": 70,
+        "currency": "USD",
+        "label": "Max"
+      },
+      "business_monthly": {
+        "amount": 200,
+        "currency": "USD",
+        "label": "Business 月付"
+      }
+    }
   }
 }

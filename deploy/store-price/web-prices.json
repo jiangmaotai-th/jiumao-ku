@@ -1,15 +1,15 @@
 {
   "_meta": {
-    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；抓取失败保留旧价。切勿填入 App Store PPP。",
+    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-08-02 每日核对已更新差异档。切勿填入 App Store PPP。",
     "updated": "2026-08-02",
     "lastScrapeAt": "2026-08-02T00:54:25.675Z",
     "byProduct": {
       "gemini-advanced": {
-        "status": "live",
-        "pricingUrl": "https://one.google.com/ai",
-        "source": "scrape:static-usd",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastConfirmedAt": "2026-08-02T00:54:39.832Z",
+        "status": "confirmed",
+        "pricingUrl": "https://gemini.google/subscriptions",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
         "lastError": null,
         "partial": false
       },
@@ -32,13 +32,14 @@
         "partial": false
       },
       "microsoft-copilot-pro": {
-        "status": "live",
-        "pricingUrl": "https://www.microsoft.com/microsoft-365/copilot/pricing",
-        "source": "scrape:static-usd",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastConfirmedAt": "2026-08-02T00:54:39.833Z",
+        "status": "confirmed",
+        "pricingUrl": "https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "Copilot Pro 已停售；个人档以 M365 Personal/Family/Premium 为准"
       },
       "poe-premium": {
         "status": "live",
@@ -166,12 +167,14 @@
         "lastConfirmedAt": null
       },
       "windsurf-pro": {
-        "status": "stale",
-        "pricingUrl": "https://windsurf.com/pricing",
-        "source": "generic:no-match",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastError": "generic_no_amount_match",
-        "lastConfirmedAt": null
+        "status": "confirmed",
+        "pricingUrl": "https://devin.ai/pricing",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "partial": false,
+        "note": "windsurf.com/pricing 现重定向至 Devin 定价页"
       },
       "claude-code": {
         "status": "confirmed",
@@ -225,12 +228,14 @@
         "lastConfirmedAt": null
       },
       "devin": {
-        "status": "stale",
-        "pricingUrl": "https://devin.ai",
-        "source": "generic:no-match",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastError": "generic_no_amount_match",
-        "lastConfirmedAt": null
+        "status": "confirmed",
+        "pricingUrl": "https://devin.ai/pricing",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "partial": false,
+        "note": "旧 $500/席公开标价已不在定价页展示"
       },
       "augment-code": {
         "status": "stale",
@@ -250,12 +255,13 @@
         "partial": false
       },
       "v0": {
-        "status": "stale",
-        "pricingUrl": "https://v0.dev/pricing",
-        "source": "generic:no-match",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastError": "generic_no_amount_match",
-        "lastConfirmedAt": null
+        "status": "confirmed",
+        "pricingUrl": "https://v0.app/pricing",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "partial": false
       },
       "bolt-new": {
         "status": "confirmed",
@@ -325,12 +331,13 @@
         "partial": false
       },
       "krea-ai": {
-        "status": "stale",
+        "status": "confirmed",
         "pricingUrl": "https://www.krea.ai/pricing",
-        "source": "generic:fetch-fail",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastError": "fetch failed",
-        "lastConfirmedAt": null
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "partial": false
       },
       "magnific-ai": {
         "status": "stale",
@@ -409,12 +416,12 @@
       },
       "luma-dream-machine": {
         "status": "confirmed",
-        "pricingUrl": "https://lumalabs.ai/dream-machine/pricing",
-        "source": "scrape:generic-confirm",
-        "updatedAt": "2026-08-02T03:09:22.823Z",
-        "lastConfirmedAt": "2026-08-02T00:55:37.652Z",
+        "pricingUrl": "https://lumalabs.ai/pricing",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
         "lastError": null,
-        "partial": true
+        "partial": false
       },
       "sora": {
         "status": "missing",
@@ -578,11 +585,11 @@
         "lastConfirmedAt": null
       },
       "elevenlabs": {
-        "status": "live",
+        "status": "confirmed",
         "pricingUrl": "https://elevenlabs.io/pricing",
-        "source": "scrape:static-usd",
-        "updatedAt": "2026-08-02T03:09:22.823Z",
-        "lastConfirmedAt": "2026-08-02T00:54:39.833Z",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
         "lastError": null,
         "partial": false
       },
@@ -643,13 +650,14 @@
         "lastConfirmedAt": null
       },
       "notion-ai": {
-        "status": "live",
-        "pricingUrl": "https://www.notion.so/pricing",
-        "source": "scrape:static-usd",
-        "updatedAt": "2026-08-02T03:09:22.824Z",
-        "lastConfirmedAt": "2026-08-02T00:54:39.833Z",
+        "status": "confirmed",
+        "pricingUrl": "https://www.notion.com/pricing",
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "独立 Notion AI add-on 已下架，完整 AI 含于 Business"
       },
       "grammarly-premium": {
         "status": "live",
@@ -661,12 +669,13 @@
         "partial": false
       },
       "jasper": {
-        "status": "stale",
+        "status": "confirmed",
         "pricingUrl": "https://www.jasper.ai/pricing",
-        "source": "generic:no-match",
-        "updatedAt": "2026-08-02T03:09:22.824Z",
-        "lastError": "generic_no_amount_match",
-        "lastConfirmedAt": null
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "partial": false
       },
       "copy-ai": {
         "status": "stale",
@@ -958,20 +967,22 @@
         "lastConfirmedAt": null
       },
       "chatgpt": {
-        "status": "fallback",
+        "status": "confirmed",
         "pricingUrl": "https://openai.com/chatgpt/pricing",
-        "source": "fallback:openai",
-        "updatedAt": "2026-08-02T03:09:22.816Z",
-        "lastConfirmedAt": "2026-08-02T00:54:28.356Z",
-        "lastError": null
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "partial": false
       },
       "claude": {
-        "status": "live",
+        "status": "confirmed",
         "pricingUrl": "https://claude.com/pricing",
-        "source": "scrape:anthropic-pricing",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastConfirmedAt": "2026-08-02T00:54:31.067Z",
-        "lastError": null
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "partial": false
       },
       "cursor": {
         "status": "live",
@@ -982,12 +993,13 @@
         "lastError": null
       },
       "github-copilot": {
-        "status": "live",
+        "status": "confirmed",
         "pricingUrl": "https://github.com/features/copilot#pricing",
-        "source": "scrape:github-copilot",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastConfirmedAt": "2026-08-02T00:54:33.821Z",
-        "lastError": null
+        "source": "daily-verify:2026-08-02",
+        "updatedAt": "2026-08-02T05:46:45.467Z",
+        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "lastError": null,
+        "partial": false
       }
     },
     "statusCounts": {
@@ -1003,9 +1015,9 @@
   "gemini-advanced": {
     "ai_plus_monthly": {
       "base": {
-        "amount": 7.99,
+        "amount": 4.99,
         "currency": "USD",
-        "priceFormatted": "$7.99",
+        "priceFormatted": "$4.99",
         "label": "AI Plus"
       },
       "locals": {}
@@ -1024,7 +1036,7 @@
         "amount": 99.99,
         "currency": "USD",
         "priceFormatted": "$99.99",
-        "label": "Gemini Spark"
+        "label": "AI Ultra 5x"
       },
       "locals": {}
     },
@@ -1033,7 +1045,7 @@
         "amount": 199.99,
         "currency": "USD",
         "priceFormatted": "$199.99",
-        "label": "AI Ultra"
+        "label": "AI Ultra 20x"
       },
       "locals": {}
     }
@@ -1077,21 +1089,12 @@
     }
   },
   "microsoft-copilot-pro": {
-    "pro_monthly": {
-      "base": {
-        "amount": 20,
-        "currency": "USD",
-        "priceFormatted": "$20.00",
-        "label": "Copilot Pro 个人月付"
-      },
-      "locals": {}
-    },
     "m365_personal_monthly": {
       "base": {
         "amount": 9.99,
         "currency": "USD",
         "priceFormatted": "$9.99",
-        "label": "Microsoft 365 Personal（含部分 AI）"
+        "label": "Microsoft 365 Personal 月付"
       },
       "locals": {}
     },
@@ -1100,7 +1103,43 @@
         "amount": 12.99,
         "currency": "USD",
         "priceFormatted": "$12.99",
-        "label": "Microsoft 365 Family"
+        "label": "Microsoft 365 Family 月付"
+      },
+      "locals": {}
+    },
+    "m365_personal_yearly": {
+      "base": {
+        "amount": 8.33,
+        "currency": "USD",
+        "priceFormatted": "$8.33",
+        "label": "Microsoft 365 Personal 年付折合月价"
+      },
+      "locals": {}
+    },
+    "m365_family_yearly": {
+      "base": {
+        "amount": 10.83,
+        "currency": "USD",
+        "priceFormatted": "$10.83",
+        "label": "Microsoft 365 Family 年付折合月价"
+      },
+      "locals": {}
+    },
+    "m365_premium_monthly": {
+      "base": {
+        "amount": 19.99,
+        "currency": "USD",
+        "priceFormatted": "$19.99",
+        "label": "Microsoft 365 Premium 月付"
+      },
+      "locals": {}
+    },
+    "m365_premium_yearly": {
+      "base": {
+        "amount": 16.67,
+        "currency": "USD",
+        "priceFormatted": "$16.67",
+        "label": "Microsoft 365 Premium 年付折合月价"
       },
       "locals": {}
     }
@@ -1211,30 +1250,39 @@
     }
   },
   "notion-ai": {
-    "ai_monthly": {
+    "plus_monthly": {
       "base": {
-        "amount": 10,
+        "amount": 12.0,
         "currency": "USD",
-        "priceFormatted": "$10.00",
-        "label": "Notion AI add-on"
+        "priceFormatted": "$12.00",
+        "label": "Plus 月付/席"
       },
       "locals": {}
     },
-    "plus_monthly": {
+    "plus_yearly": {
       "base": {
-        "amount": 10,
+        "amount": 10.0,
         "currency": "USD",
         "priceFormatted": "$10.00",
-        "label": "Plus 含 AI 能力参考"
+        "label": "Plus 年付折合月价/席"
       },
       "locals": {}
     },
     "business_monthly": {
       "base": {
-        "amount": 18,
+        "amount": 24.0,
         "currency": "USD",
-        "priceFormatted": "$18.00",
-        "label": "Business"
+        "priceFormatted": "$24.00",
+        "label": "Business 月付/席"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 20.0,
+        "currency": "USD",
+        "priceFormatted": "$20.00",
+        "label": "Business 年付折合月价/席"
       },
       "locals": {}
     }
@@ -1566,37 +1614,91 @@
   "elevenlabs": {
     "starter_monthly": {
       "base": {
-        "amount": 5,
+        "amount": 6.0,
+        "currency": "USD",
+        "priceFormatted": "$6.00",
+        "label": "Starter 月付"
+      },
+      "locals": {}
+    },
+    "starter_yearly": {
+      "base": {
+        "amount": 5.0,
         "currency": "USD",
         "priceFormatted": "$5.00",
-        "label": "Starter"
+        "label": "Starter 年付折合月价"
       },
       "locals": {}
     },
     "creator_monthly": {
       "base": {
-        "amount": 22,
+        "amount": 22.0,
         "currency": "USD",
         "priceFormatted": "$22.00",
-        "label": "Creator"
+        "label": "Creator 月付"
+      },
+      "locals": {}
+    },
+    "creator_yearly": {
+      "base": {
+        "amount": 18.33,
+        "currency": "USD",
+        "priceFormatted": "$18.33",
+        "label": "Creator 年付折合月价"
       },
       "locals": {}
     },
     "pro_monthly": {
       "base": {
-        "amount": 99,
+        "amount": 99.0,
         "currency": "USD",
         "priceFormatted": "$99.00",
-        "label": "Pro"
+        "label": "Pro 月付"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 82.5,
+        "currency": "USD",
+        "priceFormatted": "$82.50",
+        "label": "Pro 年付折合月价"
       },
       "locals": {}
     },
     "scale_monthly": {
       "base": {
-        "amount": 330,
+        "amount": 299.0,
         "currency": "USD",
-        "priceFormatted": "$330.00",
-        "label": "Scale"
+        "priceFormatted": "$299.00",
+        "label": "Scale 月付"
+      },
+      "locals": {}
+    },
+    "scale_yearly": {
+      "base": {
+        "amount": 249.17,
+        "currency": "USD",
+        "priceFormatted": "$249.17",
+        "label": "Scale 年付折合月价"
+      },
+      "locals": {}
+    },
+    "business_monthly": {
+      "base": {
+        "amount": 990.0,
+        "currency": "USD",
+        "priceFormatted": "$990.00",
+        "label": "Business 月付"
+      },
+      "locals": {}
+    },
+    "business_yearly": {
+      "base": {
+        "amount": 825.0,
+        "currency": "USD",
+        "priceFormatted": "$825.00",
+        "label": "Business 年付折合月价"
       },
       "locals": {}
     }
@@ -2039,28 +2141,37 @@
   "windsurf-pro": {
     "pro_monthly": {
       "base": {
-        "amount": 15,
+        "amount": 20.0,
         "currency": "USD",
-        "priceFormatted": "$15.00",
+        "priceFormatted": "$20.00",
         "label": "Pro 月付"
-      },
-      "locals": {}
-    },
-    "teams_monthly": {
-      "base": {
-        "amount": 40,
-        "currency": "USD",
-        "priceFormatted": "$40.00",
-        "label": "Teams 月付/席"
       },
       "locals": {}
     },
     "max_monthly": {
       "base": {
-        "amount": 200,
+        "amount": 200.0,
         "currency": "USD",
         "priceFormatted": "$200.00",
         "label": "Max 月付"
+      },
+      "locals": {}
+    },
+    "teams_base_monthly": {
+      "base": {
+        "amount": 80.0,
+        "currency": "USD",
+        "priceFormatted": "$80.00",
+        "label": "Teams 团队底价月付"
+      },
+      "locals": {}
+    },
+    "teams_monthly": {
+      "base": {
+        "amount": 40.0,
+        "currency": "USD",
+        "priceFormatted": "$40.00",
+        "label": "Teams 全量席位月付"
       },
       "locals": {}
     }
@@ -2204,21 +2315,39 @@
     }
   },
   "devin": {
-    "monthly": {
+    "pro_monthly": {
       "base": {
-        "amount": 500,
+        "amount": 20.0,
         "currency": "USD",
-        "priceFormatted": "$500.00",
-        "label": "Devin 席位月付公开标价"
+        "priceFormatted": "$20.00",
+        "label": "Pro 月付"
       },
       "locals": {}
     },
-    "core_monthly": {
+    "max_monthly": {
       "base": {
-        "amount": 20,
+        "amount": 200.0,
         "currency": "USD",
-        "priceFormatted": "$20.00",
-        "label": "Core / 更低公开入口（如有）"
+        "priceFormatted": "$200.00",
+        "label": "Max 月付"
+      },
+      "locals": {}
+    },
+    "teams_base_monthly": {
+      "base": {
+        "amount": 80.0,
+        "currency": "USD",
+        "priceFormatted": "$80.00",
+        "label": "Teams 团队底价月付"
+      },
+      "locals": {}
+    },
+    "teams_seat_monthly": {
+      "base": {
+        "amount": 40.0,
+        "currency": "USD",
+        "priceFormatted": "$40.00",
+        "label": "Teams 全量席位月付"
       },
       "locals": {}
     }
@@ -2264,30 +2393,21 @@
     }
   },
   "v0": {
-    "premium_monthly": {
-      "base": {
-        "amount": 20,
-        "currency": "USD",
-        "priceFormatted": "$20.00",
-        "label": "Premium 月付"
-      },
-      "locals": {}
-    },
     "plus_monthly": {
       "base": {
-        "amount": 30,
+        "amount": 30.0,
         "currency": "USD",
         "priceFormatted": "$30.00",
-        "label": "Plus 月付"
+        "label": "Plus 月付/席"
       },
       "locals": {}
     },
     "business_monthly": {
       "base": {
-        "amount": 100,
+        "amount": 100.0,
         "currency": "USD",
         "priceFormatted": "$100.00",
-        "label": "Business 月付"
+        "label": "Business 月付/席"
       },
       "locals": {}
     }
@@ -2502,6 +2622,15 @@
         "label": "Max"
       },
       "locals": {}
+    },
+    "business_monthly": {
+      "base": {
+        "amount": 200.0,
+        "currency": "USD",
+        "priceFormatted": "$200.00",
+        "label": "Business 月付"
+      },
+      "locals": {}
     }
   },
   "magnific-ai": {
@@ -2692,30 +2821,57 @@
     }
   },
   "luma-dream-machine": {
-    "standard_monthly": {
+    "plus_monthly": {
       "base": {
-        "amount": 9.99,
+        "amount": 30.0,
         "currency": "USD",
-        "priceFormatted": "$9.99",
-        "label": "Standard"
+        "priceFormatted": "$30.00",
+        "label": "Plus 月付"
+      },
+      "locals": {}
+    },
+    "plus_yearly": {
+      "base": {
+        "amount": 25.0,
+        "currency": "USD",
+        "priceFormatted": "$25.00",
+        "label": "Plus 年付折合月价"
       },
       "locals": {}
     },
     "pro_monthly": {
       "base": {
-        "amount": 29.99,
+        "amount": 90.0,
         "currency": "USD",
-        "priceFormatted": "$29.99",
-        "label": "Pro"
+        "priceFormatted": "$90.00",
+        "label": "Pro 月付"
       },
       "locals": {}
     },
-    "premier_monthly": {
+    "pro_yearly": {
       "base": {
-        "amount": 99.99,
+        "amount": 75.0,
         "currency": "USD",
-        "priceFormatted": "$99.99",
-        "label": "Premier"
+        "priceFormatted": "$75.00",
+        "label": "Pro 年付折合月价"
+      },
+      "locals": {}
+    },
+    "ultra_monthly": {
+      "base": {
+        "amount": 300.0,
+        "currency": "USD",
+        "priceFormatted": "$300.00",
+        "label": "Ultra 月付"
+      },
+      "locals": {}
+    },
+    "ultra_yearly": {
+      "base": {
+        "amount": 250.0,
+        "currency": "USD",
+        "priceFormatted": "$250.00",
+        "label": "Ultra 年付折合月价"
       },
       "locals": {}
     }
@@ -3360,21 +3516,21 @@
     }
   },
   "jasper": {
-    "creator_monthly": {
+    "pro_monthly": {
       "base": {
-        "amount": 49,
+        "amount": 69.0,
         "currency": "USD",
-        "priceFormatted": "$49.00",
-        "label": "Creator"
+        "priceFormatted": "$69.00",
+        "label": "Pro 月付/席"
       },
       "locals": {}
     },
-    "pro_monthly": {
+    "pro_yearly": {
       "base": {
-        "amount": 69,
+        "amount": 59.0,
         "currency": "USD",
-        "priceFormatted": "$69.00",
-        "label": "Pro"
+        "priceFormatted": "$59.00",
+        "label": "Pro 年付折合月价/席"
       },
       "locals": {}
     }
@@ -4157,9 +4313,9 @@
   "chatgpt": {
     "go_monthly": {
       "base": {
-        "amount": 5,
+        "amount": 8.0,
         "currency": "USD",
-        "priceFormatted": "$5.00",
+        "priceFormatted": "$8.00",
         "label": "Go 月付"
       },
       "locals": {}
@@ -4255,6 +4411,24 @@
         "label": "Team 月付/席"
       },
       "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 17.0,
+        "currency": "USD",
+        "priceFormatted": "$17.00",
+        "label": "Pro 年付折合月价"
+      },
+      "locals": {}
+    },
+    "team_yearly": {
+      "base": {
+        "amount": 20.0,
+        "currency": "USD",
+        "priceFormatted": "$20.00",
+        "label": "Team 年付折合月价/席"
+      },
+      "locals": {}
     }
   },
   "cursor": {
@@ -4320,6 +4494,15 @@
         "currency": "USD",
         "priceFormatted": "$39.00",
         "label": "Enterprise 月付/席"
+      },
+      "locals": {}
+    },
+    "max_monthly": {
+      "base": {
+        "amount": 100.0,
+        "currency": "USD",
+        "priceFormatted": "$100.00",
+        "label": "Max 月付"
       },
       "locals": {}
     }

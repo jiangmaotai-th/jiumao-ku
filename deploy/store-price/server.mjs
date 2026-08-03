@@ -493,7 +493,17 @@ async function handle(req, res) {
     }
 
     // Mark homepage/store title update time (call after deploying prices or content).
+    // Only accept from localhost so random visitors cannot bump the stamp.
     if (req.method === 'POST' && pathname === '/content-updated') {
+      const ip = String(req.socket.remoteAddress || '')
+      const local =
+        ip === '127.0.0.1' ||
+        ip === '::1' ||
+        ip === '::ffff:127.0.0.1'
+      if (!local) {
+        sendJson(res, 403, { error: 'localhost_only' })
+        return
+      }
       const reason = (url.searchParams.get('reason') || 'deploy').slice(0, 80)
       const at = touchContentUpdatedAt(reason)
       sendJson(res, 200, {

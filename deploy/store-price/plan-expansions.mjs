@@ -124,6 +124,7 @@ export const PLAN_EXPANSIONS = {
     plans: {
       pro_monthly: usd(9, 'Pro 月付'),
       team_monthly: usd(20, 'Team 月付/席'),
+      enterprise_monthly: usd(50, 'Enterprise 月付/席'),
     },
   },
   doubao: {
@@ -250,8 +251,8 @@ export const PLAN_EXPANSIONS = {
   'tabnine-pro': {
     pricingUrl: 'https://www.tabnine.com/pricing',
     plans: {
-      pro_monthly: usd(12, 'Dev / Pro 公开标价'),
-      agentic_monthly: usd(59, 'Agentic 年付折合月价'),
+      code_assistant_yearly: usd(39, 'Code Assistant 年付折合月价/席'),
+      agentic_yearly: usd(59, 'Agentic Platform 年付折合月价/席'),
     },
   },
   'replit-core': {
@@ -279,7 +280,6 @@ export const PLAN_EXPANSIONS = {
     pricingUrl: 'https://bolt.new/pricing',
     plans: {
       pro_monthly: usd(25, 'Pro 月付'),
-      pro_yearly: usd(22.5, 'Pro 年付折合月价'),
       teams_monthly: usd(30, 'Teams 月付'),
     },
   },
@@ -330,10 +330,14 @@ export const PLAN_EXPANSIONS = {
   'krea-ai': {
     pricingUrl: 'https://www.krea.ai/pricing',
     plans: {
-      basic_monthly: usd(9, 'Basic'),
-      pro_monthly: usd(35, 'Pro'),
-      max_monthly: usd(70, 'Max'),
+      basic_monthly: usd(9, 'Basic 月付'),
+      pro_monthly: usd(35, 'Pro 月付'),
+      max_monthly: usd(70, 'Max 月付'),
       business_monthly: usd(200, 'Business 月付'),
+      basic_yearly: usd(5.25, 'Basic 年付折合月价'),
+      pro_yearly: usd(21, 'Pro 年付折合月价'),
+      max_yearly: usd(63, 'Max 年付折合月价'),
+      business_yearly: usd(160, 'Business 年付折合月价'),
     },
   },
   photoroom: {
@@ -374,9 +378,12 @@ export const PLAN_EXPANSIONS = {
   pika: {
     pricingUrl: 'https://pika.art/pricing',
     plans: {
-      standard_monthly: usd(10, 'Standard'),
-      pro_monthly: usd(28, 'Pro'),
-      fancy_monthly: usd(76, 'Fancy'),
+      standard_monthly: usd(10, 'Standard 月付'),
+      standard_yearly: usd(8, 'Standard 年付折合月价'),
+      pro_monthly: usd(35, 'Pro 月付'),
+      pro_yearly: usd(28, 'Pro 年付折合月价'),
+      fancy_monthly: usd(95, 'Fancy 月付'),
+      fancy_yearly: usd(76, 'Fancy 年付折合月价'),
     },
   },
   'luma-dream-machine': {
@@ -449,6 +456,7 @@ export const PLAN_EXPANSIONS = {
       creator_monthly: usd(35, 'Creator 月付'),
       creator_yearly: usd(24, 'Creator 年付折合月价'),
       business_monthly: usd(65, 'Business 月付'),
+      business_yearly: usd(50, 'Business 年付折合月价'),
     },
   },
   'opus-clip': {
@@ -539,9 +547,8 @@ export const PLAN_EXPANSIONS = {
   'grammarly-premium': {
     pricingUrl: 'https://www.grammarly.com/plans',
     plans: {
-      premium_monthly: usd(12, 'Premium / Pro 月付入口'),
-      premium_yearly: usd(12, '年付折合月价（公开入口）'),
-      business_monthly: usd(15, 'Business 月付/席'),
+      premium_monthly: usd(30, 'Pro 月付'),
+      premium_yearly: usd(12, 'Pro 年付折合月价（$144/年）'),
     },
   },
   jasper: {
@@ -589,7 +596,7 @@ export const PLAN_EXPANSIONS = {
       pro_monthly: usd(16.99, 'Pro 月付'),
       pro_yearly: usd(8.33, 'Pro 年付折合月价'),
       business_monthly: usd(30, 'Business 月付'),
-      business_yearly: usd(20, 'Business 年付折合月价'),
+      business_yearly: usd(19.99, 'Business 年付折合月价'),
     },
   },
   'fireflies-ai': {

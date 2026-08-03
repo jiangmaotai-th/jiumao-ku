@@ -177,7 +177,7 @@ img {
 
 .item-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.15rem;
 }
 
@@ -535,6 +535,12 @@ img {
 
   .action-btn:active {
     transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .item-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

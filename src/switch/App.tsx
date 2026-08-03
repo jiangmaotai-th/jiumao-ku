@@ -147,7 +147,7 @@ function HomePage() {
         </p>
         <div className="hero-actions">
           <button type="button" className="btn btn-solid" onClick={() => navigate({ name: 'browse' })}>
-            浏览游戏
+            搜索游戏
           </button>
         </div>
       </section>

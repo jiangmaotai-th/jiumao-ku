@@ -5,13 +5,26 @@ import {
   type DownloadLink,
   type FilterTab,
 } from './data/apps'
+import {
+  applyDocumentMeta,
+  applyDomI18n,
+  initLocale,
+  t,
+  tList,
+} from './i18n'
+import { mountLanguageSwitcher } from './i18n/switcher'
 import { initVisitorCounter } from './visitor'
 
-const EMPTY_HINT: Record<FilterTab, string> = {
-  all: '作品即将上架。',
-  software: '暂无软件。',
-  game: '暂无游戏。',
-  other: '暂无其他内容。',
+initLocale()
+applyDocumentMeta()
+applyDomI18n()
+mountLanguageSwitcher(document.getElementById('lang-switch'))
+
+function emptyHint(tab: FilterTab): string {
+  if (tab === 'software') return t('home.emptySoftware')
+  if (tab === 'game') return t('home.emptyGame')
+  if (tab === 'other') return t('home.emptyOther')
+  return t('home.emptyAll')
 }
 
 const platformIcon = (platform: DownloadLink['platform']): string => {
@@ -24,19 +37,25 @@ const platformIcon = (platform: DownloadLink['platform']): string => {
   return `<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.2 8.3c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.7-1.3-.13-2.5.76-3.15.76-.66 0-1.67-.74-2.75-.72-1.41.02-2.72.82-3.45 2.08-1.48 2.56-.38 6.35 1.06 8.43.7 1.02 1.54 2.16 2.64 2.12 1.06-.04 1.46-.68 2.74-.68 1.27 0 1.63.68 2.76.66 1.14-.02 1.86-1.02 2.55-2.05.8-1.17 1.13-2.3 1.15-2.36-.02-.01-2.2-.84-2.22-3.34zM9.6 2.9c.57-.69.96-1.65.85-2.6-.82.03-1.81.55-2.4 1.24-.53.61-.99 1.59-.87 2.52.92.07 1.86-.47 2.42-1.16z"/></svg>`
 }
 
+function linkLabel(link: DownloadLink): string {
+  if (link.platform === 'web' || link.openInPlace) return t('common.openOnline')
+  return link.label
+}
+
 function renderDownloads(links: DownloadLink[]): string {
   return links
     .map((link) => {
       const available = link.available !== false
+      const label = linkLabel(link)
       if (!available) {
         return `
       <span
         class="download-btn download-btn--disabled"
         aria-disabled="true"
-        title="安装包尚未上架"
+        title="${t('common.unavailable')}"
       >
         ${platformIcon(link.platform)}
-        <span>${link.label}</span>
+        <span>${label}</span>
       </span>`
       }
 
@@ -49,34 +68,42 @@ function renderDownloads(links: DownloadLink[]): string {
         href="${link.href}"${downloadAttr}
       >
         ${platformIcon(link.platform)}
-        <span>${link.label}</span>
+        <span>${label}</span>
       </a>`
     })
     .join('')
 }
 
-/** Small "runs on this device" mark — avoid padlock (reads as paywall unlock). */
 const LOCAL_MARK = `<span class="local-mark" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.35"/><path d="M5 14.2h6M8 11.5v2.7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/><circle cx="8" cy="7" r="1.35" fill="currentColor"/></svg></span>`
 
-function renderSummary(summary: string): string {
-  return summary
-    .split(/\n+/)
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .map((p) => {
-      const cleaned = p.replace(/^🔒\s*/, '')
-      const privacy = cleaned.includes('本地处理')
-      const body = privacy ? `${LOCAL_MARK}${cleaned}` : cleaned
-      return `<p class="item-summary${privacy ? ' item-summary--privacy' : ''}">${body}</p>`
-    })
-    .join('')
+function catalogCopy(id: string) {
+  const name = t(`catalog.${id}.name`)
+  const summary = tList(`catalog.${id}.summary`)
+  const privacy = t(`catalog.${id}.privacy`)
+  return {
+    name: name.startsWith('catalog.') ? id : name,
+    summary,
+    privacy: privacy.startsWith('catalog.') ? '' : privacy,
+  }
+}
+
+function renderSummary(summary: string[], privacy?: string): string {
+  const blocks = summary.map(
+    (p) => `<p class="item-summary">${p}</p>`,
+  )
+  if (privacy) {
+    blocks.push(
+      `<p class="item-summary item-summary--privacy">${LOCAL_MARK}${privacy}</p>`,
+    )
+  }
+  return blocks.join('')
 }
 
 function formatStoreUpdateStamp(iso?: string | null): string {
   if (!iso) return ''
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return ''
-  const t = d.toLocaleString('zh-CN', {
+  const time = d.toLocaleString(undefined, {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',
     month: 'long',
@@ -85,21 +112,21 @@ function formatStoreUpdateStamp(iso?: string | null): string {
     minute: '2-digit',
     hour12: false,
   })
-  return `（${t}更新）`
-}
-
-function itemDisplayName(item: CatalogItem, storeUpdatedAt?: string | null): string {
-  if (item.id !== 'store-price') return item.name
-  const stamp = formatStoreUpdateStamp(storeUpdatedAt)
-  return stamp ? `${item.name}${stamp}` : item.name
+  return t('store.dailyBadge', { time })
 }
 
 function renderItem(item: CatalogItem, storeUpdatedAt?: string | null): string {
+  const copy = catalogCopy(item.id)
+  let name = copy.name
+  if (item.id === 'store-price') {
+    const stamp = formatStoreUpdateStamp(storeUpdatedAt)
+    if (stamp) name = `${copy.name}${stamp}`
+  }
   return `
-    <article class="catalog-item" role="listitem" data-category="${item.category}" data-id="${item.id}">
+    <article class="catalog-item" role="listitem" data-category="${item.category}" data-app-id="${item.id}">
       <div class="item-copy">
-        <h3 class="item-name">${itemDisplayName(item, storeUpdatedAt)}</h3>
-        ${renderSummary(item.summary)}
+        <h3 class="item-name">${name}</h3>
+        ${renderSummary(copy.summary, copy.privacy)}
       </div>
       <div class="item-downloads">
         ${renderDownloads(item.downloads)}
@@ -127,17 +154,16 @@ function isFilterTab(value: string): value is FilterTab {
 const catalogList = document.querySelector<HTMLElement>('#catalog-list')
 const categoryNav = document.querySelector<HTMLElement>('#category-nav')
 const yearEl = document.querySelector<HTMLElement>('#year')
-
-let activeFilter: FilterTab = 'all'
+let activeTab: FilterTab = 'all'
 let storeUpdatedAt: string | null = null
 
 function applyFilter(tab: FilterTab) {
-  activeFilter = tab
+  activeTab = tab
   categoryNav?.querySelectorAll<HTMLButtonElement>('.cat-btn').forEach((btn) => {
     btn.classList.toggle('is-active', btn.dataset.filter === tab)
   })
   if (catalogList) {
-    renderList(catalogList, filterCatalog(tab), EMPTY_HINT[tab], storeUpdatedAt)
+    renderList(catalogList, filterCatalog(tab), emptyHint(tab), storeUpdatedAt)
   }
 }
 
@@ -147,14 +173,14 @@ categoryNav?.addEventListener('click', (event) => {
   applyFilter(target.dataset.filter)
 })
 
-applyFilter('all')
+applyFilter(activeTab)
 
 void fetch('/api/store/home')
   .then((r) => (r.ok ? r.json() : null))
   .then((data: { updatedAt?: string | null } | null) => {
     if (!data?.updatedAt) return
     storeUpdatedAt = data.updatedAt
-    applyFilter(activeFilter)
+    applyFilter(activeTab)
   })
   .catch(() => {})
 

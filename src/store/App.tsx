@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import {
-  CHANNEL_LABELS,
+  channelLabel,
   fetchHistory,
   fetchHome,
   fetchProduct,
@@ -20,6 +22,13 @@ import {
   type ProductPrices,
   type Storefront,
 } from './api'
+import {
+  billingPeriodLabel,
+  categoryLabel,
+  formatChannelAdvice,
+  localizeApiText,
+} from './labels'
+import { MoneyProvider, useMoney } from './money'
 
 const TOP_N = 10
 
@@ -27,6 +36,8 @@ type Route =
   | { name: 'home' }
   | { name: 'browse' }
   | { name: 'product'; productId: string }
+
+type Translator = (key: string, vars?: Record<string, string | number>) => string
 
 function parseHash(): Route {
   const raw = location.hash.replace(/^#\/?/, '')
@@ -45,16 +56,11 @@ function navigate(route: Route) {
   else location.hash = `#/product/${encodeURIComponent(route.productId)}`
 }
 
-function formatCny(n?: number | null) {
-  if (n == null || Number.isNaN(n)) return '—'
-  return `¥${n.toFixed(2)}`
-}
-
-function formatUpdatedAt(iso?: string | null) {
-  if (!iso) return '暂无'
+function formatUpdatedAt(iso: string | null | undefined, locale: string, none: string) {
+  if (!iso) return none
   const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return '暂无'
-  return d.toLocaleString('zh-CN', {
+  if (Number.isNaN(d.getTime())) return none
+  return d.toLocaleString(locale, {
     timeZone: 'Asia/Shanghai',
     year: 'numeric',
     month: 'long',
@@ -65,11 +71,15 @@ function formatUpdatedAt(iso?: string | null) {
   })
 }
 
-/** e.g. 2026/8/3 21:13更新 — last real deploy/refresh time */
-function formatUpdateStamp(iso?: string | null) {
-  const t = formatUpdatedAt(iso)
-  if (t === '暂无') return '更新时间待同步'
-  return `${t}更新`
+function formatUpdateStamp(
+  iso: string | null | undefined,
+  locale: string,
+  none: string,
+  template: string,
+) {
+  const time = formatUpdatedAt(iso, locale, none)
+  if (time === none) return none
+  return template.replace('{time}', time)
 }
 
 /** Show plan tier next to price; drop redundant product name prefix when present. */
@@ -123,8 +133,9 @@ function PlatformIcon({ channel }: { channel: string }) {
 }
 
 function PlatformBadge({ channel }: { channel?: string | null }) {
+  const { t } = useT()
   const ch = channel || 'web'
-  const label = CHANNEL_LABELS[ch] || ch
+  const label = channelLabel(ch, t)
   return (
     <span className={`platform-badge is-${ch}`}>
       <PlatformIcon channel={ch} />
@@ -134,19 +145,21 @@ function PlatformBadge({ channel }: { channel?: string | null }) {
 }
 
 function FreeTierBadge() {
-  return <span className="free-tier-badge">可免费</span>
+  const { t } = useT()
+  return <span className="free-tier-badge">{t('store.freeTier')}</span>
 }
 
 function HotBadge() {
+  const { t } = useT()
   return (
-    <span className="hot-badge" title="热门">
+    <span className="hot-badge" title={t('store.hot')}>
       <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
         <path
           fill="currentColor"
           d="M8.1 1.2c.3 1.8-.4 2.9-1.5 4.1C5.4 6.6 4.2 8 4.2 10a3.8 3.8 0 0 0 7.6 0c0-1.6-.7-2.7-1.7-3.9-.3-.4-.7-.8-1-1.3.9.9 1.9 2.1 1.9 3.8a4.9 4.9 0 1 1-9.7 0c0-2.4 1.4-4 2.8-5.5C5.5 2.4 6.6 1.4 8.1 1.2Z"
         />
       </svg>
-      HOT
+      {t('store.hot')}
     </span>
   )
 }
@@ -204,6 +217,7 @@ function buildWebParityRows(
   base: PriceBase,
   anomalies: PriceAnomaly[],
   storefronts: Storefront[],
+  t: Translator,
 ) {
   const sfMap = Object.fromEntries(storefronts.map((s) => [s.code, s]))
   const anomalyMap = Object.fromEntries(anomalies.map((a) => [a.country, a]))
@@ -231,54 +245,66 @@ function buildWebParityRows(
         priceFormatted: base.priceFormatted,
         cny: base.cny,
         vsBase: 'parity' as const,
-        note: code === 'us' ? '全球基准' : '与全球美元价同值（非商店区域低价）',
+        note: code === 'us' ? t('store.globalBenchmark') : t('store.usdParityNote'),
       }
     })
 }
 
 function Header({ route, updatedAt }: { route: Route; updatedAt?: string | null }) {
+  const { t, locale } = useT()
   return (
     <header className="site-header">
       <div className="brand-block">
         <a className="brand-mark" href="/">
-          九猫库
+          {t('common.brand')}
         </a>
         <p className="brand-sub">
-          AI 订阅低价区查询器
-          <span className="brand-daily">（{formatUpdateStamp(updatedAt)}）</span>
+          {t('store.heroTitle')}
+          <span className="brand-daily">
+            {formatUpdateStamp(
+              updatedAt,
+              locale,
+              t('store.none'),
+              t('store.dailyBadge'),
+            )}
+          </span>
         </p>
       </div>
-      <nav className="site-nav" aria-label="页面导航">
-        <button
-          type="button"
-          className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'home' })}
-        >
-          首页
-        </button>
-        <button
-          type="button"
-          className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'browse' })}
-        >
-          全部 AI
-        </button>
-        <a className="nav-link" href="/">
-          返回九猫库
-        </a>
-      </nav>
+      <div className="site-header__right">
+        <nav className="site-nav" aria-label="nav">
+          <button
+            type="button"
+            className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'home' })}
+          >
+            {t('store.navHome')}
+          </button>
+          <button
+            type="button"
+            className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'browse' })}
+          >
+            {t('store.navAll')}
+          </button>
+          <a className="nav-link" href="/">
+            {t('common.backHome')}
+          </a>
+        </nav>
+        <LangSwitchHost />
+      </div>
     </header>
   )
 }
 
 function RankBars({ rows }: { rows: PriceRow[] }) {
+  const { money, region } = useMoney()
   const max = rows[rows.length - 1]?.cny || 1
   return (
     <div className="dist">
       {rows.map((r) => (
         <div className="dist-row" key={r.country}>
           <span className="code">{r.country}</span>
-          <div className="dist-bar" title={`${r.regionName} ${formatCny(r.cny)}`}>
+          <div className="dist-bar" title={`${region(r.country, r.regionName)} ${money(r.cny)}`}>
             <span
               className={r.rank === 1 ? 'is-low' : undefined}
               style={{ width: `${Math.max(8, (r.cny / max) * 100)}%` }}
@@ -297,6 +323,8 @@ function HistoryChart({
   points: HistoryPoint[]
   label: string
 }) {
+  const { t } = useT()
+  const { money } = useMoney()
   const w = 520
   const h = 160
   const pad = 28
@@ -315,13 +343,16 @@ function HistoryChart({
   }, [points])
 
   if (!points.length) {
-    return <p className="muted">暂无历史数据（刷新价格后开始记录）</p>
+    return <p className="muted">{t('store.noHistory')}</p>
   }
   if (!coords) {
     return (
       <p className="muted">
-        已有 {points.length} 个采样点（{points[0]?.t} · {formatCny(points[0]?.cny)}
-        ），需至少 2 天才能画曲线
+        {t('store.needTwoDays', {
+          n: points.length,
+          date: points[0]?.t || t('store.none'),
+          price: money(points[0]?.cny),
+        })}
       </p>
     )
   }
@@ -330,14 +361,14 @@ function HistoryChart({
   return (
     <div className="history-chart">
       <p className="muted" style={{ marginBottom: '0.5rem' }}>
-        {label} · 近 {points.length} 个采样日
+        {t('store.samples', { label, n: points.length })}
       </p>
-      <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} role="img" aria-label="价格历史">
+      <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} role="img" aria-label={t('store.priceHistory')}>
         <path d={path} fill="none" stroke="var(--gold)" strokeWidth="2.2" />
         {coords.map((c) => (
           <circle key={c.t} cx={c.x} cy={c.y} r="3.2" fill="var(--gold-soft)">
             <title>
-              {c.t} {formatCny(c.cny)}
+              {c.t} {money(c.cny)}
               {c.country ? ` · ${c.country.toUpperCase()}` : ''}
             </title>
           </circle>
@@ -364,6 +395,8 @@ function HomePage({
 }: {
   onUpdatedAt?: (iso: string | null) => void
 }) {
+  const { t } = useT()
+  const { money, region, locale } = useMoney()
   const [cards, setCards] = useState<HomeCard[]>([])
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -411,36 +444,46 @@ function HomePage({
         <div className="home-hero-row">
           <div className="home-hero-copy">
             <h1 className="hero-title">
-              AI 订阅低价区查询器
-              <span className="hero-daily">（{formatUpdateStamp(updatedAt)}）</span>
+              {t('store.heroTitle')}
+              <span className="hero-daily">
+                {formatUpdateStamp(
+                  updatedAt,
+                  locale,
+                  t('store.none'),
+                  t('store.dailyBadge'),
+                )}
+              </span>
             </h1>
-            <p className="hero-lead">
-              覆盖全球主流 AI 订阅。App Store / 网页 / 桌面分通道查看最低价区服，并跟踪价格历史。
-            </p>
+            <p className="hero-lead">{t('store.heroLead')}</p>
           </div>
           <div className="home-updated">
-            <span className="home-updated-label">更新时间</span>
-            <strong className="home-updated-value">{formatUpdatedAt(updatedAt)}</strong>
+            <span className="home-updated-label">{t('store.updatedAtLabel')}</span>
+            <strong className="home-updated-value">
+              {formatUpdatedAt(updatedAt, locale, t('store.none'))}
+            </strong>
           </div>
         </div>
         <div className="home-more home-more--top">
           <button type="button" className="btn btn-solid" onClick={() => navigate({ name: 'browse' })}>
-            浏览全部 AI
+            {t('store.browseAll')}
           </button>
         </div>
       </section>
 
       {loading ? (
-        <p className="loading">加载中…</p>
+        <p className="loading">{t('store.loadingHome')}</p>
       ) : (
         <div className="home-deal-grid">
           {cards.map((card) => {
+            const best = card.best
             const regionLabel =
-              card.bestChannel === 'appstore'
-                ? `${card.best?.flag || ''} ${card.best?.regionName || card.best?.country?.toUpperCase() || ''}`.trim()
-                : card.best
-                  ? `${card.best.flag || '🌐'} ${card.best.regionName || '全球网页价'}`
-                  : '暂无数据'
+              best && card.bestChannel === 'appstore'
+                ? `${best.flag || ''} ${region(best.country, best.regionName || best.country.toUpperCase())}`.trim()
+                : best
+                  ? `${best.flag || ''} ${
+                      best.country ? region(best.country, best.regionName) : t('store.globalWeb')
+                    }`.trim()
+                  : t('store.none')
             return (
               <button
                 key={card.productId}
@@ -456,18 +499,18 @@ function HomePage({
                   </div>
                 </div>
                 <div className="home-deal-lowest">
-                  <span className="home-deal-lowest-label">当前最低区</span>
+                  <span className="home-deal-lowest-label">{t('store.currentLowestRegion')}</span>
                   <strong className="home-deal-lowest-region">{regionLabel}</strong>
                 </div>
                 <p className="home-deal-price">
-                  <span>{card.best ? formatCny(card.best.cny) : '…'}</span>
+                  <span>{card.best ? money(card.best.cny) : t('store.none')}</span>
                   {card.bestPlanName ? (
                     <span className="home-deal-plan">
                       {formatPlanBesidePrice(card.bestPlanName, card.name)}
                     </span>
                   ) : null}
                 </p>
-                <span className="home-deal-cta">查看产品全部低价</span>
+                <span className="home-deal-cta">{t('store.viewProductDeals')}</span>
               </button>
             )
           })}
@@ -504,6 +547,8 @@ function BrowsePage() {
     }
   }, [category])
 
+  const { t } = useT()
+
   async function onSearch(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -520,20 +565,20 @@ function BrowsePage() {
     <>
       <section className="hero" style={{ paddingBottom: '1.25rem' }}>
         <h1 className="hero-title" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)' }}>
-          全部 AI 订阅
+          {t('store.browseTitle')}
         </h1>
-        <p className="hero-lead">按品类筛选；支持中英文名搜索。</p>
+        <p className="hero-lead">{t('store.browseLead')}</p>
       </section>
 
       <form className="search-row" onSubmit={onSearch}>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索 ChatGPT、Claude、Cursor…"
-          aria-label="搜索 AI 产品"
+          placeholder={t('store.searchPlaceholder')}
+          aria-label={t('store.searchAria')}
         />
         <button type="submit" className="btn btn-solid" disabled={loading}>
-          {loading ? '搜索中…' : '搜索'}
+          {loading ? t('common.searching') : t('common.search')}
         </button>
       </form>
 
@@ -543,7 +588,7 @@ function BrowsePage() {
           className={`plan${!category ? ' is-active' : ''}`}
           onClick={() => setCategory('')}
         >
-          全部
+          {t('store.categoryAll')}
         </button>
         {categories.map((c) => (
           <button
@@ -552,26 +597,26 @@ function BrowsePage() {
             className={`plan${category === c.id ? ' is-active' : ''}`}
             onClick={() => setCategory(c.id)}
           >
-            {c.name}
+            {categoryLabel(c.id, t, c.name)}
           </button>
         ))}
       </div>
 
       {loading && items.length === 0 ? (
-        <p className="loading">加载中…</p>
+        <p className="loading">{t('store.loadingHome')}</p>
       ) : items.length === 0 ? (
-        <p className="empty">没有匹配的产品</p>
+        <p className="empty">{t('store.noMatch')}</p>
       ) : (
         <div className="app-grid">
           {items.map((p) => {
             const channelText =
               [
-                p.channels.appstore ? 'App Store' : null,
-                p.channels.web ? '网页' : null,
-                p.channels.desktop ? '桌面' : null,
+                p.channels.appstore ? channelLabel('appstore', t) : null,
+                p.channels.web ? channelLabel('web', t) : null,
+                p.channels.desktop ? channelLabel('desktop', t) : null,
               ]
                 .filter(Boolean)
-                .join(' · ') || '待接入'
+                .join(' · ') || t('store.pending')
             return (
               <button
                 key={p.productId}
@@ -593,6 +638,8 @@ function BrowsePage() {
 }
 
 function ProductDetail({ productId }: { productId: string }) {
+  const { t } = useT()
+  const { money, region, currency, locale } = useMoney()
   const [product, setProduct] = useState<(ProductCard & { nameEn?: string }) | null>(null)
   const [channelDocs, setChannelDocs] = useState<
     Record<
@@ -751,7 +798,7 @@ function ProductDetail({ productId }: { productId: string }) {
   async function onRefresh() {
     if (refreshing) return
     setRefreshing(true)
-    setStatusNote('正在更新当前通道标价…')
+    setStatusNote(t('store.updatingChannel'))
     try {
       await refreshProduct(productId, channel)
       await sleep(2500)
@@ -800,7 +847,7 @@ function ProductDetail({ productId }: { productId: string }) {
         channel === 'desktop'
           ? Boolean(finalPrices.base)
           : Boolean(finalPrices.rows?.length)
-      setStatusNote(ok ? '价格已更新' : '该通道暂无标价，可稍后再试')
+      setStatusNote(ok ? t('store.priceUpdated') : t('store.noPriceChannel'))
     } catch (e) {
       setError(String((e as Error).message || e))
       setStatusNote(null)
@@ -809,18 +856,26 @@ function ProductDetail({ productId }: { productId: string }) {
     }
   }
 
-  if (loading) return <p className="loading">加载产品…</p>
+  if (loading) return <p className="loading">{t('store.loadingProduct')}</p>
   if (error) return <p className="empty">{error}</p>
-  if (!product) return <p className="empty">未找到产品</p>
+  if (!product) return <p className="empty">{t('common.noData')}</p>
 
-  const planName = plans.find((p) => p.planId === planId)?.name || '套餐'
+  const planName = plans.find((p) => p.planId === planId)?.name || t('store.plan')
   const isUnified = pricingModel === 'unified' || channel === 'web' || channel === 'desktop'
   const displayBase = base || advice?.webBase || null
+  const historyRegionLabel =
+    historyMode === 'country' && country
+      ? region(country, selected?.regionName)
+      : t('store.globalLowest')
+  const adviceText = formatChannelAdvice(advice, t, money, region)
+  const periodLabel = billingPeriodLabel(billingPeriod, t, billingLabel)
+  const safeNote = localizeApiText(note, locale)
+  const safeWarning = localizeApiText(warning, locale)
 
   return (
     <>
       <button type="button" className="back" onClick={() => navigate({ name: 'browse' })}>
-        ← 返回全部 AI
+        {t('store.backToAll')}
       </button>
 
       <header className="detail-head">
@@ -833,35 +888,28 @@ function ProductDetail({ productId }: { productId: string }) {
           </h1>
           <p>{product.vendor}</p>
           <div className="tags">
-            <span>{product.category}</span>
-            <span>AI 订阅</span>
+            <span>{categoryLabel(product.category, t, product.category)}</span>
+            <span>{t('store.heroTitle')}</span>
           </div>
         </div>
         <button type="button" className="btn" onClick={onRefresh} disabled={refreshing}>
-          {refreshing ? '更新中…' : '更新价格'}
+          {refreshing ? t('store.updating') : t('store.updatePrices')}
         </button>
       </header>
-      {product.planStructure ? (
+      {localizeApiText(product.planStructure, locale) ? (
         <p className="sheet-structure">
-          <span className="sheet-structure-label">套餐结构</span>
-          {product.planStructure}
+          <span className="sheet-structure-label">{t('store.planStructure')}</span>
+          {localizeApiText(product.planStructure, locale)}
         </p>
       ) : null}
-      {product.changeNote ? (
-        <div className="change-note">
-          <p className="change-note-label">变动说明</p>
-          <p className="change-note-text">{product.changeNote}</p>
-          {product.sheetUpdated ? (
-            <p className="change-note-meta">表格更新于 {product.sheetUpdated}</p>
-          ) : null}
-        </div>
-      ) : null}
-      {product.statusNote ? (
-        <p className="muted sheet-status">状态：{product.statusNote}</p>
+      {localizeApiText(product.statusNote, locale) ? (
+        <p className="muted sheet-status">
+          {t('store.status')}: {localizeApiText(product.statusNote, locale)}
+        </p>
       ) : null}
       {statusNote ? <p className="muted">{statusNote}</p> : null}
 
-      <p className="section-label">购买通道</p>
+      <p className="section-label">{t('store.buyChannel')}</p>
       <div className="plan-bar">
         {(['appstore', 'web', 'desktop'] as const).map((ch) => {
           const avail =
@@ -890,34 +938,34 @@ function ProductDetail({ productId }: { productId: string }) {
                 setChannel(ch)
               }}
             >
-              {CHANNEL_LABELS[ch]}
-              {!avail && ch !== 'web' ? ' · 暂无' : ''}
+              {channelLabel(ch, t)}
+              {!avail && ch !== 'web' ? ` · ${t('store.none')}` : ''}
             </button>
           )
         })}
       </div>
 
-      {advice?.summary ? (
+      {adviceText ? (
         <div className="advice-card">
-          <p className="advice-label">该走哪个通道</p>
-          <p className="advice-text">{advice.summary}</p>
+          <p className="advice-label">{t('store.channelAdvice')}</p>
+          <p className="advice-text">{adviceText}</p>
         </div>
       ) : null}
 
       {!isUnified ? (
         <>
-          <p className="section-label">选择国家 / 区服</p>
+          <p className="section-label">{t('store.pickRegion')}</p>
           <div className="region-bar">
             <select
               className="region-select"
               value={country}
               onChange={(e) => setCountry(e.target.value)}
-              aria-label="选择国家区服"
+              aria-label={t('store.pickRegion')}
             >
-              <option value="">全部地区（看低价前{TOP_N}）</option>
+              <option value="">{t('store.allRegionsTop')}</option>
               {storefronts.map((s) => (
                 <option key={s.code} value={s.code}>
-                  {s.flag} {s.name}（{s.code.toUpperCase()}）
+                  {s.flag} {region(s.code, s.name)} ({s.code.toUpperCase()})
                 </option>
               ))}
             </select>
@@ -928,21 +976,22 @@ function ProductDetail({ productId }: { productId: string }) {
       {country && selected && !isUnified ? (
         <div className="region-card">
           <p className="region-card-label">
-            所选区服 · {selected.flag} {selected.regionName} · {CHANNEL_LABELS[channel]}
+            {t('store.selectedRegion')} · {selected.flag} {region(selected.country, selected.regionName)} ·{' '}
+            {channelLabel(channel, t)}
           </p>
-          <p className="region-card-value">{formatCny(selected.cny)}</p>
+          <p className="region-card-value">{money(selected.cny)}</p>
           <p className="region-card-meta">
-            标价 {selected.priceFormatted}
-            {selected.rank != null ? ` · 第 ${selected.rank} 名` : ''}
-            {selected.isLowest ? ' · 当前最低' : ''}
+            {t('store.listPrice')} {selected.priceFormatted}
+            {selected.rank != null ? ` · ${t('store.rank', { n: String(selected.rank) })}` : ''}
+            {selected.isLowest ? ` · ${t('store.lowest')}` : ''}
           </p>
         </div>
       ) : null}
 
-      <p className="section-label">套餐</p>
+      <p className="section-label">{t('store.plan')}</p>
       <div className="plan-bar">
         {plans.length === 0 ? (
-          <span className="muted">{note || '该通道暂无套餐标价'}</span>
+          <span className="muted">{safeNote || t('store.noPlanPrice')}</span>
         ) : (
           plans.map((p) => (
             <button
@@ -952,8 +1001,10 @@ function ProductDetail({ productId }: { productId: string }) {
               onClick={() => setPlanId(p.planId)}
             >
               {p.name}
-              {p.billingLabel && p.billingPeriod && p.billingPeriod !== 'month' ? (
-                <span className="plan-period">{p.billingLabel}</span>
+              {p.billingPeriod && p.billingPeriod !== 'month' ? (
+                <span className="plan-period">
+                  {billingPeriodLabel(p.billingPeriod, t, p.billingLabel)}
+                </span>
               ) : null}
             </button>
           ))
@@ -963,61 +1014,61 @@ function ProductDetail({ productId }: { productId: string }) {
       {isUnified ? (
         <div className="unified-panel">
           <h2 className="panel-title">
-            {CHANNEL_LABELS[channel]} · {planName} · 全球统一价
+            {channelLabel(channel, t)} · {planName} · {t('store.globalUnified')}
             {updatedAt ? (
               <span className="muted" style={{ marginLeft: '0.65rem', fontSize: '0.85rem' }}>
-                {new Date(updatedAt).toLocaleString('zh-CN')}
+                {formatUpdatedAt(updatedAt, locale, t('store.none'))}
               </span>
             ) : null}
           </h2>
           <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
-            网页/桌面走 Stripe/官网收款，通常全球同价；不会出现 App Store 那种印度/土耳其骨折区。
+            {t('store.usdParityNote')}
           </p>
           {listLoading && !displayBase ? (
-            <p className="muted">正在读取标价…</p>
+            <p className="muted">{t('common.loading')}</p>
           ) : !displayBase ? (
-            <p className="muted">{note || '暂无网页/桌面标价，点「更新价格」重试'}</p>
+            <p className="muted">{safeNote || t('store.noWebDesktop')}</p>
           ) : (
             <>
               <div className="region-card">
                 <p className="region-card-label">
-                  {displayBase.label || '全球统一标价（Stripe / 官网）'}
+                  {localizeApiText(displayBase.label, locale) || t('store.unifiedStripe')}
                 </p>
-                <p className="region-card-value">{formatCny(displayBase.cny)}</p>
+                <p className="region-card-value">{money(displayBase.cny)}</p>
                 <p className="region-card-meta">
-                  标价 {displayBase.priceFormatted}
+                  {t('store.listPrice')} {displayBase.priceFormatted}
                   {displayBase.currency ? ` · ${displayBase.currency}` : ''}
                 </p>
               </div>
-              {warning ? <p className="channel-warning">{warning}</p> : null}
-              <p className="section-label">各地区对照（非低价排行）</p>
+              {safeWarning ? <p className="channel-warning">{safeWarning}</p> : null}
+              <p className="section-label">{t('store.region')}</p>
               <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
-                网页几乎全球同价，下表不是「低价前10」。想看骨折区请切到 App Store。
+                {t('store.usdParityNote')}
               </p>
               <div className="detail-grid">
                 <table className="price-table">
                   <thead>
                     <tr>
-                      <th>地区</th>
-                      <th>标价</th>
-                      <th>折合人民币</th>
-                      <th>相对美区</th>
+                      <th>{t('store.region')}</th>
+                      <th>{t('store.listPrice')}</th>
+                      <th>{t('store.equiv', { currency })}</th>
+                      <th>{t('store.relativeUs')}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {buildWebParityRows(displayBase, anomalies, storefronts).map((a) => (
+                    {buildWebParityRows(displayBase, anomalies, storefronts, t).map((a) => (
                       <tr key={a.country}>
                         <td>
-                          {a.flag} {a.regionName || a.country.toUpperCase()}
+                          {a.flag} {region(a.country, a.regionName)}
                           {'since' in a && a.since ? (
-                            <span className="muted"> · 自 {a.since}</span>
+                            <span className="muted"> · {a.since}</span>
                           ) : null}
                         </td>
                         <td>{a.priceFormatted}</td>
                         <td
                           className={`cny${a.vsBase === 'premium' ? '' : a.vsBase === 'discount' ? ' is-low' : ''}`}
                         >
-                          {formatCny(a.cny)}
+                          {money(a.cny)}
                         </td>
                         <td>
                           <span
@@ -1030,16 +1081,16 @@ function ProductDetail({ productId }: { productId: string }) {
                             }
                           >
                             {a.vsBase === 'premium'
-                              ? '溢价'
+                              ? t('store.premium')
                               : a.vsBase === 'discount'
-                                ? '低价'
+                                ? t('store.cheap')
                                 : a.country === 'us'
-                                  ? '基准'
-                                  : '等价'}
+                                  ? t('store.baseline')
+                                  : t('store.equivalent')}
                           </span>
-                          {a.note ? (
+                          {localizeApiText(a.note, locale) ? (
                             <span className="muted" style={{ marginLeft: '0.4rem' }}>
-                              {a.note}
+                              {localizeApiText(a.note, locale)}
                             </span>
                           ) : null}
                         </td>
@@ -1048,10 +1099,9 @@ function ProductDetail({ productId }: { productId: string }) {
                   </tbody>
                 </table>
                 <aside>
-                  <h2 className="panel-title">说明</h2>
+                  <h2 className="panel-title">{t('store.relativeUs')}</h2>
                   <p className="muted" style={{ margin: 0, lineHeight: 1.55 }}>
-                    「等价」= 与 $ 全球价同值，不是 App Store 印度/土耳其那种区域折扣。真正低价排行在
-                    App Store 通道。
+                    {t('store.usdParityNote')}
                   </p>
                 </aside>
               </div>
@@ -1062,31 +1112,35 @@ function ProductDetail({ productId }: { productId: string }) {
         <div className="detail-grid">
           <section>
             <h2 className="panel-title">
-              {CHANNEL_LABELS[channel]} · {planName}
-              {billingLabel ? ` · ${billingLabel}` : ''} · 低价前{TOP_N}
+              {channelLabel(channel, t)} · {planName}
+              {periodLabel ? ` · ${periodLabel}` : ''} · {t('store.topNLowest', { n: TOP_N })}
               {updatedAt ? (
                 <span className="muted" style={{ marginLeft: '0.65rem', fontSize: '0.85rem' }}>
-                  {new Date(updatedAt).toLocaleString('zh-CN')}
+                  {formatUpdatedAt(updatedAt, locale, t('store.none'))}
                 </span>
               ) : null}
             </h2>
             <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
               {billingPeriod && billingPeriod !== 'month'
-                ? `按${billingLabel || '账期'}账单折合月价排序（店面标价可能与月付档相同，但计费周期不同）。`
-                : 'App Store 内购区域定价，按人民币从低到高；第 1 名为最低价。'}
+                ? t('store.billingMonthHint', { period: periodLabel || t('store.bill') })
+                : t('store.appstoreRankHint', { currency })}
             </p>
             {listLoading && rows.length === 0 ? (
-              <p className="muted">正在读取标价…</p>
+              <p className="muted">{t('common.loading')}</p>
             ) : rows.length === 0 ? (
-              <p className="muted">{note || '暂无价格'}</p>
+              <p className="muted">{safeNote || t('store.noPrice')}</p>
             ) : (
               <table className="price-table">
                 <thead>
                   <tr>
-                    <th>名次</th>
-                    <th>地区</th>
-                    <th>店面标价</th>
-                    <th>{billingPeriod && billingPeriod !== 'month' ? '折合月价' : '折合人民币'}</th>
+                    <th>{t('store.rank', { n: '' })}</th>
+                    <th>{t('store.region')}</th>
+                    <th>{t('store.listPrice')}</th>
+                    <th>
+                      {billingPeriod && billingPeriod !== 'month'
+                        ? t('store.equivMonth', { currency })
+                        : t('store.equiv', { currency })}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1095,29 +1149,32 @@ function ProductDetail({ productId }: { productId: string }) {
                       key={r.country}
                       className={country && r.country === country ? 'is-selected' : undefined}
                     >
-                      <td>{r.rank}</td>
+                      <td>{r.rank != null ? t('store.rank', { n: String(r.rank) }) : t('store.none')}</td>
                       <td>
-                        {r.flag} {r.regionName || r.country.toUpperCase()}
+                        {r.flag} {region(r.country, r.regionName)}
                       </td>
                       <td>
                         {r.priceFormatted}
-                        {r.billingLabel && r.billingPeriod && r.billingPeriod !== 'month' ? (
-                          <span className="muted"> · {r.billingLabel}</span>
+                        {r.billingPeriod && r.billingPeriod !== 'month' ? (
+                          <span className="muted">
+                            {' '}
+                            · {billingPeriodLabel(r.billingPeriod, t, r.billingLabel)}
+                          </span>
                         ) : null}
                       </td>
                       <td className={`cny${r.rank === 1 ? ' is-low' : ''}`}>
-                        {formatCny(r.cny)}
+                        {money(r.cny)}
                         {r.billCny != null &&
                         r.billingPeriod &&
                         r.billingPeriod !== 'month' ? (
                           <span className="muted" style={{ display: 'block', fontSize: '0.78rem' }}>
-                            账单 {formatCny(r.billCny)}
+                            {t('store.bill')} {money(r.billCny)}
                           </span>
                         ) : null}
                         {r.rank === 1 ? (
                           <>
                             {' '}
-                            <span className="tag-low">最低</span>
+                            <span className="tag-low">{t('store.lowestTag')}</span>
                           </>
                         ) : null}
                       </td>
@@ -1128,14 +1185,14 @@ function ProductDetail({ productId }: { productId: string }) {
             )}
           </section>
           <aside>
-            <h2 className="panel-title">最低前{TOP_N}</h2>
+            <h2 className="panel-title">{t('store.topNLowest', { n: TOP_N })}</h2>
             <RankBars rows={rows} />
           </aside>
         </div>
       )}
 
       <p className="section-label" style={{ marginTop: '1.75rem' }}>
-        价格历史
+        {t('store.priceHistory')}
       </p>
       <div className="plan-bar">
         <button
@@ -1143,7 +1200,7 @@ function ProductDetail({ productId }: { productId: string }) {
           className={`plan${historyMode === 'lowest' ? ' is-active' : ''}`}
           onClick={() => setHistoryMode('lowest')}
         >
-          {isUnified ? '全球统一价' : '全球最低'}
+          {isUnified ? t('store.globalUnified') : t('store.globalLowest')}
         </button>
         {!isUnified ? (
           <button
@@ -1152,25 +1209,20 @@ function ProductDetail({ productId }: { productId: string }) {
             onClick={() => setHistoryMode('country')}
             disabled={!country}
           >
-            所选区服
+            {t('store.selectedRegion')}
           </button>
         ) : null}
       </div>
       <HistoryChart
         points={history}
-        label={`${CHANNEL_LABELS[channel]} · ${
-          isUnified
-            ? '全球统一价'
-            : historyMode === 'country' && country
-              ? country.toUpperCase()
-              : '全球最低'
-        }`}
+        label={`${channelLabel(channel, t)} · ${isUnified ? t('store.globalUnified') : historyRegionLabel}`}
       />
     </>
   )
 }
 
 export function App() {
+  const { t } = useT()
   const [route, setRoute] = useState<Route>(() => parseHash())
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
 
@@ -1181,7 +1233,6 @@ export function App() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
-  // Keep header stamp fresh even when not on home.
   useEffect(() => {
     let alive = true
     fetchHome()
@@ -1195,17 +1246,15 @@ export function App() {
   }, [])
 
   return (
-    <>
+    <MoneyProvider>
       <div className="atmosphere" aria-hidden="true" />
       <div className="shell">
         <Header route={route} updatedAt={updatedAt} />
         {route.name === 'home' ? <HomePage onUpdatedAt={setUpdatedAt} /> : null}
         {route.name === 'browse' ? <BrowsePage /> : null}
         {route.name === 'product' ? <ProductDetail productId={route.productId} /> : null}
-        <p className="footer-note">
-          App Store 展示各区服内购低价前 {TOP_N}；网页/桌面展示全球统一价与本地溢价异常点。低价区通常只对商店内购成立。非官方服务，实际扣款以账户区服为准。
-        </p>
+        <p className="footer-note">{t('store.disclaimer')}</p>
       </div>
-    </>
+    </MoneyProvider>
   )
 }

@@ -1,4 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
+import type { Locale } from '../i18n/types'
+import { regionDisplayName } from '../store/currency'
 import {
   fetchGame,
   fetchGames,
@@ -39,6 +43,28 @@ function formatCny(n?: number | null) {
   return `¥${n.toFixed(2)}`
 }
 
+function isChineseLocale(locale: Locale) {
+  return locale === 'zh-CN' || locale === 'zh-TW'
+}
+
+function gameDisplayName(game: { name: string; nameEn?: string }, locale: Locale) {
+  if (!isChineseLocale(locale) && game.nameEn?.trim()) return game.nameEn
+  return game.name
+}
+
+function localizedRegionName(
+  code: string | null | undefined,
+  locale: Locale,
+  fallback?: string | null,
+) {
+  return regionDisplayName(code, locale, fallback)
+}
+
+function categoryDisplayName(category: string | null | undefined, locale: Locale, fallback: string) {
+  if (!category) return fallback
+  return isChineseLocale(locale) ? category : fallback
+}
+
 const ICON_FALLBACK =
   'data:image/svg+xml,' +
   encodeURIComponent(
@@ -69,38 +95,43 @@ function GameIcon({
 }
 
 function Header({ route }: { route: Route }) {
+  const { t } = useT()
   return (
     <header className="site-header">
       <div className="brand-block">
         <a className="brand-mark" href="/">
-          九猫库
+          {t('common.brand')}
         </a>
-        <p className="brand-sub">Switch 游戏低价查询器</p>
+        <p className="brand-sub">{t('catalog.switch-price.name')}</p>
       </div>
-      <nav className="site-nav" aria-label="页面导航">
-        <button
-          type="button"
-          className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'home' })}
-        >
-          首页
-        </button>
-        <button
-          type="button"
-          className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'browse' })}
-        >
-          游戏
-        </button>
-        <a className="nav-link" href="/">
-          返回九猫库
-        </a>
-      </nav>
+      <div className="site-header__right">
+        <nav className="site-nav" aria-label="nav">
+          <button
+            type="button"
+            className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'home' })}
+          >
+            {t('switchApp.navHome')}
+          </button>
+          <button
+            type="button"
+            className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'browse' })}
+          >
+            {t('switchApp.navSearch')}
+          </button>
+          <a className="nav-link" href="/">
+            {t('common.backHome')}
+          </a>
+        </nav>
+        <LangSwitchHost />
+      </div>
     </header>
   )
 }
 
 function HomePage() {
+  const { t, locale } = useT()
   const [cards, setCards] = useState<HomeCard[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -141,48 +172,55 @@ function HomePage() {
     <>
       <section className="hero">
         <p className="hero-kicker">maotaiworks.com</p>
-        <h1 className="hero-title">Switch 游戏低价查询器</h1>
-        <p className="hero-lead">
-          显示游戏低价区服。按折合人民币查看 Nintendo eShop 数字版各地区标价，数据来自公开店面，仅供参考。
-        </p>
+        <h1 className="hero-title">{t('switchApp.heroTitle')}</h1>
+        <p className="hero-lead">{t('switchApp.heroLead')}</p>
         <div className="hero-actions">
           <button type="button" className="btn btn-solid" onClick={() => navigate({ name: 'browse' })}>
-            搜索游戏
+            {t('switchApp.browseGames')}
           </button>
         </div>
       </section>
 
-      <p className="section-label">热门数字版 · 10 款</p>
+      <p className="section-label">{t('switchApp.popularDigitalTitle', { n: TOP_N })}</p>
       {loading ? (
-        <p className="loading">加载中…</p>
+        <p className="loading">{t('switchApp.loadingHome')}</p>
       ) : cards.length === 0 ? (
-        <p className="empty">游戏列表准备中，可先去「游戏」搜索。</p>
+        <p className="empty">{t('switchApp.homeEmpty')}</p>
       ) : (
         <div className="deal-list">
-          {cards.map((card) => (
-            <button
-              key={card.gameId}
-              type="button"
-              className="deal-row"
-              onClick={() => navigate({ name: 'game', gameId: card.gameId })}
-            >
-              <GameIcon src={card.icon} size={48} />
-              <div className="deal-main">
-                <p className="deal-name">{card.name}</p>
-                <p className="deal-meta">
-                  {card.best
-                    ? `最低 ${formatCny(card.best.cny)} · ${card.best.flag || ''} ${card.best.regionName || card.best.country.toUpperCase()}`
-                    : '点击查看低价区服'}
-                  {card.savePct != null && card.savePct > 0
-                    ? ` · 较美区约省 ${card.savePct}%`
-                    : ''}
-                </p>
-              </div>
-              <div className="deal-price">
-                <strong>{card.best ? formatCny(card.best.cny) : '…'}</strong>
-              </div>
-            </button>
-          ))}
+          {cards.map((card) => {
+            const bestRegion = card.best
+              ? localizedRegionName(card.best.country, locale, card.best.regionName)
+              : ''
+            return (
+              <button
+                key={card.gameId}
+                type="button"
+                className="deal-row"
+                onClick={() => navigate({ name: 'game', gameId: card.gameId })}
+              >
+                <GameIcon src={card.icon} size={48} />
+                <div className="deal-main">
+                  <p className="deal-name">{gameDisplayName(card, locale)}</p>
+                  <p className="deal-meta">
+                    {card.best
+                      ? t('switchApp.lowestWithRegion', {
+                          price: formatCny(card.best.cny),
+                          flag: card.best.flag || '',
+                          region: bestRegion || card.best.country.toUpperCase(),
+                        })
+                      : t('switchApp.viewLowPriceRegions')}
+                    {card.savePct != null && card.savePct > 0
+                      ? ` · ${t('switchApp.saveVsUs', { pct: card.savePct })}`
+                      : ''}
+                  </p>
+                </div>
+                <div className="deal-price">
+                  <strong>{card.best ? formatCny(card.best.cny) : '…'}</strong>
+                </div>
+              </button>
+            )
+          })}
         </div>
       )}
     </>
@@ -190,6 +228,7 @@ function HomePage() {
 }
 
 function BrowsePage() {
+  const { t, locale } = useT()
   const [q, setQ] = useState('')
   const [items, setItems] = useState<GameCard[]>([])
   const [loading, setLoading] = useState(false)
@@ -231,25 +270,25 @@ function BrowsePage() {
     <>
       <section className="hero" style={{ paddingBottom: '1.5rem' }}>
         <h1 className="hero-title" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)' }}>
-          搜索游戏
+          {t('switchApp.browseTitle')}
         </h1>
-        <p className="hero-lead">支持中英文名；并行检索欧区 / 日区目录，并匹配美区等区服 NSUID。</p>
+        <p className="hero-lead">{t('switchApp.browseLead')}</p>
       </section>
 
       <form className="search-form" onSubmit={onSearch}>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索 Switch 游戏（中英文）"
-          aria-label="搜索游戏"
+          placeholder={t('switchApp.searchPlaceholder')}
+          aria-label={t('switchApp.navSearch')}
         />
         <button type="submit" className="btn btn-solid" disabled={loading}>
-          {loading ? '搜索中…' : '搜索'}
+          {loading ? t('common.searching') : t('common.search')}
         </button>
       </form>
 
       {error ? <p className="empty">{error}</p> : null}
-      {loading && items.length === 0 ? <p className="loading">加载中…</p> : null}
+      {loading && items.length === 0 ? <p className="loading">{t('common.loading')}</p> : null}
 
       <div className="app-list">
         {items.map((game) => (
@@ -261,27 +300,39 @@ function BrowsePage() {
           >
             <GameIcon src={game.icon} size={48} />
             <div className="app-main">
-              <p className="app-name">{game.name}</p>
+              <p className="app-name">{gameDisplayName(game, locale)}</p>
               <p className="app-meta">{game.publisher || 'Nintendo'}</p>
             </div>
             <div className="app-side">
-              <em>{game.regions > 0 ? `${game.regions} 个区服有价` : '低价区服'}</em>
+              <em>
+                {game.regions > 0
+                  ? t('switchApp.pricedRegions', { count: game.regions })
+                  : t('switchApp.lowPriceRegions')}
+              </em>
             </div>
           </button>
         ))}
       </div>
+      {!loading && items.length === 0 && !error ? (
+        <p className="empty">
+          {q.trim() ? t('switchApp.noSearchResults') : t('switchApp.browseEmpty')}
+        </p>
+      ) : null}
     </>
   )
 }
 
-function RankBars({ rows }: { rows: PriceRow[] }) {
+function RankBars({ rows, locale }: { rows: PriceRow[]; locale: Locale }) {
   const max = rows[rows.length - 1]?.cny || 1
   return (
     <div className="dist">
       {rows.map((r) => (
         <div className="dist-row" key={r.country}>
           <span className="code">{r.country}</span>
-          <div className="dist-bar" title={`${r.regionName} ${formatCny(r.cny)}`}>
+          <div
+            className="dist-bar"
+            title={`${localizedRegionName(r.country, locale, r.regionName)} ${formatCny(r.cny)}`}
+          >
             <span
               className={r.rank === 1 ? 'is-low' : undefined}
               style={{ width: `${Math.max(8, (r.cny / max) * 100)}%` }}
@@ -294,6 +345,7 @@ function RankBars({ rows }: { rows: PriceRow[] }) {
 }
 
 function GameDetail({ gameId }: { gameId: string }) {
+  const { t, locale } = useT()
   const [game, setGame] = useState<(GameCard & { nameEn?: string }) | null>(null)
   const [country, setCountry] = useState('')
   const [storefronts, setStorefronts] = useState<Storefront[]>([])
@@ -348,19 +400,19 @@ function GameDetail({ gameId }: { gameId: string }) {
           Boolean(prices.updatedAt) && prices.updatedAt !== prevUpdatedAt
 
         if (finished) {
-          if (hasRows) setStatusNote('价格已更新')
-          else if (touched) setStatusNote('部分区服暂无数字版标价')
+          if (hasRows) setStatusNote(t('switchApp.priceUpdated'))
+          else if (touched) setStatusNote(t('switchApp.partialNoDigitalPrices'))
           else if (!retried) {
             retried = true
             await refreshGame(gameId).catch(() => null)
-            setStatusNote('排队获取中…')
+            setStatusNote(t('switchApp.queuedFetching'))
             continue
-          } else setStatusNote('暂无价格数据')
+          } else setStatusNote(t('switchApp.noPriceData'))
           return
         }
-        setStatusNote('正在获取各地区 eShop 标价…')
+        setStatusNote(t('switchApp.fetchingEShopPrices'))
       }
-      if (isAlive()) setStatusNote('获取超时，可再点「更新价格」重试')
+      if (isAlive()) setStatusNote(t('switchApp.fetchTimeout'))
     } finally {
       if (isAlive()) setRefreshing(false)
     }
@@ -389,7 +441,7 @@ function GameDetail({ gameId }: { gameId: string }) {
           const prev = data.updatedAt
           if (!data.refreshing) await refreshGame(gameId).catch(() => null)
           if (!alive) return
-          await waitForPrices(prev, '首次打开，正在获取价格…', () => alive)
+          await waitForPrices(prev, t('switchApp.initialFetch'), () => alive)
         } else {
           const prices = await fetchPrices(gameId)
           if (!alive) return
@@ -442,7 +494,7 @@ function GameDetail({ gameId }: { gameId: string }) {
     const prevUpdatedAt = updatedAt
     try {
       await refreshGame(gameId)
-      await waitForPrices(prevUpdatedAt, '已开始更新，正在获取各地区标价…')
+      await waitForPrices(prevUpdatedAt, t('switchApp.refreshStarted'))
     } catch (e) {
       setStatusNote(null)
       setError(String((e as Error).message || e))
@@ -450,46 +502,48 @@ function GameDetail({ gameId }: { gameId: string }) {
     }
   }
 
-  if (loading) return <p className="loading">加载游戏…</p>
+  if (loading) return <p className="loading">{t('switchApp.loadingGame')}</p>
   if (error) return <p className="empty">{error}</p>
-  if (!game) return <p className="empty">未找到游戏</p>
+  if (!game) return <p className="empty">{t('switchApp.gameNotFound')}</p>
 
   return (
     <>
       <button type="button" className="back" onClick={() => navigate({ name: 'browse' })}>
-        ← 返回游戏列表
+        {t('switchApp.backToBrowse')}
       </button>
 
       <header className="detail-head">
         <GameIcon src={game.icon} size={72} />
         <div style={{ minWidth: 0 }}>
-          <h1>{game.name}</h1>
+          <h1>{gameDisplayName(game, locale)}</h1>
           <p>{game.publisher || 'Nintendo'}</p>
           <div className="tags">
-            <span>{game.category || '游戏'}</span>
+            <span>
+              {categoryDisplayName(game.category, locale, t('switchApp.gameCategoryFallback'))}
+            </span>
             {(game.platforms || ['Nintendo Switch']).map((p) => (
               <span key={p}>{p}</span>
             ))}
           </div>
         </div>
         <button type="button" className="btn" onClick={onRefresh} disabled={refreshing}>
-          {refreshing ? '更新中…' : '更新价格'}
+          {refreshing ? t('common.refreshing') : t('switchApp.updatePrices')}
         </button>
       </header>
       {statusNote ? <p className="muted">{statusNote}</p> : null}
 
-      <p className="section-label">选择国家 / 区服</p>
+      <p className="section-label">{t('switchApp.pickRegion')}</p>
       <div className="region-bar">
         <select
           className="region-select"
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          aria-label="选择国家区服"
+          aria-label={t('switchApp.pickRegionAria')}
         >
-          <option value="">全部地区（看低价前{TOP_N}）</option>
+          <option value="">{t('switchApp.allRegionsTop', { n: TOP_N })}</option>
           {storefronts.map((s) => (
             <option key={s.code} value={s.code}>
-              {s.flag} {s.name}（{s.code.toUpperCase()}）
+              {s.flag} {localizedRegionName(s.code, locale, s.name)} ({s.code.toUpperCase()})
             </option>
           ))}
         </select>
@@ -498,50 +552,54 @@ function GameDetail({ gameId }: { gameId: string }) {
       {country && selected ? (
         <div className="region-card">
           <p className="region-card-label">
-            所选区服 · {selected.flag} {selected.regionName}
+            {t('switchApp.selectedRegion')} · {selected.flag}{' '}
+            {localizedRegionName(selected.country, locale, selected.regionName)}
           </p>
           <p className="region-card-value">{formatCny(selected.cny)}</p>
           <p className="region-card-meta">
-            店面标价 {selected.priceFormatted}
+            {t('switchApp.storefrontPrice', { price: selected.priceFormatted })}
             {selected.rank != null
-              ? ` · 全球第 ${selected.rank} 名（共 ${selected.totalRegions ?? '—'} 区）`
+              ? ` · ${t('switchApp.globalRank', {
+                  rank: selected.rank,
+                  total: selected.totalRegions ?? '—',
+                })}`
               : ''}
-            {selected.isLowest ? ' · 当前最低' : ''}
-            {selected.onSale ? ' · 折扣中' : ''}
+            {selected.isLowest ? ` · ${t('switchApp.currentLowest')}` : ''}
+            {selected.onSale ? ` · ${t('switchApp.onSale')}` : ''}
           </p>
         </div>
       ) : country ? (
         <p className="muted" style={{ marginBottom: '1rem' }}>
-          该区服暂无数字版标价，可点「更新价格」或换区服
+          {t('switchApp.noSelectedRegionPrice')}
         </p>
       ) : null}
 
       <div className="detail-grid">
         <section>
           <h2 className="panel-title">
-            数字版 · 低价前{TOP_N}
+            {t('switchApp.digitalTopN', { n: TOP_N })}
             {updatedAt ? (
               <span className="muted" style={{ marginLeft: '0.65rem', fontSize: '0.85rem' }}>
-                {new Date(updatedAt).toLocaleString('zh-CN')}
+                {new Date(updatedAt).toLocaleString(locale)}
               </span>
             ) : null}
           </h2>
           <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
-            按人民币从低到高；第 1 名为最低价，仅列前 {TOP_N} 名。
-            {country ? ' 所选区服若在榜内会高亮。' : ''}
+            {t('switchApp.rankHint', { n: TOP_N })}
+            {country ? ` ${t('switchApp.selectedHighlightHint')}` : ''}
           </p>
           {listLoading && rows.length === 0 ? (
-            <p className="muted">正在读取各地区标价…</p>
+            <p className="muted">{t('switchApp.loadingPrices')}</p>
           ) : rows.length === 0 ? (
-            <p className="muted">暂无价格</p>
+            <p className="muted">{t('switchApp.noPrices')}</p>
           ) : (
             <table className="price-table">
               <thead>
                 <tr>
-                  <th>名次</th>
-                  <th>地区</th>
-                  <th>店面标价</th>
-                  <th>折合人民币</th>
+                  <th>{t('switchApp.rank')}</th>
+                  <th>{t('switchApp.region')}</th>
+                  <th>{t('switchApp.listPrice')}</th>
+                  <th>{t('switchApp.equivCny')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -552,7 +610,7 @@ function GameDetail({ gameId }: { gameId: string }) {
                   >
                     <td>{r.rank}</td>
                     <td>
-                      {r.flag} {r.regionName || r.country.toUpperCase()}
+                      {r.flag} {localizedRegionName(r.country, locale, r.regionName) || r.country.toUpperCase()}
                     </td>
                     <td>{r.priceFormatted}</td>
                     <td className={`cny${r.rank === 1 ? ' is-low' : ''}`}>
@@ -560,7 +618,7 @@ function GameDetail({ gameId }: { gameId: string }) {
                       {r.rank === 1 ? (
                         <>
                           {' '}
-                          <span className="tag-low">最低</span>
+                          <span className="tag-low">{t('switchApp.lowestTag')}</span>
                         </>
                       ) : null}
                     </td>
@@ -571,8 +629,8 @@ function GameDetail({ gameId }: { gameId: string }) {
           )}
         </section>
         <aside>
-          <h2 className="panel-title">最低前{TOP_N}</h2>
-          <RankBars rows={rows} />
+          <h2 className="panel-title">{t('switchApp.topNLowest', { n: TOP_N })}</h2>
+          <RankBars rows={rows} locale={locale} />
         </aside>
       </div>
     </>
@@ -580,6 +638,7 @@ function GameDetail({ gameId }: { gameId: string }) {
 }
 
 export function App() {
+  const { t } = useT()
   const [route, setRoute] = useState<Route>(() => parseHash())
 
   useEffect(() => {
@@ -598,8 +657,7 @@ export function App() {
         {route.name === 'browse' ? <BrowsePage /> : null}
         {route.name === 'game' ? <GameDetail gameId={route.gameId} /> : null}
         <p className="footer-note">
-          展示 eShop 数字版公开标价折合人民币后最低的前 {TOP_N} 名（第 1 名最低），仅供参考，非
-          Nintendo 官方服务。实体卡 / 账号区服解锁成本另计。
+          {t('switchApp.disclaimer', { n: TOP_N })}
         </p>
       </div>
     </>

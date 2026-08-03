@@ -258,9 +258,37 @@ function isPeriodPlan(plan) {
   return billing.period !== 'month'
 }
 
-/** Prefer cheapest monthly list price when available; else name heuristics. */
-export function pickDefaultPlan(priceDoc) {
+/**
+ * Preferred default plan ids per product (first existing match wins).
+ * ChatGPT defaults to Plus — most common paid tier — instead of cheapest Go.
+ */
+const PREFERRED_DEFAULT_PLANS = {
+  chatgpt: ['chatgpt-plus', 'plus_monthly'],
+}
+
+function pickPreferredPlan(plans, productId) {
+  const preferred = productId ? PREFERRED_DEFAULT_PLANS[productId] : null
+  if (!preferred?.length || !plans?.length) return null
+  const byId = new Map(plans.map((p) => [p.planId, p]))
+  for (const id of preferred) {
+    if (byId.has(id)) return id
+  }
+  // Fallback: monthly plan whose name looks like Plus (not Pro/Go).
+  const plusNamed = plans.find((p) => {
+    if (isPeriodPlan(p)) return false
+    const n = String(p.name || p.planId || '').toLowerCase()
+    return /\bplus\b/.test(n) && !/\bpro\b/.test(n) && !/\bgo\b/.test(n)
+  })
+  return plusNamed?.planId || null
+}
+
+/** Prefer product preferred tier, else cheapest monthly list price; else name heuristics. */
+export function pickDefaultPlan(priceDoc, productIdHint) {
   if (!priceDoc?.plans?.length) return null
+  const productId = productIdHint || priceDoc.productId || null
+  const preferred = pickPreferredPlan(priceDoc.plans, productId)
+  if (preferred) return preferred
+
   const meta = priceDoc.planMeta || {}
   const monthly = priceDoc.plans.filter((p) => !isPeriodPlan(p))
   const pool = monthly.length ? monthly : priceDoc.plans
@@ -286,9 +314,12 @@ export function plansForCountry(priceDoc, country) {
   return plans.filter((p) => priceDoc.byPlan?.[p.planId]?.[country])
 }
 
-export function pickDefaultPlanForCountry(priceDoc, country) {
+export function pickDefaultPlanForCountry(priceDoc, country, productIdHint) {
   const plans = plansForCountry(priceDoc, country)
   if (!plans.length) return null
+  const productId = productIdHint || priceDoc.productId || null
+  const preferred = pickPreferredPlan(plans, productId)
+  if (preferred) return preferred
   const ranked = [...plans].sort((a, b) => planScore(b.name) - planScore(a.name))
   return ranked[0].planId
 }

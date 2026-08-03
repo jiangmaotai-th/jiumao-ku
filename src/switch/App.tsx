@@ -75,7 +75,7 @@ function Header({ route }: { route: Route }) {
         <a className="brand-mark" href="/">
           九猫库
         </a>
-        <p className="brand-sub">Switch 低价查询器</p>
+        <p className="brand-sub">Switch 游戏低价查询器</p>
       </div>
       <nav className="site-nav" aria-label="页面导航">
         <button
@@ -141,7 +141,7 @@ function HomePage() {
     <>
       <section className="hero">
         <p className="hero-kicker">maotaiworks.com</p>
-        <h1 className="hero-title">Switch 低价查询器</h1>
+        <h1 className="hero-title">Switch 游戏低价查询器</h1>
         <p className="hero-lead">
           显示游戏低价区服。按折合人民币查看 Nintendo eShop 数字版各地区标价，数据来自公开店面，仅供参考。
         </p>

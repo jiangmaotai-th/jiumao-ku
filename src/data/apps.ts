@@ -121,6 +121,23 @@ export const catalog: CatalogItem[] = [
     ],
   },
   {
+    id: 'switch-price',
+    name: 'Switch 游戏低价查询器',
+    summary: [
+      '显示游戏低价区服：按人民币查看 Nintendo eShop 数字版各地区标价。',
+      '数据来自公开店面展示价，仅供参考，非 Nintendo 官方服务。',
+    ].join('\n'),
+    category: 'software',
+    downloads: [
+      {
+        platform: 'web',
+        label: '在线使用',
+        href: '/switch/',
+        openInPlace: true,
+      },
+    ],
+  },
+  {
     id: 'mowin',
     name: '魔窗',
     summary: '一扇更好用的桌面窗口工具。',
@@ -161,23 +178,6 @@ export const catalog: CatalogItem[] = [
         href: '/downloads/moyi/mac.dmg',
         filename: '魔译-mac.dmg',
         available: false,
-      },
-    ],
-  },
-  {
-    id: 'switch-price',
-    name: 'Switch 低价查询器',
-    summary: [
-      '显示游戏低价区服：按人民币查看 Nintendo eShop 数字版各地区标价。',
-      '数据来自公开店面展示价，仅供参考，非 Nintendo 官方服务。',
-    ].join('\n'),
-    category: 'software',
-    downloads: [
-      {
-        platform: 'web',
-        label: '在线使用',
-        href: '/switch/',
-        openInPlace: true,
       },
     ],
   },

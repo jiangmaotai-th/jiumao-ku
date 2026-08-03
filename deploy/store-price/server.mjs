@@ -240,7 +240,7 @@ async function handle(req, res) {
           updatedAt: doc.updatedAt,
           planCount: doc.plans?.length || 0,
           note: doc.note || null,
-          defaultPlanId: pickDefaultPlan(doc),
+          defaultPlanId: pickDefaultPlan(doc, product.productId),
           available: avail[ch] || (doc.plans?.length > 0),
         }
       }
@@ -319,8 +319,8 @@ async function handle(req, res) {
       let planId =
         url.searchParams.get('plan') ||
         (country && doc.pricingModel !== 'unified'
-          ? pickDefaultPlanForCountry(doc, country)
-          : pickDefaultPlan(doc))
+          ? pickDefaultPlanForCountry(doc, country, product.productId)
+          : pickDefaultPlan(doc, product.productId))
       // Channel switch often leaves App Store plan ids on web/desktop — fall back.
       const planExists =
         Boolean(planId) &&
@@ -330,8 +330,8 @@ async function handle(req, res) {
       if (planId && !planExists) {
         planId =
           country && doc.pricingModel !== 'unified'
-            ? pickDefaultPlanForCountry(doc, country)
-            : pickDefaultPlan(doc)
+            ? pickDefaultPlanForCountry(doc, country, product.productId)
+            : pickDefaultPlan(doc, product.productId)
       }
       const advice = buildChannelAdvice(product.productId, planId)
       if (!planId) {
@@ -427,7 +427,9 @@ async function handle(req, res) {
       const days = Number(url.searchParams.get('days') || 90)
       const doc = loadChannelPrices(product.productId, channel)
       const planId =
-        url.searchParams.get('plan') || pickDefaultPlan(doc) || 'plus_monthly'
+        url.searchParams.get('plan') ||
+        pickDefaultPlan(doc, product.productId) ||
+        'plus_monthly'
       const points = loadHistory(product.productId, channel, planId, {
         days,
         country,
@@ -575,6 +577,7 @@ async function handle(req, res) {
           plans: loadChannelPrices(product.productId, 'appstore').plans || [],
           defaultPlanId: pickDefaultPlan(
             loadChannelPrices(product.productId, 'appstore'),
+            product.productId,
           ),
           productId: product.productId,
           storefronts: storefrontPayload(),

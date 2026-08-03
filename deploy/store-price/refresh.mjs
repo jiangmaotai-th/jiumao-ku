@@ -161,7 +161,10 @@ export async function refreshSeeds({ force = false, limit } = {}) {
       }
     }
     saveMeta({
+      ...loadMeta(),
       lastRefreshAt: new Date().toISOString(),
+      contentUpdatedAt: new Date().toISOString(),
+      contentUpdatedReason: 'refresh-seeds-legacy',
       refreshing: null,
       lastResults: results,
     })

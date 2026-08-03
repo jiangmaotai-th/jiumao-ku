@@ -15,6 +15,10 @@ export function mountLanguageSwitcher(host: HTMLElement | null): void {
   host.classList.add('lang-switch')
   host.innerHTML = `
     <button type="button" class="lang-switch__btn" aria-haspopup="listbox" aria-expanded="false" aria-label="${t('common.languageLabel')}">
+      <svg class="lang-switch__icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" />
+        <path d="M3.5 12h17M12 3.5c2.4 2.6 3.6 5.3 3.6 8.5s-1.2 5.9-3.6 8.5M12 3.5C9.6 6.1 8.4 8.8 8.4 12s1.2 5.9 3.6 8.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
       <span class="lang-switch__current">${LOCALE_NATIVE_NAMES[current]}</span>
       <span class="lang-switch__caret" aria-hidden="true"></span>
     </button>

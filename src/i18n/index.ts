@@ -19,7 +19,10 @@ function isLocale(value: string | null | undefined): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value)
 }
 
-/** Auto: Chinese → zh-CN/zh-TW; everything else → English. Manual choice overrides via storage. */
+/**
+ * Auto locale from the visitor’s browser language (navigator.languages), not IP.
+ * Saved manual choice in localStorage wins. Unmatched languages fall back to English.
+ */
 export function detectLocale(): Locale {
   try {
     const saved = localStorage.getItem(LANG_STORAGE_KEY)
@@ -34,13 +37,23 @@ export function detectLocale(): Locale {
   ].filter(Boolean)
 
   for (const raw of candidates) {
-    const tag = raw.toLowerCase()
+    const tag = raw.toLowerCase().replace('_', '-')
     if (tag.startsWith('zh')) {
       if (tag.includes('tw') || tag.includes('hk') || tag.includes('mo') || tag.includes('hant')) {
         return 'zh-TW'
       }
       return 'zh-CN'
     }
+    if (tag.startsWith('ja')) return 'ja'
+    if (tag.startsWith('ko')) return 'ko'
+    if (tag.startsWith('fr')) return 'fr'
+    if (tag.startsWith('de')) return 'de'
+    if (tag.startsWith('es')) return 'es'
+    if (tag.startsWith('hi')) return 'hi'
+    if (tag.startsWith('th')) return 'th'
+    if (tag.startsWith('ru')) return 'ru'
+    if (tag.startsWith('pt')) return 'pt'
+    if (tag.startsWith('en')) return 'en'
   }
   return 'en'
 }

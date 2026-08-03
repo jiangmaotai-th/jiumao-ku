@@ -444,35 +444,6 @@ img {
   letter-spacing: 0.08em;
 }
 
-.change-note {
-  margin: 0 0 0.85rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid rgba(196, 163, 90, 0.4);
-  border-radius: 0.85rem;
-  background: rgba(196, 163, 90, 0.1);
-}
-
-.change-note-label {
-  margin: 0 0 0.35rem;
-  color: var(--gold-soft);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-}
-
-.change-note-text {
-  margin: 0;
-  color: var(--ink);
-  font-size: 0.95rem;
-  line-height: 1.55;
-}
-
-.change-note-meta {
-  margin: 0.45rem 0 0;
-  color: var(--ink-muted);
-  font-size: 0.75rem;
-}
-
 .sheet-status {
   margin: 0 0 0.75rem;
 }

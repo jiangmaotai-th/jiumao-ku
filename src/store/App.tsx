@@ -864,17 +864,6 @@ function ProductDetail({ productId }: { productId: string }) {
           {localizeApiText(product.planStructure, locale)}
         </p>
       ) : null}
-      {localizeApiText(product.changeNote, locale) ? (
-        <div className="change-note">
-          <p className="change-note-label">{t('store.changeNote')}</p>
-          <p className="change-note-text">{localizeApiText(product.changeNote, locale)}</p>
-          {product.sheetUpdated ? (
-            <p className="change-note-meta">
-              {t('store.tableUpdated')} {product.sheetUpdated}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
       {localizeApiText(product.statusNote, locale) ? (
         <p className="muted sheet-status">
           {t('store.status')}: {localizeApiText(product.statusNote, locale)}

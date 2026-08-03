@@ -15,6 +15,7 @@ const es: Messages = {
     privacy: 'Privacidad',
     credits: 'Créditos',
     openOnline: 'Abrir en línea',
+    download: 'Descargar',
     unavailable: 'El instalador aún no está disponible',
     localMark: 'En el dispositivo',
     loading: 'Cargando…',

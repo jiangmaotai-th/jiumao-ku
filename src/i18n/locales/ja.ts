@@ -15,6 +15,7 @@ const ja: Messages = {
     privacy: 'プライバシー',
     credits: 'クレジット',
     openOnline: 'オンラインで開く',
+    download: 'ダウンロード',
     unavailable: 'インストーラーはまだ利用できません',
     localMark: '端末内処理',
     loading: '読み込み中…',

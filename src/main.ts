@@ -37,40 +37,71 @@ const platformIcon = (platform: DownloadLink['platform']): string => {
   return `<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.2 8.3c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.7-1.3-.13-2.5.76-3.15.76-.66 0-1.67-.74-2.75-.72-1.41.02-2.72.82-3.45 2.08-1.48 2.56-.38 6.35 1.06 8.43.7 1.02 1.54 2.16 2.64 2.12 1.06-.04 1.46-.68 2.74-.68 1.27 0 1.63.68 2.76.66 1.14-.02 1.86-1.02 2.55-2.05.8-1.17 1.13-2.3 1.15-2.36-.02-.01-2.2-.84-2.22-3.34zM9.6 2.9c.57-.69.96-1.65.85-2.6-.82.03-1.81.55-2.4 1.24-.53.61-.99 1.59-.87 2.52.92.07 1.86-.47 2.42-1.16z"/></svg>`
 }
 
-function linkLabel(link: DownloadLink): string {
-  if (link.platform === 'web' || link.openInPlace) return t('common.openOnline')
-  return link.label
+function renderOnlineButton(link: DownloadLink): string {
+  return `
+    <a class="action-btn action-btn--online" href="${link.href}">
+      ${platformIcon('web')}
+      <span>${t('common.openOnline')}</span>
+    </a>`
+}
+
+function renderDesktopOption(link: DownloadLink): string {
+  const available = link.available !== false
+  const downloadAttr =
+    available && link.filename ? ` download="${link.filename}"` : ''
+  if (!available) {
+    return `
+      <span class="dl-menu__option is-disabled" aria-disabled="true" title="${t('common.unavailable')}">
+        ${platformIcon(link.platform)}
+        <span>${link.label}</span>
+      </span>`
+  }
+  return `
+    <a class="dl-menu__option" href="${link.href}"${downloadAttr}>
+      ${platformIcon(link.platform)}
+      <span>${link.label}</span>
+    </a>`
+}
+
+function renderDownloadMenu(desktopLinks: DownloadLink[]): string {
+  if (!desktopLinks.length) return ''
+  const hasAny = desktopLinks.some((l) => l.available !== false)
+  const icons = desktopLinks
+    .map((l) => `<span class="dl-menu__brand">${platformIcon(l.platform)}</span>`)
+    .join('')
+  const options = desktopLinks.map(renderDesktopOption).join('')
+  if (!hasAny) {
+    return `
+      <button type="button" class="action-btn action-btn--download is-disabled" disabled title="${t('common.unavailable')}">
+        <span class="dl-menu__brands">${icons}</span>
+        <span>${t('common.download')}</span>
+      </button>`
+  }
+  return `
+    <div class="dl-menu">
+      <button type="button" class="action-btn action-btn--download dl-menu__toggle" aria-expanded="false" aria-haspopup="true">
+        <span class="dl-menu__brands">${icons}</span>
+        <span>${t('common.download')}</span>
+      </button>
+      <div class="dl-menu__panel" hidden role="menu">
+        ${options}
+      </div>
+    </div>`
 }
 
 function renderDownloads(links: DownloadLink[]): string {
-  return links
-    .map((link) => {
-      const available = link.available !== false
-      const label = linkLabel(link)
-      if (!available) {
-        return `
-      <span
-        class="download-btn download-btn--disabled"
-        aria-disabled="true"
-        title="${t('common.unavailable')}"
-      >
-        ${platformIcon(link.platform)}
-        <span>${label}</span>
-      </span>`
-      }
-
-      const downloadAttr =
-        !link.openInPlace && link.filename ? ` download="${link.filename}"` : ''
-      const primary = link.openInPlace ? ' download-btn--primary' : ''
-      return `
-      <a
-        class="download-btn${primary}"
-        href="${link.href}"${downloadAttr}
-      >
-        ${platformIcon(link.platform)}
-        <span>${label}</span>
-      </a>`
-    })
+  const online = links.filter((l) => l.platform === 'web' || l.openInPlace)
+  const desktop = links.filter((l) => l.platform === 'mac' || l.platform === 'windows')
+  // Keep a stable mac → windows order when both exist.
+  desktop.sort((a, b) => {
+    const rank = (p: string) => (p === 'mac' ? 0 : p === 'windows' ? 1 : 2)
+    return rank(a.platform) - rank(b.platform)
+  })
+  return [
+    ...online.map(renderOnlineButton),
+    renderDownloadMenu(desktop),
+  ]
+    .filter(Boolean)
     .join('')
 }
 
@@ -126,7 +157,7 @@ function renderItem(item: CatalogItem, storeUpdatedAt?: string | null): string {
         ${stampHtml}
         ${renderSummary(copy.summary, copy.privacy)}
       </div>
-      <div class="item-downloads">
+      <div class="item-actions">
         ${renderDownloads(item.downloads)}
       </div>
     </article>`
@@ -143,6 +174,17 @@ function renderList(
     return
   }
   container.innerHTML = items.map((item) => renderItem(item, storeUpdatedAt)).join('')
+}
+
+function closeAllDownloadMenus(except?: HTMLElement | null) {
+  document.querySelectorAll<HTMLElement>('.dl-menu.is-open').forEach((menu) => {
+    if (except && menu === except) return
+    menu.classList.remove('is-open')
+    const toggle = menu.querySelector<HTMLButtonElement>('.dl-menu__toggle')
+    const panel = menu.querySelector<HTMLElement>('.dl-menu__panel')
+    if (toggle) toggle.setAttribute('aria-expanded', 'false')
+    if (panel) panel.hidden = true
+  })
 }
 
 function isFilterTab(value: string): value is FilterTab {
@@ -169,6 +211,33 @@ categoryNav?.addEventListener('click', (event) => {
   const target = (event.target as HTMLElement).closest<HTMLButtonElement>('.cat-btn')
   if (!target?.dataset.filter || !isFilterTab(target.dataset.filter)) return
   applyFilter(target.dataset.filter)
+})
+
+catalogList?.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement
+  const toggle = target.closest<HTMLButtonElement>('.dl-menu__toggle')
+  if (toggle) {
+    event.preventDefault()
+    const menu = toggle.closest<HTMLElement>('.dl-menu')
+    if (!menu) return
+    const open = !menu.classList.contains('is-open')
+    closeAllDownloadMenus(open ? menu : null)
+    menu.classList.toggle('is-open', open)
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false')
+    const panel = menu.querySelector<HTMLElement>('.dl-menu__panel')
+    if (panel) panel.hidden = !open
+    return
+  }
+  if (!target.closest('.dl-menu')) closeAllDownloadMenus()
+})
+
+document.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement
+  if (!target.closest('.dl-menu')) closeAllDownloadMenus()
+})
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeAllDownloadMenus()
 })
 
 applyFilter(activeTab)

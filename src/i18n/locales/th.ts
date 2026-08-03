@@ -15,6 +15,7 @@ const th: Messages = {
     privacy: 'ความเป็นส่วนตัว',
     credits: 'เครดิต',
     openOnline: 'เปิดออนไลน์',
+    download: 'ดาวน์โหลด',
     unavailable: 'ยังไม่มีตัวติดตั้ง',
     localMark: 'ประมวลผลบนอุปกรณ์',
     loading: 'กำลังโหลด…',

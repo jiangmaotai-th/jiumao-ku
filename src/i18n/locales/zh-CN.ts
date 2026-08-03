@@ -15,6 +15,7 @@ const zhCN: Messages = {
     privacy: '隐私说明',
     credits: '开源致谢',
     openOnline: '在线使用',
+    download: '下载',
     unavailable: '安装包尚未上架',
     localMark: '本地处理',
     loading: '加载中…',

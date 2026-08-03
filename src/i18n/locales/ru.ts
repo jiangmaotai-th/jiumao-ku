@@ -15,6 +15,7 @@ const ru: Messages = {
     privacy: 'Конфиденциальность',
     credits: 'Благодарности',
     openOnline: 'Открыть онлайн',
+    download: 'Скачать',
     unavailable: 'Установщик пока недоступен',
     localMark: 'На устройстве',
     loading: 'Загрузка…',

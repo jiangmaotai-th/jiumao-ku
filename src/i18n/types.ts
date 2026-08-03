@@ -35,6 +35,7 @@ export type Messages = {
     privacy: string
     credits: string
     openOnline: string
+    download: string
     unavailable: string
     localMark: string
     loading: string

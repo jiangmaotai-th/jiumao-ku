@@ -15,6 +15,7 @@ const zhTW: Messages = {
     privacy: '隱私說明',
     credits: '開源致謝',
     openOnline: '線上使用',
+    download: '下載',
     unavailable: '安裝檔尚未提供',
     localMark: '本機處理',
     loading: '載入中…',

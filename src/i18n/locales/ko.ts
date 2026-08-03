@@ -15,6 +15,7 @@ const ko: Messages = {
     privacy: '개인정보',
     credits: '크레딧',
     openOnline: '온라인에서 열기',
+    download: '다운로드',
     unavailable: '설치 파일은 아직 제공되지 않습니다',
     localMark: '기기 내 처리',
     loading: '불러오는 중…',

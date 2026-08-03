@@ -15,6 +15,7 @@ const fr: Messages = {
     privacy: 'Confidentialité',
     credits: 'Crédits',
     openOnline: 'Ouvrir en ligne',
+    download: 'Télécharger',
     unavailable: 'Installateur pas encore disponible',
     localMark: 'Sur l’appareil',
     loading: 'Chargement…',

@@ -15,6 +15,7 @@ const hi: Messages = {
     privacy: 'गोपनीयता',
     credits: 'श्रेय',
     openOnline: 'ऑनलाइन खोलें',
+    download: 'डाउनलोड',
     unavailable: 'इंस्टॉलर अभी उपलब्ध नहीं है',
     localMark: 'डिवाइस पर',
     loading: 'लोड हो रहा है…',

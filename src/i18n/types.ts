@@ -95,6 +95,9 @@ export type Messages = {
     navAll: string
     heroTitle: string
     heroLead: string
+    dailyBadge: string
+    updatedAtLabel: string
+    browseAll: string
     browseTitle: string
     browseLead: string
     searchPlaceholder: string
@@ -104,15 +107,21 @@ export type Messages = {
     channelAppStore: string
     pending: string
     hot: string
+    freeTier: string
     none: string
+    noMatch: string
     globalWeb: string
+    currentLowestRegion: string
+    viewProductDeals: string
     updatePrices: string
     updating: string
     priceUpdated: string
+    updatingChannel: string
     noPriceChannel: string
     pickRegion: string
     rank: string
     lowest: string
+    lowestTag: string
     noPlanPrice: string
     noWebDesktop: string
     unifiedStripe: string
@@ -121,14 +130,37 @@ export type Messages = {
     baseline: string
     equivalent: string
     noPrice: string
-    cnyMonth: string
-    cny: string
+    equivMonth: string
+    equiv: string
     globalUnified: string
     globalLowest: string
+    selectedRegion: string
     disclaimer: string
     loadingProduct: string
     loadingHome: string
     categoryAll: string
+    backToAll: string
+    planStructure: string
+    changeNote: string
+    tableUpdated: string
+    status: string
+    buyChannel: string
+    channelAdvice: string
+    allRegionsTop: string
+    plan: string
+    region: string
+    listPrice: string
+    relativeUs: string
+    bill: string
+    topNLowest: string
+    priceHistory: string
+    noHistory: string
+    needTwoDays: string
+    samples: string
+    appstoreRankHint: string
+    billingMonthHint: string
+    globalBenchmark: string
+    usdParityNote: string
   }
   image: {
     metaTitle: string

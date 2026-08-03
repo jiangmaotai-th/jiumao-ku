@@ -88,15 +88,14 @@ function catalogCopy(id: string) {
 }
 
 function renderSummary(summary: string[], privacy?: string): string {
-  const blocks = summary.map(
-    (p) => `<p class="item-summary">${p}</p>`,
-  )
-  if (privacy) {
-    blocks.push(
-      `<p class="item-summary item-summary--privacy">${LOCAL_MARK}${privacy}</p>`,
-    )
-  }
-  return blocks.join('')
+  const first = summary.find((p) => p.trim()) || ''
+  const blurb = first
+    ? `<p class="item-blurb" title="${first.replace(/"/g, '&quot;')}">${first}</p>`
+    : ''
+  const privacyLine = privacy
+    ? `<p class="item-privacy">${LOCAL_MARK}<span>${privacy}</span></p>`
+    : ''
+  return `${blurb}${privacyLine}`
 }
 
 function formatStoreUpdateStamp(iso?: string | null): string {
@@ -117,15 +116,14 @@ function formatStoreUpdateStamp(iso?: string | null): string {
 
 function renderItem(item: CatalogItem, storeUpdatedAt?: string | null): string {
   const copy = catalogCopy(item.id)
-  let name = copy.name
-  if (item.id === 'store-price') {
-    const stamp = formatStoreUpdateStamp(storeUpdatedAt)
-    if (stamp) name = `${copy.name}${stamp}`
-  }
+  const stamp =
+    item.id === 'store-price' ? formatStoreUpdateStamp(storeUpdatedAt) : ''
+  const stampHtml = stamp ? `<p class="item-stamp">${stamp}</p>` : ''
   return `
     <article class="catalog-item" role="listitem" data-category="${item.category}" data-app-id="${item.id}">
       <div class="item-copy">
-        <h3 class="item-name">${name}</h3>
+        <h3 class="item-name">${copy.name}</h3>
+        ${stampHtml}
         ${renderSummary(copy.summary, copy.privacy)}
       </div>
       <div class="item-downloads">

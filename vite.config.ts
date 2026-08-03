@@ -16,6 +16,7 @@ export default defineConfig({
         store: resolve(root, 'store/index.html'),
         switch: resolve(root, 'switch/index.html'),
         legal: resolve(root, 'legal/index.html'),
+        admin: resolve(root, 'admin/index.html'),
       },
     },
   },
@@ -27,6 +28,18 @@ export default defineConfig({
       },
       '/api/switch': {
         target: 'http://127.0.0.1:3193',
+        changeOrigin: true,
+      },
+      '/api/visit': {
+        target: 'http://127.0.0.1:3190',
+        changeOrigin: true,
+      },
+      '/api/event': {
+        target: 'http://127.0.0.1:3190',
+        changeOrigin: true,
+      },
+      '/api/admin': {
+        target: 'http://127.0.0.1:3190',
         changeOrigin: true,
       },
     },

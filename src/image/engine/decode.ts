@@ -5,7 +5,7 @@ import { detectInputFormat } from '../formats'
 
 async function bitmapFromImageData(imageData: ImageData): Promise<ImageBitmap> {
   if (imageData.width === 0 || imageData.height === 0) {
-    throw new Error('图片宽高异常')
+    throw new Error('Invalid image dimensions')
   }
   return createImageBitmap(imageData)
 }
@@ -18,7 +18,7 @@ async function decodeHeic(file: File): Promise<ImageBitmap> {
   })
   const blob = Array.isArray(converted) ? converted[0] : converted
   if (!blob || blob.size === 0) {
-    throw new Error('HEIC 解码结果为空')
+    throw new Error('Empty HEIC decode result')
   }
   return createImageBitmap(blob)
 }
@@ -27,14 +27,14 @@ async function decodeTiff(file: File): Promise<ImageBitmap> {
   const buffer = await file.arrayBuffer()
   const ifds = UTIF.decode(buffer)
   if (!ifds.length) {
-    throw new Error('TIFF 无可用页面')
+    throw new Error('No usable TIFF page')
   }
   UTIF.decodeImage(buffer, ifds[0])
   const rgba = UTIF.toRGBA8(ifds[0])
   const width = ifds[0].width as number
   const height = ifds[0].height as number
   if (!width || !height || !rgba?.length) {
-    throw new Error('TIFF 宽高异常')
+    throw new Error('Invalid TIFF dimensions')
   }
   const imageData = new ImageData(new Uint8ClampedArray(rgba), width, height)
   return bitmapFromImageData(imageData)
@@ -49,7 +49,7 @@ async function decodeNative(file: File): Promise<ImageBitmap> {
       const image = await new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new Image()
         img.onload = () => resolve(img)
-        img.onerror = () => reject(new Error('浏览器无法解码该图片'))
+        img.onerror = () => reject(new Error('Browser cannot decode this image'))
         img.src = url
       })
       return await createImageBitmap(image)
@@ -61,7 +61,7 @@ async function decodeNative(file: File): Promise<ImageBitmap> {
 
 export async function loadBitmap(file: File): Promise<ImageBitmap> {
   if (file.size === 0) {
-    throw new Error('输入文件大小为 0')
+    throw new Error('Input file size is 0')
   }
 
   const format = detectInputFormat(file.name)
@@ -84,6 +84,6 @@ export async function loadBitmap(file: File): Promise<ImageBitmap> {
 export async function validateDecodedBitmap(bitmap: ImageBitmap): Promise<void> {
   if (bitmap.width === 0 || bitmap.height === 0) {
     bitmap.close()
-    throw new Error('输出图片宽高异常')
+    throw new Error('Invalid output image dimensions')
   }
 }

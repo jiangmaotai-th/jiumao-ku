@@ -27,7 +27,7 @@ export async function encodeHeicBlob(
       workerInstance.removeEventListener('message', onMessage)
       workerInstance.removeEventListener('error', onError)
       if (!event.data.ok) {
-        reject(new Error(event.data.error || 'HEIC 编码失败'))
+        reject(new Error(event.data.error || 'HEIC encode failed'))
         return
       }
       resolve(new Blob([event.data.bytes], { type: 'image/heic' }))
@@ -35,7 +35,7 @@ export async function encodeHeicBlob(
     const onError = (error: ErrorEvent) => {
       workerInstance.removeEventListener('message', onMessage)
       workerInstance.removeEventListener('error', onError)
-      reject(new Error(error.message || 'HEIC Worker 异常'))
+      reject(new Error(error.message || 'HEIC worker error'))
     }
 
     workerInstance.addEventListener('message', onMessage)

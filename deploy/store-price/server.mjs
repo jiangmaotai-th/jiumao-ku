@@ -23,6 +23,7 @@ import {
   loadPrices,
   loadChannelPrices,
   upsertApp,
+  touchContentUpdatedAt,
 } from './db.mjs'
 import { ensureFx } from './fx.mjs'
 import { loadHistory } from './history.mjs'
@@ -491,6 +492,19 @@ async function handle(req, res) {
       return
     }
 
+    // Mark homepage/store title update time (call after deploying prices or content).
+    if (req.method === 'POST' && pathname === '/content-updated') {
+      const reason = (url.searchParams.get('reason') || 'deploy').slice(0, 80)
+      const at = touchContentUpdatedAt(reason)
+      sendJson(res, 200, {
+        ok: true,
+        updatedAt: at,
+        contentUpdatedAt: at,
+        reason,
+      })
+      return
+    }
+
     // 仅跑官网网页价抓取（写 web-prices.json），不强制重爬 App Store
     if (req.method === 'POST' && pathname === '/scrape-web') {
       ;(async () => {
@@ -500,6 +514,7 @@ async function handle(req, res) {
             await refreshProductChannel(id, 'web', { force: true }).catch(() => null)
             await refreshProductChannel(id, 'desktop', { force: true }).catch(() => null)
           }
+          touchContentUpdatedAt('scrape-web')
           console.log('[scrape-web] done', log.updatedProducts?.length)
         } catch (e) {
           console.error('scrape-web', e)

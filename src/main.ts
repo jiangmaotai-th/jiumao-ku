@@ -5,13 +5,26 @@ import {
   type DownloadLink,
   type FilterTab,
 } from './data/apps'
+import {
+  applyDocumentMeta,
+  applyDomI18n,
+  initLocale,
+  t,
+  tList,
+} from './i18n'
+import { mountLanguageSwitcher } from './i18n/switcher'
 import { initVisitorCounter } from './visitor'
 
-const EMPTY_HINT: Record<FilterTab, string> = {
-  all: '作品即将上架。',
-  software: '暂无软件。',
-  game: '暂无游戏。',
-  other: '暂无其他内容。',
+initLocale()
+applyDocumentMeta()
+applyDomI18n()
+mountLanguageSwitcher(document.getElementById('lang-switch'))
+
+function emptyHint(tab: FilterTab): string {
+  if (tab === 'software') return t('home.emptySoftware')
+  if (tab === 'game') return t('home.emptyGame')
+  if (tab === 'other') return t('home.emptyOther')
+  return t('home.emptyAll')
 }
 
 const platformIcon = (platform: DownloadLink['platform']): string => {
@@ -24,73 +37,154 @@ const platformIcon = (platform: DownloadLink['platform']): string => {
   return `<svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.2 8.3c0-2.1 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.7-1.3-.13-2.5.76-3.15.76-.66 0-1.67-.74-2.75-.72-1.41.02-2.72.82-3.45 2.08-1.48 2.56-.38 6.35 1.06 8.43.7 1.02 1.54 2.16 2.64 2.12 1.06-.04 1.46-.68 2.74-.68 1.27 0 1.63.68 2.76.66 1.14-.02 1.86-1.02 2.55-2.05.8-1.17 1.13-2.3 1.15-2.36-.02-.01-2.2-.84-2.22-3.34zM9.6 2.9c.57-.69.96-1.65.85-2.6-.82.03-1.81.55-2.4 1.24-.53.61-.99 1.59-.87 2.52.92.07 1.86-.47 2.42-1.16z"/></svg>`
 }
 
-function renderDownloads(links: DownloadLink[]): string {
-  return links
-    .map((link) => {
-      const available = link.available !== false
-      if (!available) {
-        return `
-      <span
-        class="download-btn download-btn--disabled"
-        aria-disabled="true"
-        title="安装包尚未上架"
-      >
+function renderOnlineButton(link: DownloadLink): string {
+  return `
+    <a class="action-btn action-btn--online" href="${link.href}">
+      ${platformIcon('web')}
+      <span>${t('common.openOnline')}</span>
+    </a>`
+}
+
+function renderDesktopOption(link: DownloadLink): string {
+  const available = link.available !== false
+  const downloadAttr =
+    available && link.filename ? ` download="${link.filename}"` : ''
+  if (!available) {
+    return `
+      <span class="dl-menu__option is-disabled" aria-disabled="true" title="${t('common.unavailable')}">
         ${platformIcon(link.platform)}
         <span>${link.label}</span>
       </span>`
-      }
+  }
+  return `
+    <a class="dl-menu__option" href="${link.href}"${downloadAttr}>
+      ${platformIcon(link.platform)}
+      <span>${link.label}</span>
+    </a>`
+}
 
-      const downloadAttr =
-        !link.openInPlace && link.filename ? ` download="${link.filename}"` : ''
-      const primary = link.openInPlace ? ' download-btn--primary' : ''
-      return `
-      <a
-        class="download-btn${primary}"
-        href="${link.href}"${downloadAttr}
-      >
-        ${platformIcon(link.platform)}
-        <span>${link.label}</span>
-      </a>`
-    })
+function renderDownloadMenu(desktopLinks: DownloadLink[]): string {
+  if (!desktopLinks.length) return ''
+  const hasAny = desktopLinks.some((l) => l.available !== false)
+  const icons = desktopLinks
+    .map((l) => `<span class="dl-menu__brand">${platformIcon(l.platform)}</span>`)
+    .join('')
+  const options = desktopLinks.map(renderDesktopOption).join('')
+  if (!hasAny) {
+    return `
+      <button type="button" class="action-btn action-btn--download is-disabled" disabled title="${t('common.unavailable')}">
+        <span class="dl-menu__brands">${icons}</span>
+        <span>${t('common.download')}</span>
+      </button>`
+  }
+  return `
+    <div class="dl-menu">
+      <button type="button" class="action-btn action-btn--download dl-menu__toggle" aria-expanded="false" aria-haspopup="true">
+        <span class="dl-menu__brands">${icons}</span>
+        <span>${t('common.download')}</span>
+      </button>
+      <div class="dl-menu__panel" hidden role="menu">
+        ${options}
+      </div>
+    </div>`
+}
+
+function renderDownloads(links: DownloadLink[]): string {
+  const online = links.filter((l) => l.platform === 'web' || l.openInPlace)
+  const desktop = links.filter((l) => l.platform === 'mac' || l.platform === 'windows')
+  // Keep a stable mac → windows order when both exist.
+  desktop.sort((a, b) => {
+    const rank = (p: string) => (p === 'mac' ? 0 : p === 'windows' ? 1 : 2)
+    return rank(a.platform) - rank(b.platform)
+  })
+  return [
+    ...online.map(renderOnlineButton),
+    renderDownloadMenu(desktop),
+  ]
+    .filter(Boolean)
     .join('')
 }
 
-/** Small "runs on this device" mark — avoid padlock (reads as paywall unlock). */
 const LOCAL_MARK = `<span class="local-mark" aria-hidden="true"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="2.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.35"/><path d="M5 14.2h6M8 11.5v2.7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/><circle cx="8" cy="7" r="1.35" fill="currentColor"/></svg></span>`
 
-function renderSummary(summary: string): string {
-  return summary
-    .split(/\n+/)
-    .map((p) => p.trim())
-    .filter(Boolean)
-    .map((p) => {
-      const cleaned = p.replace(/^🔒\s*/, '')
-      const privacy = cleaned.includes('本地处理')
-      const body = privacy ? `${LOCAL_MARK}${cleaned}` : cleaned
-      return `<p class="item-summary${privacy ? ' item-summary--privacy' : ''}">${body}</p>`
-    })
-    .join('')
+function catalogCopy(id: string) {
+  const name = t(`catalog.${id}.name`)
+  const summary = tList(`catalog.${id}.summary`)
+  const privacy = t(`catalog.${id}.privacy`)
+  return {
+    name: name.startsWith('catalog.') ? id : name,
+    summary,
+    privacy: privacy.startsWith('catalog.') ? '' : privacy,
+  }
 }
 
-function renderItem(item: CatalogItem): string {
+function renderSummary(summary: string[], privacy?: string): string {
+  const first = summary.find((p) => p.trim()) || ''
+  const blurb = first
+    ? `<p class="item-blurb" title="${first.replace(/"/g, '&quot;')}">${first}</p>`
+    : ''
+  const privacyLine = privacy
+    ? `<p class="item-privacy">${LOCAL_MARK}<span>${privacy}</span></p>`
+    : ''
+  return `${blurb}${privacyLine}`
+}
+
+function formatStoreUpdateStamp(iso?: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const time = d.toLocaleString(undefined, {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+  return t('store.dailyBadge', { time })
+}
+
+function renderItem(item: CatalogItem, storeUpdatedAt?: string | null): string {
+  const copy = catalogCopy(item.id)
+  const stamp =
+    item.id === 'store-price' ? formatStoreUpdateStamp(storeUpdatedAt) : ''
+  const stampHtml = stamp ? `<p class="item-stamp">${stamp}</p>` : ''
   return `
-    <article class="catalog-item" role="listitem" data-category="${item.category}">
+    <article class="catalog-item" role="listitem" data-category="${item.category}" data-app-id="${item.id}">
       <div class="item-copy">
-        <h3 class="item-name">${item.name}</h3>
-        ${renderSummary(item.summary)}
+        <h3 class="item-name">${copy.name}</h3>
+        ${stampHtml}
+        ${renderSummary(copy.summary, copy.privacy)}
       </div>
-      <div class="item-downloads">
+      <div class="item-actions">
         ${renderDownloads(item.downloads)}
       </div>
     </article>`
 }
 
-function renderList(container: HTMLElement, items: CatalogItem[], emptyText: string) {
+function renderList(
+  container: HTMLElement,
+  items: CatalogItem[],
+  emptyText: string,
+  storeUpdatedAt?: string | null,
+) {
   if (items.length === 0) {
     container.innerHTML = `<p class="empty-state">${emptyText}</p>`
     return
   }
-  container.innerHTML = items.map(renderItem).join('')
+  container.innerHTML = items.map((item) => renderItem(item, storeUpdatedAt)).join('')
+}
+
+function closeAllDownloadMenus(except?: HTMLElement | null) {
+  document.querySelectorAll<HTMLElement>('.dl-menu.is-open').forEach((menu) => {
+    if (except && menu === except) return
+    menu.classList.remove('is-open')
+    const toggle = menu.querySelector<HTMLButtonElement>('.dl-menu__toggle')
+    const panel = menu.querySelector<HTMLElement>('.dl-menu__panel')
+    if (toggle) toggle.setAttribute('aria-expanded', 'false')
+    if (panel) panel.hidden = true
+  })
 }
 
 function isFilterTab(value: string): value is FilterTab {
@@ -100,13 +194,16 @@ function isFilterTab(value: string): value is FilterTab {
 const catalogList = document.querySelector<HTMLElement>('#catalog-list')
 const categoryNav = document.querySelector<HTMLElement>('#category-nav')
 const yearEl = document.querySelector<HTMLElement>('#year')
+let activeTab: FilterTab = 'all'
+let storeUpdatedAt: string | null = null
 
 function applyFilter(tab: FilterTab) {
+  activeTab = tab
   categoryNav?.querySelectorAll<HTMLButtonElement>('.cat-btn').forEach((btn) => {
     btn.classList.toggle('is-active', btn.dataset.filter === tab)
   })
   if (catalogList) {
-    renderList(catalogList, filterCatalog(tab), EMPTY_HINT[tab])
+    renderList(catalogList, filterCatalog(tab), emptyHint(tab), storeUpdatedAt)
   }
 }
 
@@ -116,7 +213,43 @@ categoryNav?.addEventListener('click', (event) => {
   applyFilter(target.dataset.filter)
 })
 
-applyFilter('all')
+catalogList?.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement
+  const toggle = target.closest<HTMLButtonElement>('.dl-menu__toggle')
+  if (toggle) {
+    event.preventDefault()
+    const menu = toggle.closest<HTMLElement>('.dl-menu')
+    if (!menu) return
+    const open = !menu.classList.contains('is-open')
+    closeAllDownloadMenus(open ? menu : null)
+    menu.classList.toggle('is-open', open)
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false')
+    const panel = menu.querySelector<HTMLElement>('.dl-menu__panel')
+    if (panel) panel.hidden = !open
+    return
+  }
+  if (!target.closest('.dl-menu')) closeAllDownloadMenus()
+})
+
+document.addEventListener('click', (event) => {
+  const target = event.target as HTMLElement
+  if (!target.closest('.dl-menu')) closeAllDownloadMenus()
+})
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') closeAllDownloadMenus()
+})
+
+applyFilter(activeTab)
+
+void fetch('/api/store/home')
+  .then((r) => (r.ok ? r.json() : null))
+  .then((data: { updatedAt?: string | null } | null) => {
+    if (!data?.updatedAt) return
+    storeUpdatedAt = data.updatedAt
+    applyFilter(activeTab)
+  })
+  .catch(() => {})
 
 if (yearEl) {
   yearEl.textContent = String(new Date().getFullYear())

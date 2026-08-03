@@ -23,6 +23,20 @@ sudo systemctl enable --now maotaiworks-store-refresh.timer
 
 定时刷新：`maotaiworks-store-refresh.timer` 每天 **00:00（Asia/Shanghai）** 执行 `refresh-seeds?force=1`。
 
+### 首页「更新时间」戳
+
+首页 / `/store/` 标题后的时间来自 API 的 `updatedAt`（优先 `meta.contentUpdatedAt`）。
+
+部署 AI 订阅价格或相关内容后，执行其一即可让时间戳跟上：
+
+```bash
+curl -sS -X POST 'http://127.0.0.1:3192/api/store/content-updated?reason=deploy'
+# 或
+node /opt/maotaiworks/store-price/mark-content-updated.mjs deploy
+```
+
+每日 `refresh-seeds` / `scrape-web` 成功后也会自动刷新该时间。
+
 ## 网页价流水线（方案 A）
 
 1. 从 `official-web-prices.mjs` **种子**补齐缺失产品套餐  

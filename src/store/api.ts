@@ -248,8 +248,22 @@ export function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-export const CHANNEL_LABELS: Record<string, string> = {
-  appstore: 'App Store',
-  web: '网页',
-  desktop: '桌面',
+export type FxDoc = {
+  updatedAt?: string
+  base: string
+  rates: Record<string, number>
+}
+
+export function fetchFx() {
+  return get<FxDoc>('/fx')
+}
+
+export function channelLabel(
+  channel: string | null | undefined,
+  t: (key: string) => string,
+): string {
+  if (channel === 'web') return t('store.channelWeb')
+  if (channel === 'desktop') return t('store.channelDesktop')
+  if (channel === 'appstore') return t('store.channelAppStore')
+  return channel || ''
 }

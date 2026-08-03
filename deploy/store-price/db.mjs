@@ -91,11 +91,36 @@ export function saveChannelPrices(productId, channel, doc) {
 }
 
 export function loadMeta() {
-  return readJson(metaPath(), { lastRefreshAt: null, refreshing: null })
+  return readJson(metaPath(), {
+    lastRefreshAt: null,
+    contentUpdatedAt: null,
+    refreshing: null,
+  })
 }
 
 export function saveMeta(doc) {
   atomicWrite(metaPath(), doc)
+}
+
+/**
+ * Bump the public “更新时间” stamp shown on the homepage / store title.
+ * Call this whenever AI subscription prices or related content are deployed or refreshed.
+ */
+export function touchContentUpdatedAt(reason = 'update') {
+  const meta = loadMeta()
+  const now = new Date().toISOString()
+  const next = {
+    ...meta,
+    contentUpdatedAt: now,
+    contentUpdatedReason: String(reason || 'update'),
+  }
+  saveMeta(next)
+  return now
+}
+
+export function contentUpdatedAt() {
+  const meta = loadMeta()
+  return meta.contentUpdatedAt || meta.lastRefreshAt || null
 }
 
 export function upsertApp(app) {

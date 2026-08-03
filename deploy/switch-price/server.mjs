@@ -29,6 +29,7 @@ import {
   refreshSeeds,
   refreshState,
   searchGames,
+  backfillMissingIcons,
 } from './refresh.mjs'
 
 const PORT = Number(process.env.PORT || 3193)
@@ -288,4 +289,9 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`switch-price listening on 127.0.0.1:${PORT} data=${DATA_DIR}`)
+  backfillMissingIcons()
+    .then((n) => {
+      if (n) console.log(`backfilled ${n} missing game icons`)
+    })
+    .catch((e) => console.warn('icon backfill', e.message))
 })

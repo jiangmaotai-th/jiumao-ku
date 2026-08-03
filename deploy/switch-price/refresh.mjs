@@ -18,6 +18,7 @@ import {
   fetchPricesForCountry,
   nsuidForRegion,
   searchAllRegions,
+  searchEurope,
 } from './nintendo.mjs'
 import { HOT_TOP10, SEED_GAMES } from './seeds.mjs'
 
@@ -323,4 +324,58 @@ export async function searchGames(q) {
     mapped.push(await ensureGameFromSearch(hit))
   }
   return mapped
+}
+
+function gameIdSet(game) {
+  return new Set(
+    [
+      game.gameId,
+      game.nsuids?.na,
+      game.nsuids?.eu,
+      game.nsuids?.jp,
+      game.nsuids?.hk,
+      game.nsuids?.kr,
+    ]
+      .filter(Boolean)
+      .map(String),
+  )
+}
+
+/**
+ * Fill blank covers from EU catalog (common for Switch 2 / newly indexed titles).
+ */
+export async function backfillMissingIcons({ limit = 24 } = {}) {
+  const missing = loadGames().items.filter((g) => !String(g.icon || '').trim())
+  let filled = 0
+  for (const game of missing.slice(0, limit)) {
+    try {
+      const hits = await searchEurope(game.name || game.nameZh || '', 12)
+      const ids = gameIdSet(game)
+      const hit =
+        hits.find((h) => {
+          const hid = new Set(
+            [h.gameId, ...Object.values(h.nsuids || {})]
+              .filter(Boolean)
+              .map(String),
+          )
+          for (const id of ids) if (hid.has(id)) return true
+          return false
+        }) ||
+        hits.find(
+          (h) =>
+            String(h.name || '').toLowerCase() ===
+            String(game.name || '').toLowerCase(),
+        )
+      if (!hit?.icon) continue
+      upsertGame({
+        gameId: game.gameId,
+        icon: hit.icon,
+        nsuids: { ...(game.nsuids || {}), ...(hit.nsuids || {}) },
+      })
+      filled += 1
+    } catch (e) {
+      console.warn('icon backfill', game.gameId, e.message)
+    }
+  }
+  return filled
 }

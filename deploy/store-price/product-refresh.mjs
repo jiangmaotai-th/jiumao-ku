@@ -17,6 +17,7 @@ import {
   saveChannelPrices,
   saveMeta,
   upsertApp,
+  touchContentUpdatedAt,
 } from './db.mjs'
 import { appendHistory, priceTrendFromHistory } from './history.mjs'
 import { ensureFx } from './fx.mjs'
@@ -368,10 +369,16 @@ export function homeAiHighlights() {
   }).filter(Boolean)
 }
 
-/** Latest price update time across hot products + meta.lastRefreshAt. */
+/**
+ * Public stamp for homepage / store title.
+ * Prefer the newest of contentUpdatedAt (deploy/content), lastRefreshAt, and card prices.
+ */
 export function homeUpdatedAt(cards) {
   const meta = loadMeta()
-  let latest = meta.lastRefreshAt || null
+  let latest = null
+  for (const t of [meta.contentUpdatedAt, meta.lastRefreshAt]) {
+    if (t && (!latest || t > latest)) latest = t
+  }
   for (const c of cards || []) {
     if (c?.updatedAt && (!latest || c.updatedAt > latest)) latest = c.updatedAt
   }
@@ -447,6 +454,8 @@ export async function refreshAiSeeds({ force = false, limit } = {}) {
     ...loadMeta(),
     refreshing: null,
     lastRefreshAt: new Date().toISOString(),
+    contentUpdatedAt: new Date().toISOString(),
+    contentUpdatedReason: 'refresh-seeds',
     lastWebScrapeAt: scrapeLog?.finishedAt || null,
     lastWebScrapeUpdated: scrapeLog?.updatedProducts || [],
   })

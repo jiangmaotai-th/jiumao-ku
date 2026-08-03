@@ -81,8 +81,15 @@ export function upsertGame(game) {
   const doc = loadGames()
   const id = String(game.gameId)
   const idx = doc.items.findIndex((a) => String(a.gameId) === id)
-  if (idx >= 0) doc.items[idx] = { ...doc.items[idx], ...game, gameId: id }
-  else doc.items.push({ ...game, gameId: id })
+  if (idx >= 0) {
+    const prev = doc.items[idx]
+    const next = { ...prev, ...game, gameId: id }
+    // Never blank out a known cover with an empty string from a partial update.
+    if (!next.icon && prev.icon) next.icon = prev.icon
+    doc.items[idx] = next
+  } else {
+    doc.items.push({ ...game, gameId: id })
+  }
   doc.updatedAt = new Date().toISOString()
   saveGames(doc)
   return doc.items.find((a) => String(a.gameId) === id)

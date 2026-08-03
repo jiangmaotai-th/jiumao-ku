@@ -5,6 +5,7 @@ import {
 } from '../formats'
 import { loadBitmap, validateDecodedBitmap } from './decode'
 import { encodeHeicBlob } from './heicEncode'
+import { t } from '../../i18n'
 
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`
@@ -66,16 +67,16 @@ async function canvasToBlob(
 ): Promise<Blob> {
   if (format === 'BMP') {
     const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('无法读取画布像素')
+    if (!ctx) throw new Error('Unable to read canvas pixels')
     return encodeBmp(ctx.getImageData(0, 0, canvas.width, canvas.height))
   }
 
   if (format === 'HEIC') {
     const ctx = canvas.getContext('2d')
-    if (!ctx) throw new Error('无法读取画布像素')
+    if (!ctx) throw new Error('Unable to read canvas pixels')
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
     const blob = await encodeHeicBlob(imageData, quality)
-    if (!blob.size) throw new Error('HEIC 编码结果为空')
+    if (!blob.size) throw new Error('Empty HEIC encode result')
     return blob
   }
 
@@ -86,7 +87,7 @@ async function canvasToBlob(
   })
 
   if (!blob || blob.size === 0) {
-    throw new Error(`浏览器无法编码为 ${format}`)
+    throw new Error(`Browser cannot encode ${format}`)
   }
   return blob
 }
@@ -102,7 +103,7 @@ function drawBitmap(
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('无法创建画布')
+  if (!ctx) throw new Error('Unable to create canvas')
 
   if (flattenWhite) {
     ctx.fillStyle = '#ffffff'
@@ -164,10 +165,10 @@ async function validateOutputBlob(
   height: number,
 ): Promise<void> {
   if (!blob || blob.size === 0) {
-    throw new Error('输出文件大小为 0')
+    throw new Error('Output file size is 0')
   }
   if (width === 0 || height === 0) {
-    throw new Error('输出图片宽高异常')
+    throw new Error('Invalid output image dimensions')
   }
 
   // HEIC may not decode via createImageBitmap in all browsers; size/dims already checked.
@@ -219,7 +220,7 @@ export async function convertImageFile(
   file: File,
   options: ConvertOptions,
 ): Promise<ConvertedFile> {
-  if (file.size === 0) throw new Error('输入文件大小为 0')
+  if (file.size === 0) throw new Error('Input file size is 0')
 
   const bitmap = await loadBitmap(file)
   try {
@@ -257,13 +258,13 @@ export async function convertImageFile(
       }
     }
 
-    if (!best) throw new Error('转换失败：未生成文件')
+    if (!best) throw new Error(t('image.errorNoOutput'))
     options.onPhase?.('compressing', 95)
     return {
       ...best,
       warning: lossy
-        ? '已降到最低质量仍超过目标大小；请允许缩小图片尺寸或提高目标大小'
-        : '无损格式超过目标大小；请允许缩小图片尺寸、提高目标大小，或改用有损格式',
+        ? t('image.warnStillOverTarget')
+        : t('image.warnLosslessOverTarget'),
     }
   } finally {
     bitmap.close()
@@ -301,7 +302,7 @@ export async function previewImageSize(
 
     return {
       size: first.size,
-      warning: '预估仍超目标；可降低质量或勾选允许缩小尺寸',
+      warning: t('image.warnEstimateOverTarget'),
     }
   } finally {
     bitmap.close()

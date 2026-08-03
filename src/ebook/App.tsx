@@ -71,15 +71,15 @@ export function App() {
     const remote = needsRemoteConvert(preset.from, preset.to)
     setBanner(
       remote
-        ? `已选择 ${preset.label}（Calibre 完整转换，经服务器瞬时处理）`
-        : `已选择 ${preset.label}`,
+        ? t('ebook.bannerPresetRemote', { label: preset.label })
+        : t('ebook.bannerPreset', { label: preset.label }),
     )
   }
 
   const swap = () => {
     if (from === 'auto') return
     if (!OUTPUT_OPTIONS.includes(from as EbookFormat)) {
-      setBanner('当前输入格式不能作为输出，请改选手动方向。')
+      setBanner(t('ebook.bannerSwapUnsupported'))
       return
     }
     const nextFrom = to
@@ -97,16 +97,21 @@ export function App() {
     for (const file of files) {
       const detected = detectFormat(file.name)
       if (!detected) {
-        setBanner(`无法识别格式：${file.name}`)
+        setBanner(t('ebook.bannerUnknownFormat', { file: file.name }))
         continue
       }
       const inputFormat = from === 'auto' ? detected : from
       if (from !== 'auto' && detected !== from) {
-        setBanner(`请选择 ${FORMAT_LABEL[from]} 文件（当前：${file.name}）`)
+        setBanner(
+          t('ebook.bannerSelectFormatFile', {
+            format: FORMAT_LABEL[from],
+            file: file.name,
+          }),
+        )
         continue
       }
       if (inputFormat === to) {
-        setBanner('输入与输出格式相同，请更换输出格式。')
+        setBanner(t('ebook.bannerSameFormat'))
         continue
       }
       created.push({
@@ -129,10 +134,10 @@ export function App() {
     )
     setBanner(
       anyOcr
-        ? `已添加 ${created.length} 个文件，检测到扫描版 PDF，开始 OCR + 转换…`
+        ? t('ebook.bannerAddedOcr', { count: created.length })
         : anyRemote
-          ? `已添加 ${created.length} 个文件，开始 Calibre 完整转换…`
-          : `已添加 ${created.length} 个文件，开始本地转换…`,
+          ? t('ebook.bannerAddedRemote', { count: created.length })
+          : t('ebook.bannerAddedLocal', { count: created.length }),
     )
     for (const task of created) {
       await runTask(task)
@@ -162,20 +167,35 @@ export function App() {
             : t,
         ),
       )
-      setBanner('转换完成：列表已显示输出文件')
+      setBanner(t('ebook.bannerCompleted'))
     } catch (e) {
+      const message = e instanceof Error ? e.message : t('ebook.bannerFailed')
       setTasks((prev) =>
         prev.map((t) =>
           t.id === task.id
             ? {
                 ...t,
                 status: 'failed',
-                error: e instanceof Error ? e.message : '转换失败',
+                error: message,
               }
             : t,
         ),
       )
-      setBanner(e instanceof Error ? e.message : '转换失败')
+      setBanner(message)
+    }
+  }
+
+  const statusLabel = (status: TaskStatus) => {
+    switch (status) {
+      case 'running':
+        return t('ebook.statusRunning')
+      case 'completed':
+        return t('ebook.statusDone')
+      case 'failed':
+        return t('ebook.statusFailed')
+      case 'ready':
+      default:
+        return t('ebook.statusIdle')
     }
   }
 
@@ -234,9 +254,9 @@ export function App() {
           </div>
         </section>
 
-        <section className="controls" aria-label="转换方向">
+        <section className="controls" aria-label={t('ebook.directionAria')}>
           <div className="field">
-            <label htmlFor="from">输入</label>
+            <label htmlFor="from">{t('ebook.fromLabel')}</label>
             <select
               id="from"
               value={from}
@@ -245,7 +265,7 @@ export function App() {
                 setPresetId(null)
               }}
             >
-              <option value="auto">自动识别</option>
+              <option value="auto">{t('ebook.autoDetect')}</option>
               {INPUT_OPTIONS.map((fmt) => (
                 <option key={fmt} value={fmt}>
                   {FORMAT_LABEL[fmt]}
@@ -254,12 +274,18 @@ export function App() {
             </select>
           </div>
 
-          <button type="button" className="swap" onClick={swap} title="交换" aria-label="交换输入输出">
+          <button
+            type="button"
+            className="swap"
+            onClick={swap}
+            title={t('ebook.swapTitle')}
+            aria-label={t('ebook.swapAria')}
+          >
             ↔
           </button>
 
           <div className="field">
-            <label htmlFor="to">输出</label>
+            <label htmlFor="to">{t('ebook.toLabel')}</label>
             <select
               id="to"
               value={to}
@@ -277,7 +303,7 @@ export function App() {
           </div>
         </section>
 
-        <p className="section-label">常用方向</p>
+        <p className="section-label">{t('ebook.quickDirections')}</p>
         <div className="quick-row">
           {QUICK_PRESETS.map((preset) => (
             <button
@@ -291,9 +317,9 @@ export function App() {
           ))}
         </div>
 
-        <p className="section-label">转换结果</p>
+        <p className="section-label">{t('ebook.results')}</p>
         {tasks.length === 0 ? (
-          <p className="empty">还没有任务。转换完成后，这里会显示输出文件名和大小。</p>
+          <p className="empty">{t('ebook.emptyState')}</p>
         ) : (
           <div className="tasks">
             {tasks.map((task) => {
@@ -304,7 +330,7 @@ export function App() {
                     <p className="task-name">{done ? task.outputName : task.file.name}</p>
                     <p className="task-meta">
                       {done
-                        ? `${formatBytes(task.outputSize ?? 0)} · 输出 · ${FORMAT_LABEL[task.from]} → ${FORMAT_LABEL[task.to]}`
+                        ? `${formatBytes(task.outputSize ?? 0)} · ${t('ebook.outputMetaLabel')} · ${FORMAT_LABEL[task.from]} → ${FORMAT_LABEL[task.to]}`
                         : `${formatBytes(task.file.size)} · ${FORMAT_LABEL[task.from]} → ${FORMAT_LABEL[task.to]}`}
                       {task.warning ? ` · ${task.warning}` : ''}
                       {task.error ? ` · ${task.error}` : ''}
@@ -322,13 +348,7 @@ export function App() {
                               : ''
                       }`}
                     >
-                      {task.status === 'running'
-                        ? '转换中'
-                        : task.status === 'completed'
-                          ? '完成'
-                          : task.status === 'failed'
-                            ? '失败'
-                            : '就绪'}
+                      {statusLabel(task.status)}
                     </span>
                     {done ? (
                       <button
@@ -340,7 +360,7 @@ export function App() {
                           }
                         }}
                       >
-                        下载
+                        {t('ebook.download')}
                       </button>
                     ) : null}
                     <button
@@ -348,7 +368,7 @@ export function App() {
                       className="btn ghost"
                       onClick={() => setTasks((prev) => prev.filter((t) => t.id !== task.id))}
                     >
-                      移除
+                      {t('ebook.remove')}
                     </button>
                   </div>
                 </article>
@@ -367,17 +387,16 @@ export function App() {
               <circle cx="8" cy="7" r="1.35" fill="currentColor" />
             </svg>
           </span>
-          EPUB / PDF / TXT / DOCX 本地处理，不上传。涉及 MOBI / AZW3
-          的互转均用 Calibre 完整转换。扫描版 PDF（几乎无文字层）转
-          EPUB/MOBI/AZW3/TXT 时会先经服务器 OCR（中英）再转换，处理完即删。
-          单文件建议不超过 80 页；模糊拍照稿识别率会下降。
+          {t('ebook.privacyNote')}
         </p>
 
         <footer className="foot">
-          <span>魔书 · 九猫库</span>
-          <a href="/moyee/">魔叶视频转换</a>
-          <a href="/legal/#privacy">隐私说明</a>
-          <a href="/legal/#terms">使用条款</a>
+          <span>
+            {t('ebook.heroTitle')} · {t('common.brand')}
+          </span>
+          <a href="/moyee/">{t('ebook.moyeeLink')}</a>
+          <a href="/legal/#privacy">{t('common.privacy')}</a>
+          <a href="/legal/#terms">{t('common.terms')}</a>
         </footer>
       </div>
     </>

@@ -209,6 +209,46 @@ export type Messages = {
     retryFailed: string
     cancel: string
     privacyNote: string
+    initialNotice: string
+    selectFiles: string
+    selectFolder: string
+    emptyFileError: string
+    unsupportedFormatError: string
+    addedFilesMessage: string
+    outputValidationFailed: string
+    cancelRequested: string
+    conversionComplete: string
+    autoDownloadFailed: string
+    downloadFailed: string
+    catBannerAria: string
+    catBannerAlt: string
+    catAge: string
+    emptyList: string
+    fileSummaryTotal: string
+    fileSummarySelected: string
+    fileSummaryRecent: string
+    selectAllVisible: string
+    selectFile: string
+    fileName: string
+    fileFormat: string
+    originalSize: string
+    previewSize: string
+    status: string
+    progress: string
+    noteError: string
+    calculating: string
+    previewFailed: string
+    custom: string
+    autoDownload: string
+    localConversion: string
+    supportedFormatsHint: string
+    saveByDownload: string
+    saveByDownloadHint: string
+    warnStillOverTarget: string
+    warnLosslessOverTarget: string
+    warnEstimateOverTarget: string
+    errorNoOutput: string
+    errorGeneric: string
   }
   ebook: {
     metaTitle: string
@@ -219,6 +259,14 @@ export type Messages = {
     dropHint: string
     fromLabel: string
     toLabel: string
+    directionAria: string
+    autoDetect: string
+    swapTitle: string
+    swapAria: string
+    quickDirections: string
+    results: string
+    emptyState: string
+    outputMetaLabel: string
     addFiles: string
     privacyNote: string
     statusIdle: string
@@ -227,6 +275,19 @@ export type Messages = {
     statusFailed: string
     download: string
     clearDone: string
+    remove: string
+    moyeeLink: string
+    bannerPreset: string
+    bannerPresetRemote: string
+    bannerSwapUnsupported: string
+    bannerUnknownFormat: string
+    bannerSelectFormatFile: string
+    bannerSameFormat: string
+    bannerAddedOcr: string
+    bannerAddedRemote: string
+    bannerAddedLocal: string
+    bannerCompleted: string
+    bannerFailed: string
   }
   moyee: {
     metaTitle: string
@@ -246,6 +307,109 @@ export type Messages = {
     engineReady: string
     privacyNote: string
     noJobs: string
+    dropMergeHint: string
+    dropMusicHint: string
+    statusReady: string
+    statusCompleted: string
+    statusFailed: string
+    audioBadge: string
+    outputMarker: string
+    download: string
+    remove: string
+    downloadResult: string
+    startAll: string
+    startMerge: string
+    webGuideTitle: string
+    webGuideLead: string
+    settingsTitle: string
+    settingsNoSelection: string
+    footerBrand: string
+    preview: string
+    mergeHint: string
+    compressTitle: string
+    modeLabel: string
+    compressStandard: string
+    compressHighQuality: string
+    compressMaxCompress: string
+    qualityLabel: string
+    crfHint: string
+    extractTitle: string
+    extractAudio: string
+    extractGif: string
+    extractCover: string
+    platformPresets: string
+    platformSpec: string
+    platformCustom: string
+    platformSocial: string
+    platformSeller: string
+    formatTitle: string
+    container: string
+    audioBitrate: string
+    sampleRate: string
+    original: string
+    originalResolution: string
+    width: string
+    height: string
+    timeRange: string
+    trimStart: string
+    trimEnd: string
+    clearTrim: string
+    picture: string
+    rotate: string
+    hFlip: string
+    vFlip: string
+    aspectMode: string
+    aspectKeep: string
+    aspectCrop: string
+    aspectStretch: string
+    watermarkLoudness: string
+    enableTextWatermark: string
+    watermarkText: string
+    watermarkPosition: string
+    positionTl: string
+    positionTr: string
+    positionBl: string
+    positionBr: string
+    positionCenter: string
+    loudnorm: string
+    manualTitle: string
+    manualIntro: string
+    manualFeatureTitle: string
+    manualFeatures: string[]
+    manualDifferenceTitle: string
+    manualDifferences: string[]
+    manualDownloadPrefix: string
+    manualDownloadSuffix: string
+    bannerFilesAdded: string
+    bannerRunning: string
+    bannerCompleted: string
+    bannerMerging: string
+    bannerMergeCompleted: string
+    errorEngineLoadFailed: string
+    errorConvertFailed: string
+    errorMergeNeedFiles: string
+    errorMergeFailed: string
+    plat: {
+      'youtube-1080': string
+      'youtube-4k': string
+      'youtube-shorts': string
+      'instagram-reels': string
+      'instagram-feed': string
+      'instagram-square': string
+      tiktok: string
+      douyin: string
+      xiaohongshu: string
+      kuaishou: string
+      toutiao: string
+      weibo: string
+      'facebook-reels': string
+      'linkedin-video': string
+      'pinterest-video': string
+      'wechat-channels': string
+      'taobao-seller': string
+      'jd-seller': string
+      'xiaohongshu-seller': string
+    }
   }
   switchApp: {
     metaTitle: string
@@ -254,10 +418,51 @@ export type Messages = {
     navSearch: string
     heroTitle: string
     heroLead: string
+    browseGames: string
+    popularDigitalTitle: string
+    homeEmpty: string
+    lowestWithRegion: string
+    viewLowPriceRegions: string
+    saveVsUs: string
     browseTitle: string
     browseLead: string
     searchPlaceholder: string
+    pricedRegions: string
+    lowPriceRegions: string
+    noSearchResults: string
+    browseEmpty: string
     updatePrices: string
+    priceUpdated: string
+    partialNoDigitalPrices: string
+    queuedFetching: string
+    noPriceData: string
+    fetchingEShopPrices: string
+    fetchTimeout: string
+    initialFetch: string
+    refreshStarted: string
+    gameNotFound: string
+    backToBrowse: string
+    gameCategoryFallback: string
+    pickRegion: string
+    pickRegionAria: string
+    allRegionsTop: string
+    selectedRegion: string
+    storefrontPrice: string
+    globalRank: string
+    currentLowest: string
+    onSale: string
+    noSelectedRegionPrice: string
+    digitalTopN: string
+    rankHint: string
+    selectedHighlightHint: string
+    loadingPrices: string
+    noPrices: string
+    rank: string
+    region: string
+    listPrice: string
+    equivCny: string
+    lowestTag: string
+    topNLowest: string
     disclaimer: string
     loadingGame: string
     loadingHome: string

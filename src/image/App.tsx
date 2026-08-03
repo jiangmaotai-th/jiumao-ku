@@ -53,7 +53,10 @@ const MAX_RENDERED_ROWS = 600
 const MAX_VISIBLE_HISTORY = 600
 const MAX_PREVIEW_BATCH = 24
 
+type Translate = (path: string, vars?: Record<string, string | number>) => string
+
 export function App() {
+  const { t } = useT()
   const [files, setFiles] = useState<AppFile[]>([])
   const [outputFormat, setOutputFormat] = useState<WebOutputFormat>('JPEG')
   const [targetSizeMb, setTargetSizeMb] = useState(10)
@@ -63,9 +66,7 @@ export function App() {
   const [allowResize, setAllowResize] = useState(false)
   const [autoDownload, setAutoDownload] = useState(true)
   const [busy, setBusy] = useState(false)
-  const [messages, setMessages] = useState<string[]>([
-    '网页版本地转换：完成后自动下载（单文件直接下，多文件打 ZIP）。需要选输出文件夹请用 macOS 桌面 Pro。',
-  ])
+  const [messages, setMessages] = useState<string[]>([t('image.initialNotice')])
   const cancelRef = useRef(false)
   const previewRunRef = useRef(0)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -180,12 +181,12 @@ export function App() {
 
     for (const file of incoming) {
       if (file.size === 0) {
-        rejected.push(`${file.name} 文件为空`)
+        rejected.push(t('image.emptyFileError', { name: file.name }))
         continue
       }
       const format = detectInputFormat(file.name)
       if (!format) {
-        rejected.push(`${file.name} 不是支持的图片格式`)
+        rejected.push(t('image.unsupportedFormatError', { name: file.name }))
         continue
       }
       const relativePath =
@@ -217,7 +218,7 @@ export function App() {
     })
 
     setMessages([
-      ...(accepted.length > 0 ? [`已加入 ${accepted.length} 个文件。`] : []),
+      ...(accepted.length > 0 ? [t('image.addedFilesMessage', { count: accepted.length })] : []),
       ...rejected.slice(0, 5),
     ])
   }
@@ -313,7 +314,7 @@ export function App() {
           }
 
           if (!result.blob || result.size === 0 || result.width === 0 || result.height === 0) {
-            throw new Error('输出校验失败')
+            throw new Error(t('image.outputValidationFailed'))
           }
 
           const relativePath = buildOutputRelativePath(job.file, result.filename, outputFormat)
@@ -363,18 +364,20 @@ export function App() {
     setBusy(false)
 
     if (cancelRef.current) {
-      setMessages(['已请求取消转换。'])
+      setMessages([t('image.cancelRequested')])
       return
     }
 
-    setMessages([`转换完成：成功 ${success} 个，失败 ${failed} 个。`])
+    setMessages([t('image.conversionComplete', { success, failed })])
     if (autoDownload && completedArtifacts.length > 0) {
       try {
         await downloadArtifacts(completedArtifacts)
       } catch (error) {
         setMessages((current) => [
           ...current,
-          `自动下载失败：${String(error instanceof Error ? error.message : error)}`,
+          t('image.autoDownloadFailed', {
+            error: String(error instanceof Error ? error.message : error),
+          }),
         ])
       }
     }
@@ -396,7 +399,7 @@ export function App() {
 
   const cancelConvert = () => {
     cancelRef.current = true
-    setMessages(['已请求取消转换。'])
+    setMessages([t('image.cancelRequested')])
   }
 
   const clearFiles = () => {
@@ -412,7 +415,11 @@ export function App() {
     try {
       await downloadArtifacts(ready)
     } catch (error) {
-      setMessages([`下载失败：${String(error instanceof Error ? error.message : error)}`])
+      setMessages([
+        t('image.downloadFailed', {
+          error: String(error instanceof Error ? error.message : error),
+        }),
+      ])
     }
   }
 
@@ -427,8 +434,13 @@ export function App() {
     files.length > MAX_RENDERED_ROWS ? files.slice(-MAX_RENDERED_ROWS) : files
   const allVisibleSelected =
     visibleFiles.length > 0 && visibleFiles.every((file) => file.selected)
-
-  const { t } = useT()
+  const fileSummaryParts = [
+    t('image.fileSummaryTotal', { count: files.length }),
+    ...(selectedCount > 0 ? [t('image.fileSummarySelected', { count: selectedCount })] : []),
+    ...(files.length > visibleFiles.length
+      ? [t('image.fileSummaryRecent', { count: visibleFiles.length })]
+      : []),
+  ]
 
   return (
     <main className="app-shell">
@@ -459,13 +471,13 @@ export function App() {
 
       <section className="workspace">
         <div className="main-panel">
-          <section className="cat-banner" aria-label="五只猫">
+          <section className="cat-banner" aria-label={t('image.catBannerAria')}>
             <div className="cat-banner-frame">
-              <img src="/image/cat-banner.png" alt="五只猫：小瓷、杨大宝、肝菲、杨小美、杨小午" />
+              <img src="/image/cat-banner.png" alt={t('image.catBannerAlt')} />
               <ul className="cat-memorial" aria-hidden="true">
                 <li className="cat-1">
                   <span className="cat-name">小瓷</span>
-                  <span className="cat-meta">19岁</span>
+                  <span className="cat-meta">{t('image.catAge', { n: 19 })}</span>
                 </li>
                 <li className="cat-2">
                   <span className="cat-name">杨大宝</span>
@@ -495,8 +507,8 @@ export function App() {
             }}
           >
             <div>
-              <h2>拖拽 JPEG、PNG、WebP、BMP、HEIC、TIFF 到这里</h2>
-              <p>全部在浏览器本地完成；HEIC/TIFF 首次使用会加载 WASM 解码器。</p>
+              <h2>{t('image.dropTitle')}</h2>
+              <p>{t('image.dropHint')}</p>
             </div>
             <div className="drop-actions">
               <button
@@ -506,7 +518,7 @@ export function App() {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <span className="button-icon file-icon" aria-hidden="true" />
-                选择文件
+                {t('image.selectFiles')}
               </button>
               <button
                 className="icon-button"
@@ -515,7 +527,7 @@ export function App() {
                 onClick={() => folderInputRef.current?.click()}
               >
                 <span className="button-icon folder-icon" aria-hidden="true" />
-                选择文件夹
+                {t('image.selectFolder')}
               </button>
             </div>
             <input
@@ -552,15 +564,10 @@ export function App() {
           )}
 
           {files.length === 0 ? (
-            <div className="empty-list">拖入图片或文件夹后，文件会显示在这里。</div>
+            <div className="empty-list">{t('image.emptyList')}</div>
           ) : (
             <section className="file-panel">
-              <div className="file-summary">
-                共 {files.length} 个文件
-                {selectedCount > 0 && `，已选 ${selectedCount} 个`}
-                {files.length > visibleFiles.length &&
-                  `，当前显示最近 ${visibleFiles.length} 个`}
-              </div>
+              <div className="file-summary">{fileSummaryParts.join(' · ')}</div>
               <div className="file-table">
                 <div className="file-row file-head file-row-select">
                   <span>
@@ -569,16 +576,16 @@ export function App() {
                       checked={allVisibleSelected}
                       disabled={busy}
                       onChange={(event) => toggleSelectAllVisible(event.target.checked)}
-                      aria-label="全选当前列表"
+                      aria-label={t('image.selectAllVisible')}
                     />
                   </span>
-                  <span>文件名</span>
-                  <span>格式</span>
-                  <span>原始大小</span>
-                  <span>预览大小</span>
-                  <span>状态</span>
-                  <span>进度</span>
-                  <span>提示 / 错误</span>
+                  <span>{t('image.fileName')}</span>
+                  <span>{t('image.fileFormat')}</span>
+                  <span>{t('image.originalSize')}</span>
+                  <span>{t('image.previewSize')}</span>
+                  <span>{t('image.status')}</span>
+                  <span>{t('image.progress')}</span>
+                  <span>{t('image.noteError')}</span>
                 </div>
                 {visibleFiles.map((file) => (
                   <div className="file-row file-row-select" key={file.id}>
@@ -596,7 +603,7 @@ export function App() {
                             ),
                           )
                         }
-                        aria-label={`选择 ${file.name}`}
+                        aria-label={t('image.selectFile', { name: file.name })}
                       />
                     </span>
                     <span className="file-name" title={file.relativePath}>
@@ -608,7 +615,7 @@ export function App() {
                       {file.outputSize ? (
                         formatBytes(file.outputSize)
                       ) : file.previewPending ? (
-                        '计算中'
+                        t('image.calculating')
                       ) : file.previewSize ? (
                         <span className="preview-value">
                           {formatBytes(file.previewSize)}
@@ -618,7 +625,7 @@ export function App() {
                         </span>
                       ) : file.previewError ? (
                         <span className="preview-error" title={file.previewError}>
-                          预览失败
+                          {t('image.previewFailed')}
                         </span>
                       ) : (
                         '-'
@@ -626,7 +633,7 @@ export function App() {
                     </span>
                     <span>
                       <span className={`status-badge status-${file.status}`}>
-                        {statusLabel(file.status)}
+                        {statusLabel(file.status, t)}
                       </span>
                     </span>
                     <span>
@@ -651,10 +658,10 @@ export function App() {
         </div>
 
         <aside className="settings-panel">
-          <h2>转换设置</h2>
+          <h2>{t('image.settings')}</h2>
 
           <label className="field">
-            输出格式
+            {t('image.format')}
             <select
               value={outputFormat}
               disabled={busy}
@@ -669,7 +676,7 @@ export function App() {
           </label>
 
           <label className="field">
-            目标大小
+            {t('image.targetSize')}
             <select
               value={[5, 10, 20].includes(targetSizeMb) ? targetSizeMb : 'custom'}
               disabled={busy}
@@ -681,7 +688,7 @@ export function App() {
               <option value={5}>5MB</option>
               <option value={10}>10MB</option>
               <option value={20}>20MB</option>
-              <option value="custom">自定义</option>
+              <option value="custom">{t('image.custom')}</option>
             </select>
             <input
               type="number"
@@ -695,7 +702,7 @@ export function App() {
 
           {showQuality && (
             <label className="field">
-              输出质量
+              {t('image.quality')}
               <div className="slider-row">
                 <input
                   type="range"
@@ -711,7 +718,7 @@ export function App() {
           )}
 
           <label className="field">
-            文件名后缀
+            {t('image.suffix')}
             <input
               value={filenameSuffix}
               disabled={busy}
@@ -721,7 +728,7 @@ export function App() {
           </label>
 
           <label className="field">
-            并发数量
+            {t('image.concurrency')}
             <select
               value={concurrency}
               disabled={busy}
@@ -741,7 +748,7 @@ export function App() {
               disabled={busy}
               onChange={(event) => setAllowResize(event.target.checked)}
             />
-            允许缩小尺寸以压到目标大小
+            {t('image.allowResize')}
           </label>
 
           <label className="check-field">
@@ -751,27 +758,23 @@ export function App() {
               disabled={busy}
               onChange={(event) => setAutoDownload(event.target.checked)}
             />
-            完成后自动下载
+            {t('image.autoDownload')}
           </label>
 
           <div className="tool-status">
             <div className="tool-status-item">
               <div>
                 <span className="dot ok" />
-                浏览器本地转换
+                {t('image.localConversion')}
               </div>
-              <p className="format-hint">
-                输入 JPEG / PNG / WebP / BMP / HEIC / TIFF；输出 JPEG / PNG / WebP / BMP / HEIC。多文件自动打 ZIP（按格式分文件夹）。
-              </p>
+              <p className="format-hint">{t('image.supportedFormatsHint')}</p>
             </div>
             <div className="tool-status-item">
               <div>
                 <span className="dot ok" />
-                结果用下载保存
+                {t('image.saveByDownload')}
               </div>
-              <p className="format-hint">
-                网页版不提供「选择输出目录」（Safari 不支持，Chrome 也常被系统拦截）。需要指定文件夹请用 macOS 桌面 Pro。
-              </p>
+              <p className="format-hint">{t('image.saveByDownloadHint')}</p>
             </div>
           </div>
         </aside>
@@ -780,22 +783,22 @@ export function App() {
       <footer className="bottom-toolbar">
         <button className="primary" type="button" disabled={!canStart || busy} onClick={() => void startConvert()}>
           <span className="button-icon play-icon" aria-hidden="true" />
-          开始转换
+          {t('image.startConvert')}
         </button>
         <button type="button" disabled={!busy} onClick={cancelConvert}>
           <span className="button-icon cancel-icon" aria-hidden="true" />
-          取消
+          {t('image.cancel')}
         </button>
         <button
           type="button"
           disabled={busy || failedCount === 0}
           onClick={() => void retryFailed()}
         >
-          重试失败
+          {t('image.retryFailed')}
         </button>
         <button type="button" disabled={busy} onClick={clearFiles}>
           <span className="button-icon trash-icon" aria-hidden="true" />
-          清空列表
+          {t('image.clear')}
         </button>
         <button
           type="button"
@@ -803,27 +806,27 @@ export function App() {
           onClick={() => void downloadOutputs()}
         >
           <span className="button-icon folder-icon" aria-hidden="true" />
-          下载结果
+          {t('image.downloadAll')}
         </button>
       </footer>
     </main>
   )
 }
 
-function statusLabel(status: FileStatus): string {
+function statusLabel(status: FileStatus, t: Translate): string {
   switch (status) {
     case 'queued':
-      return '排队'
+      return t('image.statusQueued')
     case 'converting':
-      return '转换中'
+      return t('image.statusConverting')
     case 'compressing':
-      return '压缩中'
+      return t('image.statusCompressing')
     case 'success':
-      return '成功'
+      return t('image.statusSuccess')
     case 'failed':
-      return '失败'
+      return t('image.statusFailed')
     case 'cancelled':
-      return '已取消'
+      return t('image.statusCancelled')
   }
 }
 

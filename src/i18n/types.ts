@@ -161,6 +161,27 @@ export type Messages = {
     billingMonthHint: string
     globalBenchmark: string
     usdParityNote: string
+    catChat: string
+    catCoding: string
+    catImage: string
+    catVideo: string
+    catAudio: string
+    catWriting: string
+    catResearch: string
+    catDesign: string
+    catEdu: string
+    catHealth: string
+    catHardware: string
+    billMonth: string
+    billYear: string
+    billWeek: string
+    billQuarter: string
+    billOther: string
+    advicePreferAppStore: string
+    adviceSimilar: string
+    adviceAppStoreOnly: string
+    adviceWebOnly: string
+    adviceWebPremium: string
   }
   image: {
     metaTitle: string

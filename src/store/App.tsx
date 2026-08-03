@@ -22,6 +22,12 @@ import {
   type ProductPrices,
   type Storefront,
 } from './api'
+import {
+  billingPeriodLabel,
+  categoryLabel,
+  formatChannelAdvice,
+  localizeApiText,
+} from './labels'
 import { MoneyProvider, useMoney } from './money'
 
 const TOP_N = 10
@@ -553,7 +559,7 @@ function BrowsePage() {
             className={`plan${category === c.id ? ' is-active' : ''}`}
             onClick={() => setCategory(c.id)}
           >
-            {c.name}
+            {categoryLabel(c.id, t, c.name)}
           </button>
         ))}
       </div>
@@ -823,6 +829,10 @@ function ProductDetail({ productId }: { productId: string }) {
     historyMode === 'country' && country
       ? region(country, selected?.regionName)
       : t('store.globalLowest')
+  const adviceText = formatChannelAdvice(advice, t, money, region)
+  const periodLabel = billingPeriodLabel(billingPeriod, t, billingLabel)
+  const safeNote = localizeApiText(note, locale)
+  const safeWarning = localizeApiText(warning, locale)
 
   return (
     <>
@@ -840,7 +850,7 @@ function ProductDetail({ productId }: { productId: string }) {
           </h1>
           <p>{product.vendor}</p>
           <div className="tags">
-            <span>{product.category}</span>
+            <span>{categoryLabel(product.category, t, product.category)}</span>
             <span>{t('store.heroTitle')}</span>
           </div>
         </div>
@@ -848,16 +858,16 @@ function ProductDetail({ productId }: { productId: string }) {
           {refreshing ? t('store.updating') : t('store.updatePrices')}
         </button>
       </header>
-      {product.planStructure ? (
+      {localizeApiText(product.planStructure, locale) ? (
         <p className="sheet-structure">
           <span className="sheet-structure-label">{t('store.planStructure')}</span>
-          {product.planStructure}
+          {localizeApiText(product.planStructure, locale)}
         </p>
       ) : null}
-      {product.changeNote ? (
+      {localizeApiText(product.changeNote, locale) ? (
         <div className="change-note">
           <p className="change-note-label">{t('store.changeNote')}</p>
-          <p className="change-note-text">{product.changeNote}</p>
+          <p className="change-note-text">{localizeApiText(product.changeNote, locale)}</p>
           {product.sheetUpdated ? (
             <p className="change-note-meta">
               {t('store.tableUpdated')} {product.sheetUpdated}
@@ -865,9 +875,9 @@ function ProductDetail({ productId }: { productId: string }) {
           ) : null}
         </div>
       ) : null}
-      {product.statusNote ? (
+      {localizeApiText(product.statusNote, locale) ? (
         <p className="muted sheet-status">
-          {t('store.status')}: {product.statusNote}
+          {t('store.status')}: {localizeApiText(product.statusNote, locale)}
         </p>
       ) : null}
       {statusNote ? <p className="muted">{statusNote}</p> : null}
@@ -908,10 +918,10 @@ function ProductDetail({ productId }: { productId: string }) {
         })}
       </div>
 
-      {advice?.summary ? (
+      {adviceText ? (
         <div className="advice-card">
           <p className="advice-label">{t('store.channelAdvice')}</p>
-          <p className="advice-text">{advice.summary}</p>
+          <p className="advice-text">{adviceText}</p>
         </div>
       ) : null}
 
@@ -954,7 +964,7 @@ function ProductDetail({ productId }: { productId: string }) {
       <p className="section-label">{t('store.plan')}</p>
       <div className="plan-bar">
         {plans.length === 0 ? (
-          <span className="muted">{note || t('store.noPlanPrice')}</span>
+          <span className="muted">{safeNote || t('store.noPlanPrice')}</span>
         ) : (
           plans.map((p) => (
             <button
@@ -964,8 +974,10 @@ function ProductDetail({ productId }: { productId: string }) {
               onClick={() => setPlanId(p.planId)}
             >
               {p.name}
-              {p.billingLabel && p.billingPeriod && p.billingPeriod !== 'month' ? (
-                <span className="plan-period">{p.billingLabel}</span>
+              {p.billingPeriod && p.billingPeriod !== 'month' ? (
+                <span className="plan-period">
+                  {billingPeriodLabel(p.billingPeriod, t, p.billingLabel)}
+                </span>
               ) : null}
             </button>
           ))
@@ -988,12 +1000,12 @@ function ProductDetail({ productId }: { productId: string }) {
           {listLoading && !displayBase ? (
             <p className="muted">{t('common.loading')}</p>
           ) : !displayBase ? (
-            <p className="muted">{note || t('store.noWebDesktop')}</p>
+            <p className="muted">{safeNote || t('store.noWebDesktop')}</p>
           ) : (
             <>
               <div className="region-card">
                 <p className="region-card-label">
-                  {displayBase.label || t('store.unifiedStripe')}
+                  {localizeApiText(displayBase.label, locale) || t('store.unifiedStripe')}
                 </p>
                 <p className="region-card-value">{money(displayBase.cny)}</p>
                 <p className="region-card-meta">
@@ -1001,7 +1013,7 @@ function ProductDetail({ productId }: { productId: string }) {
                   {displayBase.currency ? ` · ${displayBase.currency}` : ''}
                 </p>
               </div>
-              {warning ? <p className="channel-warning">{warning}</p> : null}
+              {safeWarning ? <p className="channel-warning">{safeWarning}</p> : null}
               <p className="section-label">{t('store.region')}</p>
               <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
                 {t('store.usdParityNote')}
@@ -1049,9 +1061,9 @@ function ProductDetail({ productId }: { productId: string }) {
                                   ? t('store.baseline')
                                   : t('store.equivalent')}
                           </span>
-                          {a.note ? (
+                          {localizeApiText(a.note, locale) ? (
                             <span className="muted" style={{ marginLeft: '0.4rem' }}>
-                              {a.note}
+                              {localizeApiText(a.note, locale)}
                             </span>
                           ) : null}
                         </td>
@@ -1074,7 +1086,7 @@ function ProductDetail({ productId }: { productId: string }) {
           <section>
             <h2 className="panel-title">
               {channelLabel(channel, t)} · {planName}
-              {billingLabel ? ` · ${billingLabel}` : ''} · {t('store.topNLowest', { n: TOP_N })}
+              {periodLabel ? ` · ${periodLabel}` : ''} · {t('store.topNLowest', { n: TOP_N })}
               {updatedAt ? (
                 <span className="muted" style={{ marginLeft: '0.65rem', fontSize: '0.85rem' }}>
                   {formatUpdatedAt(updatedAt, locale, t('store.none'))}
@@ -1083,13 +1095,13 @@ function ProductDetail({ productId }: { productId: string }) {
             </h2>
             <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
               {billingPeriod && billingPeriod !== 'month'
-                ? t('store.billingMonthHint', { period: billingLabel || t('store.bill') })
+                ? t('store.billingMonthHint', { period: periodLabel || t('store.bill') })
                 : t('store.appstoreRankHint', { currency })}
             </p>
             {listLoading && rows.length === 0 ? (
               <p className="muted">{t('common.loading')}</p>
             ) : rows.length === 0 ? (
-              <p className="muted">{note || t('store.noPrice')}</p>
+              <p className="muted">{safeNote || t('store.noPrice')}</p>
             ) : (
               <table className="price-table">
                 <thead>
@@ -1116,8 +1128,11 @@ function ProductDetail({ productId }: { productId: string }) {
                       </td>
                       <td>
                         {r.priceFormatted}
-                        {r.billingLabel && r.billingPeriod && r.billingPeriod !== 'month' ? (
-                          <span className="muted"> · {r.billingLabel}</span>
+                        {r.billingPeriod && r.billingPeriod !== 'month' ? (
+                          <span className="muted">
+                            {' '}
+                            · {billingPeriodLabel(r.billingPeriod, t, r.billingLabel)}
+                          </span>
                         ) : null}
                       </td>
                       <td className={`cny${r.rank === 1 ? ' is-low' : ''}`}>

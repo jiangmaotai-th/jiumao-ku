@@ -226,6 +226,8 @@ const zhTW: Messages = {
     modeCompress: '壓縮',
     modeMusic: '音訊',
     modeMerge: '合併',
+    modeExtract: '提取',
+    modeManual: '說明',
     modeGif: 'GIF',
     dropHint: '將媒體拖放到這裡，或點選選擇',
     start: '開始',

@@ -229,6 +229,8 @@ const ru: Messages = {
     modeCompress: 'Сжать',
     modeMusic: 'Аудио',
     modeMerge: 'Объединить',
+    modeExtract: 'Извлечение',
+    modeManual: 'Справка',
     modeGif: 'GIF',
     dropHint: 'Перетащите медиа сюда или нажмите для выбора',
     start: 'Старт',

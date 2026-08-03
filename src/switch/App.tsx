@@ -1,4 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import {
   fetchGame,
   fetchGames,
@@ -69,33 +71,37 @@ function GameIcon({
 }
 
 function Header({ route }: { route: Route }) {
+  const { t } = useT()
   return (
     <header className="site-header">
       <div className="brand-block">
         <a className="brand-mark" href="/">
-          九猫库
+          {t('common.brand')}
         </a>
-        <p className="brand-sub">Switch 低价查询器</p>
+        <p className="brand-sub">{t('catalog.switch-price.name')}</p>
       </div>
-      <nav className="site-nav" aria-label="页面导航">
-        <button
-          type="button"
-          className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'home' })}
-        >
-          首页
-        </button>
-        <button
-          type="button"
-          className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'browse' })}
-        >
-          游戏
-        </button>
-        <a className="nav-link" href="/">
-          返回九猫库
-        </a>
-      </nav>
+      <div className="site-header__right">
+        <nav className="site-nav" aria-label="nav">
+          <button
+            type="button"
+            className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'home' })}
+          >
+            {t('switchApp.navHome')}
+          </button>
+          <button
+            type="button"
+            className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'browse' })}
+          >
+            {t('switchApp.navSearch')}
+          </button>
+          <a className="nav-link" href="/">
+            {t('common.backHome')}
+          </a>
+        </nav>
+        <LangSwitchHost />
+      </div>
     </header>
   )
 }
@@ -213,6 +219,8 @@ function BrowsePage() {
     }
   }, [])
 
+  const { t } = useT()
+
   async function onSearch(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -231,25 +239,25 @@ function BrowsePage() {
     <>
       <section className="hero" style={{ paddingBottom: '1.5rem' }}>
         <h1 className="hero-title" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)' }}>
-          搜索游戏
+          {t('switchApp.browseTitle')}
         </h1>
-        <p className="hero-lead">支持中英文名；并行检索欧区 / 日区目录，并匹配美区等区服 NSUID。</p>
+        <p className="hero-lead">{t('switchApp.browseLead')}</p>
       </section>
 
       <form className="search-row" onSubmit={onSearch}>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索 Switch 游戏（中英文）"
-          aria-label="搜索游戏"
+          placeholder={t('switchApp.searchPlaceholder')}
+          aria-label={t('switchApp.navSearch')}
         />
         <button type="submit" className="btn btn-solid" disabled={loading}>
-          {loading ? '搜索中…' : '搜索'}
+          {loading ? t('common.searching') : t('common.search')}
         </button>
       </form>
 
       {error ? <p className="empty">{error}</p> : null}
-      {loading && items.length === 0 ? <p className="loading">加载中…</p> : null}
+      {loading && items.length === 0 ? <p className="loading">{t('common.loading')}</p> : null}
 
       <div className="app-grid">
         {items.map((game) => (

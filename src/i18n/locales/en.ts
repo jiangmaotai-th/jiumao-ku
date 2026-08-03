@@ -229,6 +229,8 @@ const en: Messages = {
     modeCompress: 'Compress',
     modeMusic: 'Audio',
     modeMerge: 'Merge',
+    modeExtract: 'Extract',
+    modeManual: 'Guide',
     modeGif: 'GIF',
     dropHint: 'Drop media here, or click to choose',
     start: 'Start',

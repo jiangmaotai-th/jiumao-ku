@@ -229,6 +229,8 @@ const hi: Messages = {
     modeCompress: 'कंप्रेस',
     modeMusic: 'ऑडियो',
     modeMerge: 'मर्ज',
+    modeExtract: 'एक्सट्रैक्ट',
+    modeManual: 'गाइड',
     modeGif: 'GIF',
     dropHint: 'मीडिया यहां छोड़ें, या चुनने के लिए क्लिक करें',
     start: 'शुरू करें',

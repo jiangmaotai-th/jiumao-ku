@@ -229,6 +229,8 @@ const th: Messages = {
     modeCompress: 'บีบอัด',
     modeMusic: 'เสียง',
     modeMerge: 'รวม',
+    modeExtract: 'แยก',
+    modeManual: 'คู่มือ',
     modeGif: 'GIF',
     dropHint: 'วางสื่อที่นี่ หรือคลิกเพื่อเลือก',
     start: 'เริ่ม',

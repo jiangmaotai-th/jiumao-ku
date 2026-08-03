@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import {
   FORMAT_LABEL,
   acceptFor,
@@ -46,14 +48,13 @@ function uid() {
 }
 
 export function App() {
+  const { t } = useT()
   const [from, setFrom] = useState<EbookFormat | 'auto'>('auto')
   const [to, setTo] = useState<EbookFormat>('epub')
   const [presetId, setPresetId] = useState<string | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [dragOver, setDragOver] = useState(false)
-  const [banner, setBanner] = useState(
-    '自动识别输入格式，选择输出后拖入文件即可。AZW3/MOBI 与扫描版 PDF 将经服务器瞬时处理。',
-  )
+  const [banner, setBanner] = useState(() => t('ebook.heroLead'))
   const inputRef = useRef<HTMLInputElement>(null)
 
   const accept = useMemo(
@@ -185,18 +186,21 @@ export function App() {
         <header className="topbar">
           <div className="brand-block">
             <a className="brand" href="/">
-              九猫库
+              {t('common.brand')}
             </a>
             <p className="brand-domain">maotaiworks.com</p>
           </div>
-          <a className="back" href="/">
-            返回首页
-          </a>
+          <div className="site-header__right">
+            <a className="back" href="/">
+              {t('common.backHome')}
+            </a>
+            <LangSwitchHost />
+          </div>
         </header>
 
         <section className="hero">
-          <h1 className="product">魔书</h1>
-          <p className="hero-line">电子书格式本地互转。选好方向，拖进来就行。</p>
+          <h1 className="product">{t('ebook.heroTitle')}</h1>
+          <p className="hero-line">{t('ebook.heroLead')}</p>
 
           <div
             className={`drop ${dragOver ? 'dragover' : ''}`}
@@ -213,8 +217,8 @@ export function App() {
             }}
           >
             <div>
-              <strong>拖入书籍文件</strong>
-              <span>或点击选择 · EPUB / PDF / TXT / DOCX / MOBI / AZW3</span>
+              <strong>{t('ebook.dropTitle')}</strong>
+              <span>{t('ebook.dropHint')}</span>
             </div>
             <input
               ref={inputRef}

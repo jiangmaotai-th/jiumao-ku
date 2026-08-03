@@ -226,6 +226,8 @@ const zhCN: Messages = {
     modeCompress: '压缩',
     modeMusic: '音频',
     modeMerge: '合并',
+    modeExtract: '提取',
+    modeManual: '说明',
     modeGif: 'GIF',
     dropHint: '拖放媒体文件到这里，或点击选择',
     start: '开始处理',

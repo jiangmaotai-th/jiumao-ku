@@ -184,6 +184,8 @@ export type Messages = {
     modeCompress: string
     modeMusic: string
     modeMerge: string
+    modeExtract: string
+    modeManual: string
     modeGif: string
     dropHint: string
     start: string

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import {
   CHANNEL_LABELS,
   fetchHistory,
@@ -229,35 +231,37 @@ function buildWebParityRows(
 }
 
 function Header({ route }: { route: Route }) {
+  const { t } = useT()
   return (
     <header className="site-header">
       <div className="brand-block">
         <a className="brand-mark" href="/">
-          九猫库
+          {t('common.brand')}
         </a>
-        <p className="brand-sub">
-          AI 订阅低价区查询器<span className="brand-daily">（每日更新）</span>
-        </p>
+        <p className="brand-sub">{t('catalog.store-price.name')}</p>
       </div>
-      <nav className="site-nav" aria-label="页面导航">
-        <button
-          type="button"
-          className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'home' })}
-        >
-          首页
-        </button>
-        <button
-          type="button"
-          className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
-          onClick={() => navigate({ name: 'browse' })}
-        >
-          全部 AI
-        </button>
-        <a className="nav-link" href="/">
-          返回九猫库
-        </a>
-      </nav>
+      <div className="site-header__right">
+        <nav className="site-nav" aria-label="nav">
+          <button
+            type="button"
+            className={`nav-link${route.name === 'home' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'home' })}
+          >
+            {t('store.navHome')}
+          </button>
+          <button
+            type="button"
+            className={`nav-link${route.name === 'browse' ? ' is-active' : ''}`}
+            onClick={() => navigate({ name: 'browse' })}
+          >
+            {t('store.navAll')}
+          </button>
+          <a className="nav-link" href="/">
+            {t('common.backHome')}
+          </a>
+        </nav>
+        <LangSwitchHost />
+      </div>
     </header>
   )
 }
@@ -486,6 +490,8 @@ function BrowsePage() {
     }
   }, [category])
 
+  const { t } = useT()
+
   async function onSearch(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -502,20 +508,20 @@ function BrowsePage() {
     <>
       <section className="hero" style={{ paddingBottom: '1.25rem' }}>
         <h1 className="hero-title" style={{ fontSize: 'clamp(1.8rem, 5vw, 2.4rem)' }}>
-          全部 AI 订阅
+          {t('store.browseTitle')}
         </h1>
-        <p className="hero-lead">按品类筛选；支持中英文名搜索。</p>
+        <p className="hero-lead">{t('store.browseLead')}</p>
       </section>
 
       <form className="search-row" onSubmit={onSearch}>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="搜索 ChatGPT、Claude、Cursor…"
-          aria-label="搜索 AI 产品"
+          placeholder={t('store.searchPlaceholder')}
+          aria-label={t('store.searchAria')}
         />
         <button type="submit" className="btn btn-solid" disabled={loading}>
-          {loading ? '搜索中…' : '搜索'}
+          {loading ? t('common.searching') : t('common.search')}
         </button>
       </form>
 

@@ -226,6 +226,8 @@ const ko: Messages = {
     modeCompress: '압축',
     modeMusic: '오디오',
     modeMerge: '병합',
+    modeExtract: '추출',
+    modeManual: '안내',
     modeGif: 'GIF',
     dropHint: '미디어를 여기에 놓거나 클릭해 선택하세요',
     start: '시작',

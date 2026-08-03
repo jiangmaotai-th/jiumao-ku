@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type InputHTMLAttributes } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import {
   ACCEPT_INPUT,
   detectInputFormat,
@@ -426,24 +428,32 @@ export function App() {
   const allVisibleSelected =
     visibleFiles.length > 0 && visibleFiles.every((file) => file.selected)
 
+  const { t } = useT()
+
   return (
     <main className="app-shell">
       <header className="app-header">
         <div>
           <p className="eyebrow">
             <a className="back-link" href="/">
-              九猫库
+              {t('common.brand')}
             </a>
-            <span>maotaiworks.com · 网页版</span>
+            <span>maotaiworks.com</span>
           </p>
           <h1 className="app-title">
-            <span>小午的图片转换</span>
+            <span>{t('image.heroTitle')}</span>
             <img className="pro-badge" src="/image/pro-badge.png" alt="Pro" />
           </h1>
+          <p className="hero-lead" style={{ marginTop: '0.35rem' }}>
+            {t('image.heroLead')}
+          </p>
         </div>
-        <div className="mode-card">
-          <strong>当前输出格式</strong>
-          <span>{outputFormat}</span>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <div className="mode-card">
+            <strong>{t('image.format')}</strong>
+            <span>{outputFormat}</span>
+          </div>
+          <LangSwitchHost />
         </div>
       </header>
 

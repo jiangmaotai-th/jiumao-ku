@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import { useMoyeeStore } from './store'
 import {
   AUDIO_CONTAINERS,
@@ -8,15 +10,6 @@ import {
   videoCodecFor,
 } from './domain/platforms'
 import type { AppMode, ExtractMode, OutputProfile } from './types'
-
-const NAV: { id: AppMode | 'manual'; label: string }[] = [
-  { id: 'convert', label: '视频转换' },
-  { id: 'compress', label: '视频压缩' },
-  { id: 'music', label: '音频' },
-  { id: 'merge', label: '合并' },
-  { id: 'extract', label: '提取' },
-  { id: 'manual', label: '说明' },
-]
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
@@ -54,9 +47,23 @@ export function App() {
   const setCompressMode = useMoyeeStore((s) => s.setCompressMode)
   const setCompressQuality = useMoyeeStore((s) => s.setCompressQuality)
 
+  const { t } = useT()
   const [panel, setPanel] = useState<AppMode | 'manual'>('convert')
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const nav = useMemo(
+    () =>
+      [
+        { id: 'convert' as const, label: t('moyee.modeConvert') },
+        { id: 'compress' as const, label: t('moyee.modeCompress') },
+        { id: 'music' as const, label: t('moyee.modeMusic') },
+        { id: 'merge' as const, label: t('moyee.modeMerge') },
+        { id: 'extract' as const, label: t('moyee.modeExtract') },
+        { id: 'manual' as const, label: t('moyee.modeManual') },
+      ] satisfies { id: AppMode | 'manual'; label: string }[],
+    [t],
+  )
 
   useEffect(() => {
     void ensureEngine()
@@ -81,24 +88,25 @@ export function App() {
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="/moyee/">
-          魔叶Converte
+          {t('moyee.heroTitle')}
         </a>
         <div className="topbar-meta">
           <span>
             {engineLoading
-              ? '引擎加载中…'
+              ? t('moyee.engineLoading')
               : engineReady
-                ? 'FFmpeg 就绪 · 本地处理'
+                ? t('moyee.engineReady')
                 : engineError
-                  ? `引擎失败：${engineError}`
-                  : '准备引擎…'}
+                  ? engineError
+                  : t('moyee.engineLoading')}
           </span>
-          <a href="/">返回九猫库</a>
+          <a href="/">{t('common.backHome')}</a>
+          <LangSwitchHost />
         </div>
       </header>
 
       <aside className="sidebar">
-        {NAV.map((item) => (
+        {nav.map((item) => (
           <button
             key={item.id}
             type="button"

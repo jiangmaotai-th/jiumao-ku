@@ -229,6 +229,8 @@ const ja: Messages = {
     modeCompress: '圧縮',
     modeMusic: '音声',
     modeMerge: '結合',
+    modeExtract: '抽出',
+    modeManual: 'ガイド',
     modeGif: 'GIF',
     dropHint: 'メディアをここにドロップ、またはクリックして選択',
     start: '開始',

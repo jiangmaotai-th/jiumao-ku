@@ -61,7 +61,15 @@ function formatUpdatedAt(iso?: string | null) {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false,
   })
+}
+
+/** e.g. 2026/8/3 21:13更新 — last real deploy/refresh time */
+function formatUpdateStamp(iso?: string | null) {
+  const t = formatUpdatedAt(iso)
+  if (t === '暂无') return '更新时间待同步'
+  return `${t}更新`
 }
 
 /** Show plan tier next to price; drop redundant product name prefix when present. */
@@ -228,7 +236,7 @@ function buildWebParityRows(
     })
 }
 
-function Header({ route }: { route: Route }) {
+function Header({ route, updatedAt }: { route: Route; updatedAt?: string | null }) {
   return (
     <header className="site-header">
       <div className="brand-block">
@@ -236,7 +244,8 @@ function Header({ route }: { route: Route }) {
           九猫库
         </a>
         <p className="brand-sub">
-          AI 订阅低价区查询器<span className="brand-daily">（每日更新）</span>
+          AI 订阅低价区查询器
+          <span className="brand-daily">（{formatUpdateStamp(updatedAt)}）</span>
         </p>
       </div>
       <nav className="site-nav" aria-label="页面导航">
@@ -350,19 +359,27 @@ function HistoryChart({
   )
 }
 
-function HomePage() {
+function HomePage({
+  onUpdatedAt,
+}: {
+  onUpdatedAt?: (iso: string | null) => void
+}) {
   const [cards, setCards] = useState<HomeCard[]>([])
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let alive = true
+    const apply = (iso: string | null) => {
+      setUpdatedAt(iso)
+      onUpdatedAt?.(iso)
+    }
     const load = () =>
       fetchHome()
         .then((data) => {
           if (!alive) return
           setCards(data.cards || [])
-          setUpdatedAt(data.updatedAt || null)
+          apply(data.updatedAt || null)
         })
         .catch(() => {
           if (alive) setCards([])
@@ -377,7 +394,7 @@ function HomePage() {
           if (!alive) return
           const next = data.cards || []
           setCards(next)
-          setUpdatedAt(data.updatedAt || null)
+          apply(data.updatedAt || null)
           if (next.filter((c) => !c.best).length === 0) window.clearInterval(timer)
         })
         .catch(() => {})
@@ -386,7 +403,7 @@ function HomePage() {
       alive = false
       window.clearInterval(timer)
     }
-  }, [])
+  }, [onUpdatedAt])
 
   return (
     <div className="home-page">
@@ -394,7 +411,8 @@ function HomePage() {
         <div className="home-hero-row">
           <div className="home-hero-copy">
             <h1 className="hero-title">
-              AI 订阅低价区查询器<span className="hero-daily">（每日更新）</span>
+              AI 订阅低价区查询器
+              <span className="hero-daily">（{formatUpdateStamp(updatedAt)}）</span>
             </h1>
             <p className="hero-lead">
               覆盖全球主流 AI 订阅。App Store / 网页 / 桌面分通道查看最低价区服，并跟踪价格历史。
@@ -1154,6 +1172,7 @@ function ProductDetail({ productId }: { productId: string }) {
 
 export function App() {
   const [route, setRoute] = useState<Route>(() => parseHash())
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
 
   useEffect(() => {
     const onHash = () => setRoute(parseHash())
@@ -1162,12 +1181,25 @@ export function App() {
     return () => window.removeEventListener('hashchange', onHash)
   }, [])
 
+  // Keep header stamp fresh even when not on home.
+  useEffect(() => {
+    let alive = true
+    fetchHome()
+      .then((data) => {
+        if (alive) setUpdatedAt(data.updatedAt || null)
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
+
   return (
     <>
       <div className="atmosphere" aria-hidden="true" />
       <div className="shell">
-        <Header route={route} />
-        {route.name === 'home' ? <HomePage /> : null}
+        <Header route={route} updatedAt={updatedAt} />
+        {route.name === 'home' ? <HomePage onUpdatedAt={setUpdatedAt} /> : null}
         {route.name === 'browse' ? <BrowsePage /> : null}
         {route.name === 'product' ? <ProductDetail productId={route.productId} /> : null}
         <p className="footer-note">

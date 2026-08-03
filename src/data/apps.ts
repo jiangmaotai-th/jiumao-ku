@@ -30,7 +30,7 @@ export interface CatalogItem {
 export const catalog: CatalogItem[] = [
   {
     id: 'store-price',
-    name: 'AI 订阅低价区查询器（每日更新）',
+    name: 'AI 订阅低价区查询器',
     summary: [
       '覆盖全球主流 AI 订阅：App Store / 网页 / 桌面分通道查看低价区服前 10，并跟踪价格历史。',
       '公开标价折合人民币，仅供参考，非各平台官方服务。每日按官方档位表更新。',

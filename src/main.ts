@@ -72,11 +72,33 @@ function renderSummary(summary: string): string {
     .join('')
 }
 
-function renderItem(item: CatalogItem): string {
+function formatStoreUpdateStamp(iso?: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
+  const t = d.toLocaleString('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+  return `（${t}更新）`
+}
+
+function itemDisplayName(item: CatalogItem, storeUpdatedAt?: string | null): string {
+  if (item.id !== 'store-price') return item.name
+  const stamp = formatStoreUpdateStamp(storeUpdatedAt)
+  return stamp ? `${item.name}${stamp}` : item.name
+}
+
+function renderItem(item: CatalogItem, storeUpdatedAt?: string | null): string {
   return `
-    <article class="catalog-item" role="listitem" data-category="${item.category}">
+    <article class="catalog-item" role="listitem" data-category="${item.category}" data-id="${item.id}">
       <div class="item-copy">
-        <h3 class="item-name">${item.name}</h3>
+        <h3 class="item-name">${itemDisplayName(item, storeUpdatedAt)}</h3>
         ${renderSummary(item.summary)}
       </div>
       <div class="item-downloads">
@@ -85,12 +107,17 @@ function renderItem(item: CatalogItem): string {
     </article>`
 }
 
-function renderList(container: HTMLElement, items: CatalogItem[], emptyText: string) {
+function renderList(
+  container: HTMLElement,
+  items: CatalogItem[],
+  emptyText: string,
+  storeUpdatedAt?: string | null,
+) {
   if (items.length === 0) {
     container.innerHTML = `<p class="empty-state">${emptyText}</p>`
     return
   }
-  container.innerHTML = items.map(renderItem).join('')
+  container.innerHTML = items.map((item) => renderItem(item, storeUpdatedAt)).join('')
 }
 
 function isFilterTab(value: string): value is FilterTab {
@@ -101,12 +128,16 @@ const catalogList = document.querySelector<HTMLElement>('#catalog-list')
 const categoryNav = document.querySelector<HTMLElement>('#category-nav')
 const yearEl = document.querySelector<HTMLElement>('#year')
 
+let activeFilter: FilterTab = 'all'
+let storeUpdatedAt: string | null = null
+
 function applyFilter(tab: FilterTab) {
+  activeFilter = tab
   categoryNav?.querySelectorAll<HTMLButtonElement>('.cat-btn').forEach((btn) => {
     btn.classList.toggle('is-active', btn.dataset.filter === tab)
   })
   if (catalogList) {
-    renderList(catalogList, filterCatalog(tab), EMPTY_HINT[tab])
+    renderList(catalogList, filterCatalog(tab), EMPTY_HINT[tab], storeUpdatedAt)
   }
 }
 
@@ -117,6 +148,15 @@ categoryNav?.addEventListener('click', (event) => {
 })
 
 applyFilter('all')
+
+void fetch('/api/store/home')
+  .then((r) => (r.ok ? r.json() : null))
+  .then((data: { updatedAt?: string | null } | null) => {
+    if (!data?.updatedAt) return
+    storeUpdatedAt = data.updatedAt
+    applyFilter(activeFilter)
+  })
+  .catch(() => {})
 
 if (yearEl) {
   yearEl.textContent = String(new Date().getFullYear())

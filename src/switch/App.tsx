@@ -163,24 +163,24 @@ function HomePage() {
             <button
               key={card.gameId}
               type="button"
-              className="deal-card"
+              className="deal-row"
               onClick={() => navigate({ name: 'game', gameId: card.gameId })}
             >
-              <GameIcon src={card.icon} size={56} />
-              <div className="deal-body">
-                <strong>{card.name}</strong>
-                <span>
+              <GameIcon src={card.icon} size={48} />
+              <div className="deal-main">
+                <p className="deal-name">{card.name}</p>
+                <p className="deal-meta">
                   {card.best
                     ? `最低 ${formatCny(card.best.cny)} · ${card.best.flag || ''} ${card.best.regionName || card.best.country.toUpperCase()}`
                     : '点击查看低价区服'}
                   {card.savePct != null && card.savePct > 0
                     ? ` · 较美区约省 ${card.savePct}%`
                     : ''}
-                </span>
+                </p>
               </div>
-              <span className="deal-price">
-                {card.best ? formatCny(card.best.cny) : '…'}
-              </span>
+              <div className="deal-price">
+                <strong>{card.best ? formatCny(card.best.cny) : '…'}</strong>
+              </div>
             </button>
           ))}
         </div>
@@ -236,7 +236,7 @@ function BrowsePage() {
         <p className="hero-lead">支持中英文名；并行检索欧区 / 日区目录，并匹配美区等区服 NSUID。</p>
       </section>
 
-      <form className="search-row" onSubmit={onSearch}>
+      <form className="search-form" onSubmit={onSearch}>
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -251,18 +251,20 @@ function BrowsePage() {
       {error ? <p className="empty">{error}</p> : null}
       {loading && items.length === 0 ? <p className="loading">加载中…</p> : null}
 
-      <div className="app-grid">
+      <div className="app-list">
         {items.map((game) => (
           <button
             key={game.gameId}
             type="button"
-            className="app-card"
+            className="app-row"
             onClick={() => navigate({ name: 'game', gameId: game.gameId })}
           >
-            <GameIcon src={game.icon} size={64} />
-            <div>
-              <strong>{game.name}</strong>
-              <span>{game.publisher || 'Nintendo'}</span>
+            <GameIcon src={game.icon} size={48} />
+            <div className="app-main">
+              <p className="app-name">{game.name}</p>
+              <p className="app-meta">{game.publisher || 'Nintendo'}</p>
+            </div>
+            <div className="app-side">
               <em>{game.regions > 0 ? `${game.regions} 个区服有价` : '低价区服'}</em>
             </div>
           </button>

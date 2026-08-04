@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=ZCOOL+XiaoWei&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=ZCOOL+XiaoWei&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -22,43 +22,46 @@
 
     <header class="site-header">
       <div class="brand-block">
-        <a class="brand-mark" href="/">九猫库</a>
+        <a class="brand-mark" href="/" data-i18n="common.brand">九猫库</a>
         <p class="brand-domain">maotaiworks.com</p>
       </div>
-      <nav class="site-nav" aria-label="分类筛选" id="category-nav">
-        <button type="button" class="cat-btn is-active" data-filter="all">全部</button>
-        <button type="button" class="cat-btn" data-filter="software">软件</button>
-        <button type="button" class="cat-btn" data-filter="game">游戏</button>
-        <button type="button" class="cat-btn" data-filter="other">其他</button>
-      </nav>
+      <div class="site-header__right">
+        <nav class="site-nav" aria-label="category" id="category-nav">
+          <button type="button" class="cat-btn is-active" data-filter="all" data-i18n="home.filterAll">全部</button>
+          <button type="button" class="cat-btn" data-filter="software" data-i18n="home.filterSoftware">软件</button>
+          <button type="button" class="cat-btn" data-filter="game" data-i18n="home.filterGame">游戏</button>
+          <button type="button" class="cat-btn" data-filter="other" data-i18n="home.filterOther">其他</button>
+        </nav>
+        <div id="lang-switch"></div>
+      </div>
     </header>
 
     <main>
       <section class="hero" aria-labelledby="hero-title">
-        <h1 id="hero-title" class="hero-title reveal">九猫库</h1>
-        <p class="hero-lead reveal">
+        <h1 id="hero-title" class="hero-title reveal" data-i18n="common.brand">九猫库</h1>
+        <p class="hero-lead reveal" data-i18n="home.heroLead">
           个人开发者的软件和游戏小站
         </p>
       </section>
 
-      <section id="catalog" class="catalog" aria-label="作品列表">
+      <section id="catalog" class="catalog" data-i18n-aria="home.catalogAria" aria-label="作品列表">
         <div id="catalog-list" class="item-list" role="list"></div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div class="footer-left">
-        <p class="footer-brand">九猫库</p>
+        <p class="footer-brand" data-i18n="common.brand">九猫库</p>
         <p class="visitor-count" id="visitor-count" hidden>累计访客 —</p>
       </div>
       <p class="footer-meta">
-        <a href="/legal/#terms">使用条款</a>
+        <a href="/legal/#terms" data-i18n="common.terms">使用条款</a>
         <span aria-hidden="true">·</span>
-        <a href="/legal/#privacy">隐私说明</a>
+        <a href="/legal/#privacy" data-i18n="common.privacy">隐私说明</a>
         <span aria-hidden="true">·</span>
-        <a href="/legal/#credits">开源致谢</a>
+        <a href="/legal/#credits" data-i18n="common.credits">开源致谢</a>
         <span aria-hidden="true">·</span>
-        <span>© <span id="year"></span> 九猫库</span>
+        <span>© <span id="year"></span> <span data-i18n="common.copyright">九猫库</span></span>
       </p>
     </footer>
 

@@ -4,6 +4,8 @@
 
 当前上架：
 
+- **AI 订阅低价区查询器** — 网页版 `/store/`
+- **一键转 Markdown** — 网页版 `/markdown/`（文档本地转 MD；音视频/OCR 需 macOS 版）
 - **小午的图片转换** — 网页版 `/image/`（点开即用，本地 JPEG/PNG/WebP/BMP 互转）
 - **魔书** — 网页版 `/ebook/`
 - **MoyeeConverte** — 网页版 `/moyee/`（点开即用）+ macOS/Windows 安装包

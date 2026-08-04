@@ -46,6 +46,38 @@ export const catalog: CatalogItem[] = [
     ],
   },
   {
+    id: 'magic-markdown',
+    name: '一键转 Markdown（全能文档转 MD）· 测试版',
+    summary: [
+      '【测试版】全能转 Markdown：PDF、Word（DOC/DOCX）、Apple Pages / Numbers / Keynote、PPTX、Excel（XLSX）、图片 OCR（中英）、ODT/RTF、HTML、EPUB、CSV/TSV、JSON/JSONL/YAML、XML/RSS、Jupyter（IPYNB）、ZIP、TXT/MD、EML 等一键批量转换，并支持智能切片导出。',
+      '网页版在浏览器本地完成文档转换与图片 OCR，原文件不上传。音频视频转写、部分旧版 Office（PPT/XLS）请用桌面版（macOS / Windows）。',
+      '本地处理｜网页不上传正文；桌面版另含 MarkItDown、Vision OCR 与 Whisper 音视频转写（测试版陆续上架）。',
+    ].join('\n'),
+    category: 'software',
+    downloads: [
+      {
+        platform: 'web',
+        label: '在线使用',
+        href: '/markdown/',
+        openInPlace: true,
+      },
+      {
+        platform: 'mac',
+        label: 'macOS',
+        href: '/downloads/magic-markdown/mac.dmg',
+        filename: '一键转Markdown-mac.dmg',
+        available: false,
+      },
+      {
+        platform: 'windows',
+        label: 'Windows',
+        href: '/downloads/magic-markdown/windows.zip',
+        filename: '一键转Markdown-windows.zip',
+        available: false,
+      },
+    ],
+  },
+  {
     id: 'xiaowu-image',
     name: '小午图片格式全能转换',
     summary: [

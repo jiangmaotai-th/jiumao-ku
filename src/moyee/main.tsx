@@ -1,13 +1,8 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
 import { App } from './App'
 import './styles.css'
+import { bootReactApp } from '../i18n/appBoot'
 
-const root = document.getElementById('root')
-if (!root) throw new Error('root missing')
-
-createRoot(root).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+bootReactApp(App, {
+  titleKey: 'moyee.metaTitle',
+  descriptionKey: 'moyee.metaDescription',
+})

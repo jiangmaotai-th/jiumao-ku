@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Calibre-backed ebook convert API for AZW3/MOBI (+ OCR for scanned PDFs).
+ * Old Word .doc goes through LibreOffice first (Calibre has no DOC input plugin).
  * POST /api/ebook-convert  multipart: file + from + to
  * Temp files are always deleted after the request.
  */
@@ -13,6 +14,7 @@ import { spawn } from 'node:child_process'
 const PORT = Number(process.env.PORT || 3191)
 const MAX_BYTES = Number(process.env.MAX_UPLOAD_BYTES || 40 * 1024 * 1024)
 const CONVERT_BIN = process.env.EBOOK_CONVERT || 'ebook-convert'
+const LIBREOFFICE_BIN = process.env.LIBREOFFICE || 'libreoffice'
 const OCRMYPDF_BIN = process.env.OCRMYPDF || 'ocrmypdf'
 const PDFTOTEXT_BIN = process.env.PDFTOTEXT || 'pdftotext'
 const PDFINFO_BIN = process.env.PDFINFO || 'pdfinfo'
@@ -21,8 +23,63 @@ const OCR_MAX_PAGES = Number(process.env.OCR_MAX_PAGES || 80)
 const OCR_MIN_CHARS_PER_PAGE = Number(process.env.OCR_MIN_CHARS_PER_PAGE || 40)
 const CONVERT_TIMEOUT_MS = Number(process.env.CONVERT_TIMEOUT_MS || 180000)
 const OCR_TIMEOUT_MS = Number(process.env.OCR_TIMEOUT_MS || 420000)
-const ALLOWED = new Set(['epub', 'pdf', 'txt', 'docx', 'mobi', 'azw3', 'html', 'htm'])
+const ALLOWED = new Set(['epub', 'pdf', 'txt', 'doc', 'docx', 'mobi', 'azw3', 'html', 'htm'])
 const REFLOWABLE = new Set(['epub', 'mobi', 'azw3', 'txt'])
+
+const DRM_MESSAGE =
+  '该文件受 DRM（数字版权保护）加密，魔书不提供也不协助移除 DRM。请改用无加密 / DRM-free 版本后再转换。'
+
+function readU16BE(buf, offset) {
+  return buf.readUInt16BE(offset)
+}
+
+function readU32BE(buf, offset) {
+  return buf.readUInt32BE(offset)
+}
+
+function detectDrmBuffer(from, data) {
+  if (from === 'epub' || from === 'azw3') {
+    const latin = data.toString('latin1')
+    if (/META-INF\/encryption\.xml/i.test(latin) || /META-INF\/rights\.xml/i.test(latin)) {
+      return 'encryption.xml'
+    }
+    if (/xmlns:adept|urn:adept|adept:resource/i.test(latin)) return 'Adobe ADEPT'
+  }
+  if (from === 'mobi' || from === 'azw3') {
+    if (data.length >= 86) {
+      try {
+        const first = readU32BE(data, 78)
+        if (first + 14 <= data.length) {
+          const enc = readU16BE(data, first + 12)
+          if (enc !== 0) return 'MOBI encryption'
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    const head = data.subarray(0, Math.min(data.length, 65536)).toString('latin1')
+    if (/DRM_KEY|DRMION|KindleEbookEncryption|PDOC_ENCRYPT/i.test(head)) {
+      return 'Kindle DRM'
+    }
+  }
+  if (from === 'pdf') {
+    const head = data.subarray(0, Math.min(data.length, 1024 * 64)).toString('latin1')
+    if (
+      /\/Encrypt\b/.test(head) &&
+      (/\/Filter\s*\/Standard/i.test(head) || /\/CFM\s*\/AES/i.test(head))
+    ) {
+      return 'PDF Encrypt'
+    }
+  }
+  return null
+}
+
+function mapConvertError(message) {
+  if (/DRM|encrypted|encryption|password|adept/i.test(message)) {
+    return DRM_MESSAGE
+  }
+  return message
+}
 
 function sendJson(res, status, body) {
   const data = JSON.stringify(body)
@@ -39,13 +96,13 @@ function parseMultipart(buf, boundary) {
   const parts = []
   let start = buf.indexOf(sep) + sep.length
   while (start < buf.length) {
-    if (buf[start] === 45 && buf[start + 1] === 45) break // --
+    if (buf[start] === 45 && buf[start + 1] === 45) break
     if (buf[start] === 13 && buf[start + 1] === 10) start += 2
     const headerEnd = buf.indexOf('\r\n\r\n', start)
     if (headerEnd < 0) break
     const headers = buf.slice(start, headerEnd).toString('utf8')
     const next = buf.indexOf(sep, headerEnd + 4)
-    const end = next < 0 ? buf.length : next - 2 // trim \r\n
+    const end = next < 0 ? buf.length : next - 2
     const content = buf.slice(headerEnd + 4, end)
     const nameMatch = /name="([^"]+)"/.exec(headers)
     const fileMatch = /filename="([^"]+)"/.exec(headers)
@@ -119,7 +176,6 @@ async function pdfNeedsOcr(pdfPath) {
 }
 
 async function runOcr(inputPath, outputPath) {
-  // Low-memory friendly: single job, skip pages that already have text.
   const args = [
     '--language',
     OCR_LANG,
@@ -140,7 +196,6 @@ async function runOcr(inputPath, outputPath) {
   await runCmd(OCRMYPDF_BIN, args, OCR_TIMEOUT_MS, 'OCR')
 }
 
-/** Calibre flags tuned for fuller MOBI/AZW3 fidelity. */
 function buildConvertArgs(from, to, inputPath, outputPath) {
   const args = [inputPath, outputPath, '--pretty-print']
   if (to === 'mobi') {
@@ -184,6 +239,35 @@ function runConvert(from, to, inputPath, outputPath) {
   })
 }
 
+/** Old Word .doc → LibreOffice, then Calibre when needed for MOBI/AZW3. */
+async function convertDocWithLibreOffice(inputPath, dir, to, outputPath) {
+  const loInput = path.join(dir, 'lo-in.doc')
+  fs.copyFileSync(inputPath, loInput)
+
+  const direct = to === 'pdf' || to === 'txt' || to === 'epub' || to === 'html' || to === 'htm'
+  const loTo = to === 'txt' ? 'txt:Text' : to === 'htm' ? 'html' : direct ? to : 'docx'
+  const midExt = to === 'txt' ? 'txt' : to === 'htm' ? 'html' : direct ? to : 'docx'
+
+  await runCmd(
+    LIBREOFFICE_BIN,
+    ['--headless', '--norestore', '--convert-to', loTo, '--outdir', dir, loInput],
+    OCR_TIMEOUT_MS,
+    'LibreOffice',
+  )
+
+  const produced = path.join(dir, `lo-in.${midExt}`)
+  if (!fs.existsSync(produced)) {
+    throw new Error('旧版 DOC 转换失败（LibreOffice 未生成输出）')
+  }
+
+  if (direct) {
+    fs.copyFileSync(produced, outputPath)
+    return
+  }
+
+  await runConvert('docx', to, produced, outputPath)
+}
+
 function cleanup(...files) {
   for (const f of files) {
     try {
@@ -221,7 +305,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && url.searchParams.get('health') === '1') {
     const ocr = await ocrAvailable()
-    sendJson(res, 200, { ok: true, engine: 'calibre', ocr })
+    sendJson(res, 200, { ok: true, engine: 'calibre', ocr, doc: true })
     return
   }
 
@@ -281,28 +365,37 @@ const server = http.createServer(async (req, res) => {
   let ocrApplied = false
   try {
     fs.writeFileSync(inputPath, filePart.data)
-    let convertInput = inputPath
 
-    // Scanned PDF → reflowable: OCR first so Calibre has a text layer.
-    if (from === 'pdf' && REFLOWABLE.has(to)) {
-      const needs = await pdfNeedsOcr(inputPath)
-      if (needs) {
-        const pages = await pdfPageCount(inputPath)
-        if (pages > OCR_MAX_PAGES) {
-          sendJson(res, 413, {
-            error: 'ocr_too_many_pages',
-            message: `扫描版 PDF 超过 ${OCR_MAX_PAGES} 页，请先拆分后再转（OCR 较耗资源）`,
-            maxPages: OCR_MAX_PAGES,
-          })
-          return
-        }
-        await runOcr(inputPath, ocrPath)
-        convertInput = ocrPath
-        ocrApplied = true
-      }
+    const drmHit = detectDrmBuffer(from, filePart.data)
+    if (drmHit) {
+      sendJson(res, 403, { error: 'drm_protected', message: DRM_MESSAGE, detail: drmHit })
+      return
     }
 
-    await runConvert(from, to, convertInput, outputPath)
+    if (from === 'doc') {
+      await convertDocWithLibreOffice(inputPath, dir, outExt, outputPath)
+    } else {
+      let convertInput = inputPath
+      if (from === 'pdf' && REFLOWABLE.has(to)) {
+        const needs = await pdfNeedsOcr(inputPath)
+        if (needs) {
+          const pages = await pdfPageCount(inputPath)
+          if (pages > OCR_MAX_PAGES) {
+            sendJson(res, 413, {
+              error: 'ocr_too_many_pages',
+              message: `扫描版 PDF 超过 ${OCR_MAX_PAGES} 页，请先拆分后再转（OCR 较耗资源）`,
+              maxPages: OCR_MAX_PAGES,
+            })
+            return
+          }
+          await runOcr(inputPath, ocrPath)
+          convertInput = ocrPath
+          ocrApplied = true
+        }
+      }
+      await runConvert(from, to, convertInput, outputPath)
+    }
+
     const out = fs.readFileSync(outputPath)
     res.writeHead(200, {
       'Content-Type': 'application/octet-stream',
@@ -314,9 +407,12 @@ const server = http.createServer(async (req, res) => {
     })
     res.end(out)
   } catch (e) {
-    sendJson(res, 500, {
-      error: 'convert_failed',
-      message: e instanceof Error ? e.message : String(e),
+    const raw = e instanceof Error ? e.message : String(e)
+    const message = mapConvertError(raw)
+    const drm = message === DRM_MESSAGE
+    sendJson(res, drm ? 403 : 500, {
+      error: drm ? 'drm_protected' : 'convert_failed',
+      message,
     })
   } finally {
     cleanup(inputPath, outputPath, ocrPath)

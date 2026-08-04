@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { t } from '../i18n'
 import {
   defaultCompressProfile,
   defaultMusicProfile,
@@ -14,6 +15,13 @@ import type { CompressMode } from './types'
 
 function uid(): string {
   return crypto.randomUUID()
+}
+
+function localizedError(e: unknown, fallbackKey: string): string {
+  if (e instanceof Error && e.message && !/[\u3400-\u9fff]/.test(e.message)) {
+    return e.message
+  }
+  return t(fallbackKey)
 }
 
 async function probeBlob(blob: Blob, fileName: string): Promise<MediaMeta> {
@@ -203,7 +211,7 @@ export const useMoyeeStore = create<Store>((set, get) => ({
     } catch (e) {
       set({
         engineLoading: false,
-        engineError: e instanceof Error ? e.message : '引擎加载失败',
+        engineError: localizedError(e, 'moyee.errorEngineLoadFailed'),
       })
     }
   },
@@ -228,7 +236,7 @@ export const useMoyeeStore = create<Store>((set, get) => ({
     set((s) => ({
       jobs: [...s.jobs, ...created],
       selectedId: created[0]?.id ?? s.selectedId,
-      banner: `已添加 ${created.length} 个文件（本地处理，不上传）`,
+      banner: t('moyee.bannerFilesAdded', { count: created.length }),
     }))
   },
 
@@ -288,7 +296,7 @@ export const useMoyeeStore = create<Store>((set, get) => ({
             }
           : j,
       ),
-      banner: '正在转换…浏览器内处理，大文件会较慢',
+      banner: t('moyee.bannerRunning'),
     }))
     try {
       const { blob, fileName } = await runJob({
@@ -317,20 +325,21 @@ export const useMoyeeStore = create<Store>((set, get) => ({
               }
             : j,
         ),
-        banner: '完成，列表已更新为输出文件信息，可下载结果',
+        banner: t('moyee.bannerCompleted'),
       }))
     } catch (e) {
+      const message = localizedError(e, 'moyee.errorConvertFailed')
       set((s) => ({
         jobs: s.jobs.map((j) =>
           j.id === job.id
             ? {
                 ...j,
                 status: 'failed',
-                error: e instanceof Error ? e.message : '转换失败',
+                error: message,
               }
             : j,
         ),
-        banner: e instanceof Error ? e.message : '转换失败',
+        banner: message,
       }))
     }
   },
@@ -352,7 +361,7 @@ export const useMoyeeStore = create<Store>((set, get) => ({
   runMergeJobs: async () => {
     const files = get().jobs.map((j) => j.file)
     if (files.length < 2) {
-      set({ banner: '合并模式请至少添加 2 个视频' })
+      set({ banner: t('moyee.errorMergeNeedFiles') })
       return
     }
     await get().ensureEngine()
@@ -373,7 +382,7 @@ export const useMoyeeStore = create<Store>((set, get) => ({
               }
             : j,
         ),
-        banner: '正在合并…',
+        banner: t('moyee.bannerMerging'),
       }))
     }
     try {
@@ -403,11 +412,11 @@ export const useMoyeeStore = create<Store>((set, get) => ({
                 }
               : j,
           ),
-          banner: '合并完成，列表已更新为输出文件信息',
+          banner: t('moyee.bannerMergeCompleted'),
         }))
       }
     } catch (e) {
-      set({ banner: e instanceof Error ? e.message : '合并失败' })
+      set({ banner: localizedError(e, 'moyee.errorMergeFailed') })
     }
   },
 

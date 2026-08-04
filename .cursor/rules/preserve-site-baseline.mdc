@@ -1,0 +1,28 @@
+---
+description: Protect the healthy site baseline (layout, i18n, store currency, ChatGPT Plus default). Work only on the main working branch.
+alwaysApply: true
+---
+
+# Site baseline — do not regress
+
+This repo’s **healthy production baseline** is tagged `stable/site-healthy-2026-08-04` (restore with `git checkout stable/site-healthy-2026-08-04` or reset to that commit if needed).
+
+## Working branch
+
+- Do **all** site feature work on the **`main`** branch in `/Users/maotaiyima/maotai网站`.
+- Do **not** implement website features on unrelated project branches / other repo workspaces and then rsync-overwrite production.
+- Before deploy, confirm the build still includes: homepage multi-grid, language switcher, store locale currency, ChatGPT default Plus, and `/markdown/`.
+
+## Must preserve
+
+1. **Homepage multi-grid** — `.item-list` is a responsive tile grid (3 → 2 → 1 columns), not a single-column list. Keep `src/styles/main.css` tile layout + `index.html` `#lang-switch` header.
+2. **Site-wide i18n** — `src/i18n/*`, language switcher, `data-i18n` markup, locale auto-detect. Do not remove or bypass when adding features.
+3. **AI store locale currency** — `src/store/currency.ts` / `money.tsx`: display money follows UI language (e.g. ja→JPY, en→USD). Keep this wired in store UI.
+4. **ChatGPT default plan = Plus** — `deploy/store-price/refresh.mjs` `PREFERRED_DEFAULT_PLANS.chatgpt` → `chatgpt-plus` / `plus_monthly`. Do not revert to cheapest-Go defaults.
+5. **Catalog entries** — keep `magic-markdown` and other apps in `src/data/apps.ts` **and** matching `src/i18n/locales/*` catalog copy.
+6. **Deploy caution** — `rsync --delete` of `dist/` wipes any live-only assets. Always build from this repo’s full tree before deploy.
+
+## When adding features
+
+- Prefer additive changes; avoid rewriting homepage/store shell “for convenience”.
+- If a change touches layout, i18n, or store defaults, verify those five items above still work before shipping.

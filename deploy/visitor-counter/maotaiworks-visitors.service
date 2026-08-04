@@ -1,5 +1,5 @@
 [Unit]
-Description=maotaiworks.com visitor counter
+Description=maotaiworks.com visitor counter + analytics
 After=network.target
 
 [Service]
@@ -9,6 +9,9 @@ Group=www-data
 WorkingDirectory=/opt/maotaiworks/visitor-counter
 Environment=PORT=3190
 Environment=VISITOR_DATA=/var/lib/maotaiworks/visitors.json
+Environment=ANALYTICS_DATA=/var/lib/maotaiworks/analytics.json
+Environment=CORS_ORIGIN=https://maotaiworks.com
+EnvironmentFile=-/etc/maotaiworks/admin.env
 ExecStart=/usr/bin/node /opt/maotaiworks/visitor-counter/server.mjs
 Restart=always
 RestartSec=2

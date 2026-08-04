@@ -214,10 +214,10 @@ export function buildChannelAdvice(productId, planIdHint) {
   const webDoc = loadChannelPrices(productId, 'web')
   const asPlan =
     (planIdHint && asDoc.byPlan?.[planIdHint] && planIdHint) ||
-    pickDefaultPlan(asDoc)
+    pickDefaultPlan(asDoc, productId)
   const webPlan =
     (planIdHint && webDoc.planMeta?.[planIdHint] && planIdHint) ||
-    pickDefaultPlan(webDoc)
+    pickDefaultPlan(webDoc, productId)
   const asRanked = asPlan ? rankedPrices(asDoc, asPlan) : []
   const asBest = asRanked[0]
   const webBase = webPlan ? webDoc.planMeta?.[webPlan]?.base : null
@@ -273,11 +273,11 @@ export function buildChannelAdvice(productId, planIdHint) {
 export function productCardSummary(product) {
   // Home "best deal" prefers App Store PPP. Web/desktop unified base is NOT a regional deal.
   const asDoc = loadChannelPrices(product.productId, 'appstore')
-  const asPlan = pickDefaultPlan(asDoc)
+  const asPlan = pickDefaultPlan(asDoc, product.productId)
   const asBest = asPlan ? rankedPrices(asDoc, asPlan)[0] : null
 
   const webDoc = loadChannelPrices(product.productId, 'web')
-  const webPlan = pickDefaultPlan(webDoc)
+  const webPlan = pickDefaultPlan(webDoc, product.productId)
   const webBase = webPlan ? webDoc.planMeta?.[webPlan]?.base : null
 
   let best = null

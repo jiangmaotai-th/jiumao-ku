@@ -195,3 +195,62 @@ export function compressCrf(mode: 'standard' | 'highQuality' | 'maxCompress', qu
   const offset = ((50 - quality) / 50) * 4
   return Math.min(36, Math.max(18, Math.round(base + offset)))
 }
+
+/**
+ * Compress size preview relative to the source file.
+ * Quality 100 ≈ 接近原体积（不超过原文件）；调低画质 / 更强模式 → 更小。
+ */
+export function estimateCompressBytes(opts: {
+  originalBytes: number
+  crf: number
+  quality: number
+  mode: 'standard' | 'highQuality' | 'maxCompress'
+  durationSecs?: number
+  width?: number
+  height?: number
+}): { bytes: number; low: number; high: number } {
+  const original = opts.originalBytes
+  if (original <= 0) return { bytes: 0, low: 0, high: 0 }
+
+  const q = Math.min(100, Math.max(0, opts.quality)) / 100
+  // Size ratio at slider midpoint (quality=50)
+  const midRatio =
+    opts.mode === 'highQuality' ? 0.78 : opts.mode === 'maxCompress' ? 0.3 : 0.5
+  const maxRatio = 0.98 // 画质拉满：最多接近原文件，不预估变大
+  const minRatio = Math.max(0.06, midRatio * 0.4)
+
+  let ratio: number
+  if (q >= 0.5) {
+    const t = (q - 0.5) / 0.5
+    ratio = midRatio + (maxRatio - midRatio) * t
+  } else {
+    const t = q / 0.5
+    ratio = minRatio + (midRatio - minRatio) * t
+  }
+
+  // Lightly bias with CRF so mode+slider stay consistent with encode settings
+  const crf = Math.min(36, Math.max(18, opts.crf))
+  const crfBias = Math.pow(2, (28 - crf) / 12) // mild
+  ratio = Math.min(maxRatio, Math.max(minRatio, ratio * (0.85 + 0.15 * Math.min(1.3, crfBias))))
+
+  let estimate = original * ratio
+
+  // If bitrate math exists, use the smaller of the two (still never above original)
+  const duration = opts.durationSecs
+  const w = opts.width
+  const h = opts.height
+  if (duration && duration > 0 && w && h && w * h > 0) {
+    const vsCrf23 = Math.pow(2, (23 - crf) / 6)
+    const videoMbps = Math.max(0.2, 5 * ((w * h) / (1920 * 1080)) * vsCrf23)
+    const bitrateBytes = ((videoMbps + 0.128) * 1_000_000) / 8 * duration
+    estimate = Math.min(estimate, bitrateBytes)
+  }
+
+  estimate = Math.min(original * maxRatio, Math.max(original * minRatio, estimate))
+  const bytes = Math.round(estimate)
+  return {
+    bytes,
+    low: Math.round(Math.max(original * minRatio, bytes * 0.88)),
+    high: Math.round(Math.min(original, bytes * 1.1)),
+  }
+}

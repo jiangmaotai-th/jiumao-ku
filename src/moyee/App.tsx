@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import { useMoyeeStore } from './store'
 import {
   AUDIO_CONTAINERS,
@@ -9,15 +11,6 @@ import {
 } from './domain/platforms'
 import type { AppMode, ExtractMode, OutputProfile } from './types'
 
-const NAV: { id: AppMode | 'manual'; label: string }[] = [
-  { id: 'convert', label: '视频转换' },
-  { id: 'compress', label: '视频压缩' },
-  { id: 'music', label: '音频' },
-  { id: 'merge', label: '合并' },
-  { id: 'extract', label: '提取' },
-  { id: 'manual', label: '说明' },
-]
-
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
   if (n < 1024 ** 2) return `${(n / 1024).toFixed(1)} KB`
@@ -25,11 +18,33 @@ function formatBytes(n: number): string {
   return `${(n / 1024 ** 3).toFixed(2)} GB`
 }
 
-function statusLabel(status: string, progress: number): string {
+function statusLabel(
+  status: string,
+  progress: number,
+  translate: (path: string, vars?: Record<string, string | number>) => string,
+): string {
   if (status === 'running') return `${progress}%`
-  if (status === 'completed') return '完成'
-  if (status === 'failed') return '失败'
-  return '就绪'
+  if (status === 'completed') return translate('moyee.statusCompleted')
+  if (status === 'failed') return translate('moyee.statusFailed')
+  return translate('moyee.statusReady')
+}
+
+function modeTitle(
+  mode: AppMode,
+  translate: (path: string, vars?: Record<string, string | number>) => string,
+): string {
+  switch (mode) {
+    case 'convert':
+      return translate('moyee.modeConvert')
+    case 'compress':
+      return translate('moyee.modeCompress')
+    case 'music':
+      return translate('moyee.modeMusic')
+    case 'merge':
+      return translate('moyee.modeMerge')
+    case 'extract':
+      return translate('moyee.modeExtract')
+  }
 }
 
 export function App() {
@@ -54,9 +69,23 @@ export function App() {
   const setCompressMode = useMoyeeStore((s) => s.setCompressMode)
   const setCompressQuality = useMoyeeStore((s) => s.setCompressQuality)
 
+  const { t } = useT()
   const [panel, setPanel] = useState<AppMode | 'manual'>('convert')
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const nav = useMemo(
+    () =>
+      [
+        { id: 'convert' as const, label: t('moyee.modeConvert') },
+        { id: 'compress' as const, label: t('moyee.modeCompress') },
+        { id: 'music' as const, label: t('moyee.modeMusic') },
+        { id: 'merge' as const, label: t('moyee.modeMerge') },
+        { id: 'extract' as const, label: t('moyee.modeExtract') },
+        { id: 'manual' as const, label: t('moyee.modeManual') },
+      ] satisfies { id: AppMode | 'manual'; label: string }[],
+    [t],
+  )
 
   useEffect(() => {
     void ensureEngine()
@@ -81,24 +110,25 @@ export function App() {
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="/moyee/">
-          魔叶Converte
+          {t('moyee.heroTitle')}
         </a>
         <div className="topbar-meta">
           <span>
             {engineLoading
-              ? '引擎加载中…'
+              ? t('moyee.engineLoading')
               : engineReady
-                ? 'FFmpeg 就绪 · 本地处理'
+                ? t('moyee.engineReady')
                 : engineError
-                  ? `引擎失败：${engineError}`
-                  : '准备引擎…'}
+                  ? engineError
+                  : t('moyee.engineLoading')}
           </span>
-          <a href="/">返回九猫库</a>
+          <a href="/">{t('common.backHome')}</a>
+          <LangSwitchHost />
         </div>
       </header>
 
       <aside className="sidebar">
-        {NAV.map((item) => (
+        {nav.map((item) => (
           <button
             key={item.id}
             type="button"
@@ -129,13 +159,13 @@ export function App() {
                 void addFiles(e.dataTransfer.files)
               }}
             >
-              <strong>拖放文件到这里，或点击选择</strong>
+              <strong>{t('moyee.dropHint')}</strong>
               <span>
                 {mode === 'merge'
-                  ? '合并模式：按顺序添加至少 2 个视频'
+                  ? t('moyee.dropMergeHint')
                   : mode === 'music'
-                    ? '支持常见音频 / 视频（提取音轨）'
-                    : '文件只在浏览器内处理，不会上传到服务器'}
+                    ? t('moyee.dropMusicHint')
+                    : t('moyee.privacyNote')}
               </span>
               <input
                 ref={inputRef}
@@ -155,7 +185,7 @@ export function App() {
             </div>
 
             {jobs.length === 0 ? (
-              <p className="empty-hint">还没有任务。添加媒体后可在右侧调整参数。</p>
+              <p className="empty-hint">{t('moyee.noJobs')}</p>
             ) : (
               <div className="task-list">
                 {jobs.map((job) => {
@@ -174,7 +204,7 @@ export function App() {
                     ) : isImageThumb ? (
                       <img className="task-thumb" src={shown.previewUrl} alt="" />
                     ) : (
-                      <div className="task-thumb audio">AUDIO</div>
+                      <div className="task-thumb audio">{t('moyee.audioBadge')}</div>
                     )}
                     <div>
                       <p className="task-name">{shown.fileName}</p>
@@ -186,7 +216,7 @@ export function App() {
                         {shown.width && shown.height
                           ? ` · ${shown.width}×${shown.height}`
                           : ''}
-                        {job.status === 'completed' ? ' · 输出' : ''}
+                        {job.status === 'completed' ? ` · ${t('moyee.outputMarker')}` : ''}
                       </p>
                     </div>
                     <div className="task-actions">
@@ -201,7 +231,7 @@ export function App() {
                                 : ''
                         }`}
                       >
-                        {statusLabel(job.status, job.progress)}
+                        {statusLabel(job.status, job.progress, t)}
                       </span>
                       {job.status === 'completed' ? (
                         <button
@@ -212,7 +242,7 @@ export function App() {
                             downloadJob(job.id)
                           }}
                         >
-                          下载
+                          {t('moyee.download')}
                         </button>
                       ) : null}
                       <button
@@ -223,7 +253,7 @@ export function App() {
                           removeJob(job.id)
                         }}
                       >
-                        移除
+                        {t('moyee.remove')}
                       </button>
                     </div>
                   </article>
@@ -238,15 +268,15 @@ export function App() {
       <aside className="inspector">
         {panel === 'manual' ? (
           <>
-            <h2>网页版说明</h2>
+            <h2>{t('moyee.webGuideTitle')}</h2>
             <p className="banner">
-              对齐桌面版核心工作流：转换、压缩、音频、合并、提取与平台预设。处理在本地浏览器完成。
+              {t('moyee.webGuideLead')}
             </p>
           </>
         ) : !selected ? (
           <>
-            <h2>输出设置</h2>
-            <p className="banner">选择一个任务后可编辑参数。</p>
+            <h2>{t('moyee.settingsTitle')}</h2>
+            <p className="banner">{t('moyee.settingsNoSelection')}</p>
           </>
         ) : (
           <Inspector
@@ -283,7 +313,7 @@ export function App() {
 
       <footer className="footer">
         <div className="footer-copy">
-          <p className="banner">{banner ?? '魔叶Converte 网页版 · maotaiworks.com'}</p>
+          <p className="banner">{banner ?? t('moyee.footerBrand')}</p>
           <p className="privacy-note">
             <span className="local-mark" aria-hidden="true">
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -292,12 +322,12 @@ export function App() {
                 <circle cx="8" cy="7" r="1.35" fill="currentColor" />
               </svg>
             </span>
-            本地处理｜转换压缩全在本机完成，不上传、不联网，隐私零泄露。{' '}
-            <a href="/legal/#privacy">隐私说明</a>
+            {t('moyee.privacyNote')}{' '}
+            <a href="/legal/#privacy">{t('common.privacy')}</a>
             {' · '}
-            <a href="/legal/#terms">使用条款</a>
+            <a href="/legal/#terms">{t('common.terms')}</a>
             {' · '}
-            <a href="/legal/#credits">开源致谢</a>
+            <a href="/legal/#credits">{t('common.credits')}</a>
           </p>
         </div>
         <div className="footer-actions">
@@ -307,7 +337,7 @@ export function App() {
             disabled={!selected || selected.status === 'running' || panel === 'manual'}
             onClick={() => void runSelected()}
           >
-            {mode === 'merge' ? '开始合并' : '开始转换'}
+            {mode === 'merge' ? t('moyee.startMerge') : t('moyee.start')}
           </button>
           <button
             type="button"
@@ -315,11 +345,11 @@ export function App() {
             disabled={!jobs.length || panel === 'manual' || mode === 'merge'}
             onClick={() => void runAll()}
           >
-            全部开始
+            {t('moyee.startAll')}
           </button>
           {selected?.status === 'completed' ? (
             <button type="button" className="btn" onClick={() => downloadJob(selected.id)}>
-              下载结果
+              {t('moyee.downloadResult')}
             </button>
           ) : null}
         </div>
@@ -353,25 +383,16 @@ function Inspector({
   onCompressQuality: (q: number) => void
   onChange: (p: OutputProfile) => void
 }) {
+  const { t } = useT()
   const containers = mode === 'music' || mode === 'extract' ? AUDIO_CONTAINERS : VIDEO_CONTAINERS
   const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName) && !hasVideo
 
   return (
     <>
-      <h2>
-        {mode === 'convert'
-          ? '转换'
-          : mode === 'compress'
-            ? '压缩'
-            : mode === 'music'
-              ? '音频'
-              : mode === 'merge'
-                ? '合并'
-                : '提取'}
-      </h2>
+      <h2>{modeTitle(mode, t)}</h2>
 
       <section className="field-group">
-        <h3>预览</h3>
+        <h3>{t('moyee.preview')}</h3>
         <div className="preview-box">
           {hasVideo ? (
             <video key={previewUrl} src={previewUrl} controls playsInline preload="metadata" />
@@ -385,14 +406,14 @@ function Inspector({
       </section>
 
       {mode === 'merge' ? (
-        <p className="banner">将按任务列表顺序拼接（尽量使用相同编码的视频）。</p>
+        <p className="banner">{t('moyee.mergeHint')}</p>
       ) : null}
 
       {mode === 'compress' ? (
         <section className="field-group">
-          <h3>压缩</h3>
+          <h3>{t('moyee.compressTitle')}</h3>
           <div className="field">
-            <label htmlFor="cmode">模式</label>
+            <label htmlFor="cmode">{t('moyee.modeLabel')}</label>
             <select
               id="cmode"
               value={compressMode}
@@ -400,13 +421,13 @@ function Inspector({
                 onCompressMode(e.target.value as 'standard' | 'highQuality' | 'maxCompress')
               }
             >
-              <option value="standard">标准</option>
-              <option value="highQuality">高质量</option>
-              <option value="maxCompress">极限压缩</option>
+              <option value="standard">{t('moyee.compressStandard')}</option>
+              <option value="highQuality">{t('moyee.compressHighQuality')}</option>
+              <option value="maxCompress">{t('moyee.compressMaxCompress')}</option>
             </select>
           </div>
           <div className="field">
-            <label htmlFor="cq">画质 {compressQuality}</label>
+            <label htmlFor="cq">{t('moyee.qualityLabel', { value: compressQuality })}</label>
             <input
               id="cq"
               type="range"
@@ -416,15 +437,20 @@ function Inspector({
               onChange={(e) => onCompressQuality(Number(e.target.value))}
             />
           </div>
-          <p className="banner">CRF ≈ {profile.crf ?? '—'} · 保持原容器 {profile.container.toUpperCase()}</p>
+          <p className="banner">
+            {t('moyee.crfHint', {
+              crf: profile.crf ?? '-',
+              container: profile.container.toUpperCase(),
+            })}
+          </p>
         </section>
       ) : null}
 
       {mode === 'extract' ? (
         <section className="field-group">
-          <h3>提取类型</h3>
+          <h3>{t('moyee.extractTitle')}</h3>
           <div className="field">
-            <label htmlFor="ex">模式</label>
+            <label htmlFor="ex">{t('moyee.modeLabel')}</label>
             <select
               id="ex"
               value={profile.extractMode ?? 'audio'}
@@ -439,9 +465,9 @@ function Inspector({
                 }
               }}
             >
-              <option value="audio">提取音频</option>
-              <option value="gif">转 GIF</option>
-              <option value="cover">封面图</option>
+              <option value="audio">{t('moyee.extractAudio')}</option>
+              <option value="gif">{t('moyee.extractGif')}</option>
+              <option value="cover">{t('moyee.extractCover')}</option>
             </select>
           </div>
         </section>
@@ -449,9 +475,9 @@ function Inspector({
 
       {mode === 'convert' ? (
         <section className="field-group">
-          <h3>平台预设</h3>
+          <h3>{t('moyee.platformPresets')}</h3>
           <div className="field">
-            <label htmlFor="plat">一键规格</label>
+            <label htmlFor="plat">{t('moyee.platformSpec')}</label>
             <select
               id="plat"
               value={profile.platformId ?? ''}
@@ -465,18 +491,18 @@ function Inspector({
                 if (preset) onChange({ ...preset.profile })
               }}
             >
-              <option value="">自定义</option>
-              <optgroup label="社交平台">
+              <option value="">{t('moyee.platformCustom')}</option>
+              <optgroup label={t('moyee.platformSocial')}>
                 {PLATFORM_PRESETS.filter((p) => p.category === 'social').map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.label}
+                    {t(`moyee.plat.${p.id}`)}
                   </option>
                 ))}
               </optgroup>
-              <optgroup label="卖家">
+              <optgroup label={t('moyee.platformSeller')}>
                 {PLATFORM_PRESETS.filter((p) => p.category === 'seller').map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.label}
+                    {t(`moyee.plat.${p.id}`)}
                   </option>
                 ))}
               </optgroup>
@@ -487,9 +513,9 @@ function Inspector({
 
       {mode !== 'merge' && !(mode === 'extract' && profile.extractMode !== 'audio') ? (
         <section className="field-group">
-          <h3>格式</h3>
+          <h3>{t('moyee.formatTitle')}</h3>
           <div className="field">
-            <label htmlFor="fmt">容器</label>
+            <label htmlFor="fmt">{t('moyee.container')}</label>
             <select
               id="fmt"
               value={profile.container}
@@ -515,7 +541,7 @@ function Inspector({
           {mode === 'convert' || mode === 'music' ? (
             <div className="field-row">
               <div className="field">
-                <label htmlFor="ab">音频码率</label>
+                <label htmlFor="ab">{t('moyee.audioBitrate')}</label>
                 <input
                   id="ab"
                   type="number"
@@ -528,7 +554,7 @@ function Inspector({
                 />
               </div>
               <div className="field">
-                <label htmlFor="ar">采样率</label>
+                <label htmlFor="ar">{t('moyee.sampleRate')}</label>
                 <select
                   id="ar"
                   value={profile.sampleRate ?? ''}
@@ -540,7 +566,7 @@ function Inspector({
                     })
                   }
                 >
-                  <option value="">原始</option>
+                  <option value="">{t('moyee.original')}</option>
                   <option value="44100">44100</option>
                   <option value="48000">48000</option>
                 </select>
@@ -550,11 +576,11 @@ function Inspector({
           {mode === 'convert' ? (
             <div className="field-row">
               <div className="field">
-                <label htmlFor="w">宽</label>
+                <label htmlFor="w">{t('moyee.width')}</label>
                 <input
                   id="w"
                   type="number"
-                  placeholder="原画"
+                  placeholder={t('moyee.originalResolution')}
                   value={profile.width ?? ''}
                   onChange={(e) =>
                     onChange({
@@ -567,11 +593,11 @@ function Inspector({
                 />
               </div>
               <div className="field">
-                <label htmlFor="h">高</label>
+                <label htmlFor="h">{t('moyee.height')}</label>
                 <input
                   id="h"
                   type="number"
-                  placeholder="原画"
+                  placeholder={t('moyee.originalResolution')}
                   value={profile.height ?? ''}
                   onChange={(e) =>
                     onChange({
@@ -590,10 +616,10 @@ function Inspector({
 
       {mode !== 'merge' ? (
         <section className="field-group">
-          <h3>时间范围</h3>
+          <h3>{t('moyee.timeRange')}</h3>
           <div className="field-row">
             <div className="field">
-              <label htmlFor="ts">起点（秒）</label>
+              <label htmlFor="ts">{t('moyee.trimStart')}</label>
               <input
                 id="ts"
                 type="number"
@@ -609,7 +635,7 @@ function Inspector({
               />
             </div>
             <div className="field">
-              <label htmlFor="te">终点（秒）</label>
+              <label htmlFor="te">{t('moyee.trimEnd')}</label>
               <input
                 id="te"
                 type="number"
@@ -631,7 +657,7 @@ function Inspector({
             className="btn"
             onClick={() => onChange({ ...profile, trimStartSecs: null, trimEndSecs: null })}
           >
-            清除裁剪
+            {t('moyee.clearTrim')}
           </button>
         </section>
       ) : null}
@@ -639,9 +665,9 @@ function Inspector({
       {mode === 'convert' ? (
         <>
           <section className="field-group">
-            <h3>画面</h3>
+            <h3>{t('moyee.picture')}</h3>
             <div className="field">
-              <label htmlFor="rot">旋转</label>
+              <label htmlFor="rot">{t('moyee.rotate')}</label>
               <select
                 id="rot"
                 value={profile.rotateDegrees ?? 0}
@@ -662,7 +688,7 @@ function Inspector({
                   checked={!!profile.hFlip}
                   onChange={(e) => onChange({ ...profile, hFlip: e.target.checked })}
                 />{' '}
-                水平翻转
+                {t('moyee.hFlip')}
               </label>
               <label>
                 <input
@@ -670,11 +696,11 @@ function Inspector({
                   checked={!!profile.vFlip}
                   onChange={(e) => onChange({ ...profile, vFlip: e.target.checked })}
                 />{' '}
-                垂直翻转
+                {t('moyee.vFlip')}
               </label>
             </div>
             <div className="field">
-              <label htmlFor="aspect">比例模式</label>
+              <label htmlFor="aspect">{t('moyee.aspectMode')}</label>
               <select
                 id="aspect"
                 value={profile.aspectMode}
@@ -685,25 +711,25 @@ function Inspector({
                   })
                 }
               >
-                <option value="keep">保持（补边）</option>
-                <option value="crop">裁切填充</option>
-                <option value="stretch">拉伸</option>
+                <option value="keep">{t('moyee.aspectKeep')}</option>
+                <option value="crop">{t('moyee.aspectCrop')}</option>
+                <option value="stretch">{t('moyee.aspectStretch')}</option>
               </select>
             </div>
           </section>
 
           <section className="field-group">
-            <h3>水印 / 响度</h3>
+            <h3>{t('moyee.watermarkLoudness')}</h3>
             <label>
               <input
                 type="checkbox"
                 checked={!!profile.watermarkEnabled}
                 onChange={(e) => onChange({ ...profile, watermarkEnabled: e.target.checked })}
               />{' '}
-              启用文字水印
+              {t('moyee.enableTextWatermark')}
             </label>
             <div className="field">
-              <label htmlFor="wm">水印文字</label>
+              <label htmlFor="wm">{t('moyee.watermarkText')}</label>
               <input
                 id="wm"
                 type="text"
@@ -712,7 +738,7 @@ function Inspector({
               />
             </div>
             <div className="field">
-              <label htmlFor="wmp">位置</label>
+              <label htmlFor="wmp">{t('moyee.watermarkPosition')}</label>
               <select
                 id="wmp"
                 value={profile.watermarkPosition ?? 'br'}
@@ -723,11 +749,11 @@ function Inspector({
                   })
                 }
               >
-                <option value="tl">左上</option>
-                <option value="tr">右上</option>
-                <option value="bl">左下</option>
-                <option value="br">右下</option>
-                <option value="center">居中</option>
+                <option value="tl">{t('moyee.positionTl')}</option>
+                <option value="tr">{t('moyee.positionTr')}</option>
+                <option value="bl">{t('moyee.positionBl')}</option>
+                <option value="br">{t('moyee.positionBr')}</option>
+                <option value="center">{t('moyee.positionCenter')}</option>
               </select>
             </div>
             <label>
@@ -736,7 +762,7 @@ function Inspector({
                 checked={!!profile.loudnormEnabled}
                 onChange={(e) => onChange({ ...profile, loudnormEnabled: e.target.checked })}
               />{' '}
-              响度标准化
+              {t('moyee.loudnorm')}
             </label>
           </section>
         </>
@@ -746,34 +772,32 @@ function Inspector({
 }
 
 function ManualPanel() {
+  const { t, tList } = useT()
+
   return (
     <div className="manual" style={{ padding: '1.25rem 1.5rem', overflow: 'auto' }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>使用说明</h2>
-      <p>
-        MoyeeConverter 是一款全能视频音频转换器，格式转换、体积压缩、参数精调一站式搞定。网页版在浏览器内用
-        FFmpeg（WebAssembly）处理媒体，文件不会上传到服务器。
-      </p>
-      <h3>功能对齐</h3>
+      <h2 style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>
+        {t('moyee.manualTitle')}
+      </h2>
+      <p>{t('moyee.manualIntro')}</p>
+      <h3>{t('moyee.manualFeatureTitle')}</h3>
       <ul>
-        <li>视频转换：格式、分辨率、平台预设（抖音 / 小红书 / YouTube 等）</li>
-        <li>视频压缩：标准 / 高质量 / 极限 + 画质滑杆</li>
-        <li>音频转换：MP3 / M4A / WAV / FLAC / OGG</li>
-        <li>合并：多段视频顺序拼接</li>
-        <li>提取：音轨 / GIF / 封面</li>
-        <li>裁剪时间、旋转翻转、文字水印、响度标准化</li>
+        {tList('moyee.manualFeatures').map((item) => (
+          <li key={item}>{item}</li>
+        ))}
       </ul>
-      <h3>与桌面版差异</h3>
+      <h3>{t('moyee.manualDifferenceTitle')}</h3>
       <ul>
-        <li>大文件会更慢，并受浏览器内存限制（建议单文件 &lt; 500MB）</li>
-        <li>图片水印、外挂字幕烧录、硬件加速等以桌面版为准</li>
-        <li>首次打开需下载约 25MB 的 FFmpeg 引擎（可缓存）</li>
+        {tList('moyee.manualDifferences').map((item) => (
+          <li key={item}>{item}</li>
+        ))}
       </ul>
       <p>
-        需要完整批量与桌面体验时，请到{' '}
+        {t('moyee.manualDownloadPrefix')}{' '}
         <a href="/" style={{ color: 'var(--gold-soft)' }}>
-          九猫库
+          {t('common.brand')}
         </a>{' '}
-        下载安装包。
+        {t('moyee.manualDownloadSuffix')}
       </p>
     </div>
   )

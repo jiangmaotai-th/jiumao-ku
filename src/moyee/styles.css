@@ -10,7 +10,7 @@
   --danger: #e07860;
   --ok: #7cb89a;
   --font-display: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
-  --font-body: 'DM Sans', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
   --sidebar: 200px;
   --inspector: min(340px, 34vw);
   color-scheme: dark;

@@ -29,6 +29,9 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "utif": "^3.1.0",
-    "zustand": "^5.0.14"
+    "zustand": "^5.0.14",
+    "snappyjs": "^0.7.0",
+    "tesseract.js": "^7.0.0",
+    "iwork-preview": "^1.0.0"
   }
 }

@@ -202,7 +202,10 @@ export const AI_PRODUCTS = [
   }),
   p('character-ai-plus', 'Character.AI Plus', 'Character.AI Plus', 'chat', 'Character.AI', {
     appstore: { trackId: 1607652642, planHints: ['c.ai+', 'plus', 'character'] },
-    web: { planKeys: ['plus_monthly'] },
+    web: {
+      pricingUrl: 'https://character.ai/subscribe',
+      planKeys: ['plus_monthly', 'plus_yearly'],
+    },
   }),
   p('replika-pro', 'Replika Pro', 'Replika Pro', 'chat', 'Luka', {
     appstore: { trackId: 1158555867, planHints: ['pro', 'replika'] },
@@ -231,16 +234,16 @@ export const AI_PRODUCTS = [
   }),
   p('kimi', 'Kimi', 'Kimi', 'chat', '月之暗面', {
     web: {
-      pricingUrl: 'https://www.kimi.com/zh-cn/help/membership/membership-pricing',
+      pricingUrl: 'https://www.kimi.ai/help/membership/membership-pricing',
       planKeys: [
-        'andante_monthly',
-        'andante_yearly',
         'moderato_monthly',
         'moderato_yearly',
         'allegretto_monthly',
         'allegretto_yearly',
         'allegro_monthly',
         'allegro_yearly',
+        'vivace_monthly',
+        'vivace_yearly',
       ],
     },
   }),
@@ -310,7 +313,10 @@ export const AI_PRODUCTS = [
     },
   }),
   p('replit-core', 'Replit Core', 'Replit Core', 'coding', 'Replit', {
-    web: { planKeys: ['core_monthly'] },
+    web: {
+      pricingUrl: 'https://replit.com/pricing',
+      planKeys: ['core_monthly', 'core_yearly', 'pro_monthly', 'pro_yearly'],
+    },
   }),
   p('amazon-q', 'Amazon Q Developer', 'Amazon Q Developer', 'coding', 'Amazon', {
     web: { planKeys: ['pro_monthly'] },

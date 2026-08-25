@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-08-03 每日核对已更新差异档。切勿填入 App Store PPP。",
-    "updated": "2026-08-03",
+    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-08-25 每日核对已更新差异档。切勿填入 App Store PPP。",
+    "updated": "2026-08-25",
     "lastScrapeAt": "2026-08-02T00:54:25.675Z",
     "byProduct": {
       "gemini-advanced": {
@@ -57,12 +57,14 @@
         "updatedAt": "2026-08-02T03:09:22.821Z"
       },
       "character-ai-plus": {
-        "status": "stale",
-        "pricingUrl": "https://character.ai/subscription",
-        "source": "generic:fetch-fail",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastError": "http_404",
-        "lastConfirmedAt": null
+        "status": "confirmed",
+        "pricingUrl": "https://character.ai/subscribe",
+        "source": "daily-verify:2026-08-25",
+        "updatedAt": "2026-08-25T10:15:20.151Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-08-25T10:15:20.151Z",
+        "partial": false,
+        "note": "2026-08-25：定价 URL 改为 /subscribe；年付折合按 $94.99/12=$7.92"
       },
       "replika-pro": {
         "status": "stale",
@@ -126,13 +128,14 @@
         "partial": false
       },
       "kimi": {
-        "status": "live",
-        "pricingUrl": "https://www.kimi.com/zh-cn/help/membership/membership-pricing",
-        "source": "scrape:kimi-help",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastConfirmedAt": "2026-08-02T00:54:27.409Z",
+        "status": "confirmed",
+        "pricingUrl": "https://www.kimi.ai/help/membership/membership-pricing",
+        "source": "daily-verify:2026-08-25",
+        "updatedAt": "2026-08-25T10:15:20.151Z",
+        "lastConfirmedAt": "2026-08-25T10:15:20.151Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "2026-08-25：官网 USD 档 Moderato/Allegretto/Allegro/Vivace；下架 Andante（含年付幽灵）"
       },
       "sparkdesk": {
         "status": "stale",
@@ -206,11 +209,12 @@
       "replit-core": {
         "status": "confirmed",
         "pricingUrl": "https://replit.com/pricing",
-        "source": "scrape:generic-confirm",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastConfirmedAt": "2026-08-02T00:55:03.807Z",
+        "source": "daily-verify:2026-08-25",
+        "updatedAt": "2026-08-25T10:15:20.151Z",
+        "lastConfirmedAt": "2026-08-25T10:15:20.151Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "2026-08-25：补上 Pro 年付折合 $95（官网 Yearly 展示）"
       },
       "amazon-q": {
         "status": "confirmed",
@@ -1407,75 +1411,75 @@
     }
   },
   "kimi": {
-    "andante_monthly": {
-      "base": {
-        "amount": 49,
-        "currency": "CNY",
-        "priceFormatted": "¥49",
-        "label": "官网标价（人民币）"
-      },
-      "locals": {}
-    },
-    "andante_yearly": {
-      "base": {
-        "amount": 39,
-        "currency": "CNY",
-        "priceFormatted": "¥39",
-        "label": "连续包年折合月价（年付 ¥468）"
-      },
-      "locals": {}
-    },
     "moderato_monthly": {
       "base": {
-        "amount": 99,
-        "currency": "CNY",
-        "priceFormatted": "¥99",
-        "label": "官网标价（人民币）"
+        "amount": 19,
+        "currency": "USD",
+        "priceFormatted": "$19.00",
+        "label": "Moderato 月付"
       },
       "locals": {}
     },
     "moderato_yearly": {
       "base": {
-        "amount": 79,
-        "currency": "CNY",
-        "priceFormatted": "¥79",
-        "label": "连续包年折合月价（年付 ¥948）"
+        "amount": 15,
+        "currency": "USD",
+        "priceFormatted": "$15.00",
+        "label": "Moderato 年付折合月价（年付 $180）"
       },
       "locals": {}
     },
     "allegretto_monthly": {
       "base": {
-        "amount": 199,
-        "currency": "CNY",
-        "priceFormatted": "¥199",
-        "label": "官网标价（人民币）"
+        "amount": 39,
+        "currency": "USD",
+        "priceFormatted": "$39.00",
+        "label": "Allegretto 月付"
       },
       "locals": {}
     },
     "allegretto_yearly": {
       "base": {
-        "amount": 159,
-        "currency": "CNY",
-        "priceFormatted": "¥159",
-        "label": "连续包年折合月价（年付 ¥1,908）"
+        "amount": 31,
+        "currency": "USD",
+        "priceFormatted": "$31.00",
+        "label": "Allegretto 年付折合月价（年付 $372）"
       },
       "locals": {}
     },
     "allegro_monthly": {
       "base": {
-        "amount": 699,
-        "currency": "CNY",
-        "priceFormatted": "¥699",
-        "label": "官网标价（人民币）"
+        "amount": 99,
+        "currency": "USD",
+        "priceFormatted": "$99.00",
+        "label": "Allegro 月付"
       },
       "locals": {}
     },
     "allegro_yearly": {
       "base": {
-        "amount": 559,
-        "currency": "CNY",
-        "priceFormatted": "¥559",
-        "label": "连续包年折合月价（年付 ¥6,708）"
+        "amount": 79,
+        "currency": "USD",
+        "priceFormatted": "$79.00",
+        "label": "Allegro 年付折合月价（年付 $948）"
+      },
+      "locals": {}
+    },
+    "vivace_monthly": {
+      "base": {
+        "amount": 199,
+        "currency": "USD",
+        "priceFormatted": "$199.00",
+        "label": "Vivace 月付"
+      },
+      "locals": {}
+    },
+    "vivace_yearly": {
+      "base": {
+        "amount": 159,
+        "currency": "USD",
+        "priceFormatted": "$159.00",
+        "label": "Vivace 年付折合月价（年付 $1,908）"
       },
       "locals": {}
     }
@@ -1954,10 +1958,10 @@
     },
     "plus_yearly": {
       "base": {
-        "amount": 7.99,
+        "amount": 7.92,
         "currency": "USD",
-        "priceFormatted": "$7.99",
-        "label": "c.ai+ 年付折合月价"
+        "priceFormatted": "$7.92",
+        "label": "c.ai+ 年付折合月价（$94.99/年）"
       },
       "locals": {}
     }
@@ -2396,6 +2400,15 @@
         "currency": "USD",
         "priceFormatted": "$100.00",
         "label": "Pro 月付"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 95,
+        "currency": "USD",
+        "priceFormatted": "$95.00",
+        "label": "Pro 年付折合月价"
       },
       "locals": {}
     }

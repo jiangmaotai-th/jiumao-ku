@@ -98,10 +98,10 @@ export const PLAN_EXPANSIONS = {
     },
   },
   'character-ai-plus': {
-    pricingUrl: 'https://character.ai/subscription',
+    pricingUrl: 'https://character.ai/subscribe',
     plans: {
       plus_monthly: usd(9.99, 'c.ai+ 月付'),
-      plus_yearly: usd(7.99, 'c.ai+ 年付折合月价'),
+      plus_yearly: usd(7.92, 'c.ai+ 年付折合月价（$94.99/年）'),
     },
   },
   'replika-pro': {
@@ -261,6 +261,7 @@ export const PLAN_EXPANSIONS = {
       core_monthly: usd(25, 'Core 月付'),
       core_yearly: usd(20, 'Core 年付折合月价'),
       pro_monthly: usd(100, 'Pro 月付'),
+      pro_yearly: usd(95, 'Pro 年付折合月价'),
     },
   },
   'sourcegraph-cody': {

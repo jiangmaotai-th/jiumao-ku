@@ -2,6 +2,7 @@ import { StrictMode, type ComponentType } from 'react'
 import { createRoot } from 'react-dom/client'
 import { applyDocumentMeta, initLocale, t } from './index'
 import { I18nProvider } from './react'
+import { mountNoteWidget } from '../note/widget'
 
 /** Boot a React SPA with shared locale detection (same mw_lang as homepage). */
 export function bootReactApp(
@@ -28,4 +29,5 @@ export function bootReactApp(
       </I18nProvider>
     </StrictMode>,
   )
+  mountNoteWidget()
 }

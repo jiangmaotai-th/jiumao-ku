@@ -1,11 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
+import { createNoteMiddleware } from './scripts/note-middleware.js'
 
 const root = import.meta.dirname
+const notes = createNoteMiddleware(root)
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'notes',
+      configureServer(server) {
+        server.middlewares.use(notes)
+      },
+      configurePreviewServer(server) {
+        server.middlewares.use(notes)
+      },
+    },
+  ],
   build: {
     rollupOptions: {
       input: {
@@ -36,6 +49,10 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/api/event': {
+        target: 'http://127.0.0.1:3190',
+        changeOrigin: true,
+      },
+      '/api/note': {
         target: 'http://127.0.0.1:3190',
         changeOrigin: true,
       },

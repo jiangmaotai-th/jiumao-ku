@@ -7,6 +7,7 @@ export type AnalyticsAppId =
   | 'mowin'
   | 'moyi'
   | 'switch-price'
+  | 'daily-scratch'
   | (string & {})
 
 export type AnalyticsEventType = 'view' | 'download' | 'use'
@@ -37,6 +38,7 @@ export function trackEvent(
 
 export function trackView(app: AnalyticsAppId): void {
   trackEvent(app, 'view')
+  void import('./note/widget').then((m) => m.mountNoteWidget()).catch(() => {})
 }
 
 export function trackDownload(app: AnalyticsAppId, label?: string): void {

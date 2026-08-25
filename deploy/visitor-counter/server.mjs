@@ -5,11 +5,13 @@
  * Public:
  *   GET/POST /api/visit              → site-wide unique visitors { total, today }
  *   POST     /api/event              → { app, type: view|download|use, label? }
+ *   POST     /api/note               → private scrap { text, path?, locale? }
  *
  * Admin (cookie session):
  *   POST /api/admin/login            → { password }
  *   POST /api/admin/logout
  *   GET  /api/admin/stats            → dashboard payload
+ *   GET  /api/admin/notes            → private scraps (not shown on the public site)
  */
 import http from 'node:http'
 import fs from 'node:fs'
@@ -21,6 +23,8 @@ const DATA_FILE =
   process.env.VISITOR_DATA || path.join('/var/lib/maotaiworks', 'visitors.json')
 const ANALYTICS_FILE =
   process.env.ANALYTICS_DATA || path.join('/var/lib/maotaiworks', 'analytics.json')
+const NOTES_FILE =
+  process.env.NOTES_DATA || path.join('/var/lib/maotaiworks', 'notes.json')
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || ''
 const COOKIE_VID = 'mw_vid'
 const COOKIE_ADMIN = 'mw_admin'
@@ -37,10 +41,16 @@ const APP_META = {
   mowin: '魔窗',
   moyi: '魔译',
   'switch-price': 'Switch 低价查询器',
+  'daily-scratch': '每日刮刮乐',
+  'idle-tank': '放置鱼缸',
+  'ring-goose': '套大鹅',
 }
 
 const sessions = new Map() // token -> expiresAt
 const loginFails = new Map() // ip -> { count, until }
+const noteHits = new Map() // ip -> { n, t }
+const MAX_NOTE_LEN = 200
+const MAX_NOTES = 2000
 
 function shanghaiDateKey(d = new Date()) {
   const shifted = new Date(d.getTime() + TZ_OFFSET_MS)
@@ -257,6 +267,31 @@ function pruneSessions() {
   }
 }
 
+function loadNotes() {
+  try {
+    const list = JSON.parse(fs.readFileSync(NOTES_FILE, 'utf8'))
+    return Array.isArray(list) ? list : []
+  } catch {
+    return []
+  }
+}
+
+function saveNotes(list) {
+  atomicWrite(NOTES_FILE, list.slice(0, MAX_NOTES))
+}
+
+function noteRateLimited(ip) {
+  const now = Date.now()
+  const row = noteHits.get(ip) || { n: 0, t: now }
+  if (now - row.t > 10 * 60 * 1000) {
+    noteHits.set(ip, { n: 1, t: now })
+    return false
+  }
+  row.n += 1
+  noteHits.set(ip, row)
+  return row.n > 8
+}
+
 let site = rollSite(loadSite())
 let analytics = rollAnalytics(loadAnalytics())
 
@@ -347,6 +382,49 @@ const server = http.createServer(async (req, res) => {
       const headers = {}
       if (setCookies.length) headers['Set-Cookie'] = setCookies
       sendJson(res, 200, { ok: true }, headers)
+      return
+    }
+
+    // —— private notes (not listed on the public site) ——
+    if (pathname === '/api/note') {
+      if (req.method !== 'POST') {
+        sendJson(res, 405, { error: 'method_not_allowed' })
+        return
+      }
+      const ip = clientIp(req)
+      if (noteRateLimited(ip)) {
+        sendJson(res, 429, { error: 'too_many' })
+        return
+      }
+      const body = await readBody(req)
+      const text = String(body.text || '').replace(/\r\n/g, '\n').trim().slice(0, MAX_NOTE_LEN)
+      if (text.length < 2) {
+        sendJson(res, 400, { error: 'empty' })
+        return
+      }
+      const list = loadNotes()
+      list.unshift({
+        id: crypto.randomBytes(8).toString('hex'),
+        text,
+        path: String(body.path || '').slice(0, 180),
+        locale: String(body.locale || '').slice(0, 12),
+        at: Date.now(),
+      })
+      saveNotes(list)
+      sendJson(res, 200, { ok: true })
+      return
+    }
+
+    if (pathname === '/api/admin/notes') {
+      if (req.method !== 'GET') {
+        sendJson(res, 405, { error: 'method_not_allowed' })
+        return
+      }
+      if (!isAdmin(req)) {
+        sendJson(res, 401, { error: 'unauthorized' })
+        return
+      }
+      sendJson(res, 200, { list: loadNotes() })
       return
     }
 
@@ -444,6 +522,38 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
+    if (pathname === '/api/goose/board') {
+      const boardFile = process.env.GOOSE_BOARD || path.join(path.dirname(DATA_FILE), 'goose-board.json')
+      const readBoard = () => {
+        try {
+          const list = JSON.parse(fs.readFileSync(boardFile, 'utf8'))
+          return Array.isArray(list) ? list : []
+        } catch { return [] }
+      }
+      if (req.method === 'GET') {
+        sendJson(res, 200, { list: readBoard().slice(0, 50) })
+        return
+      }
+      if (req.method === 'POST') {
+        const body = await readBody(req)
+        const row = {
+          name: String(body.name || '夜市游客').slice(0, 12),
+          geese: Math.max(0, Math.floor(Number(body.geese) || 0)),
+          score: Math.max(0, Math.floor(Number(body.score) || 0)),
+          diff: ['easy', 'normal', 'hard'].includes(body.diff) ? body.diff : 'normal',
+          at: Date.now(),
+        }
+        const list = readBoard()
+        list.push(row)
+        list.sort((a, b) => b.geese - a.geese || b.score - a.score)
+        atomicWrite(boardFile, list.slice(0, 50))
+        sendJson(res, 200, { ok: true, list: list.slice(0, 50) })
+        return
+      }
+      sendJson(res, 405, { error: 'method_not_allowed' })
+      return
+    }
+
     sendJson(res, 404, { error: 'not_found' })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'error'
@@ -458,8 +568,10 @@ const server = http.createServer(async (req, res) => {
 
 ensureDir(DATA_FILE)
 ensureDir(ANALYTICS_FILE)
+ensureDir(NOTES_FILE)
 if (!fs.existsSync(DATA_FILE)) atomicWrite(DATA_FILE, site)
 if (!fs.existsSync(ANALYTICS_FILE)) atomicWrite(ANALYTICS_FILE, analytics)
+if (!fs.existsSync(NOTES_FILE)) atomicWrite(NOTES_FILE, [])
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`analytics listening on 127.0.0.1:${PORT}`)

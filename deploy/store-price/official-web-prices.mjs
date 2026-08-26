@@ -114,8 +114,9 @@ const OFFICIAL_WEB_PRICES_BASE = {
     premium_monthly: usd(19.99, 'Poe 公开标价'),
   }),
   'pi-premium': missing('Pi 以免费/邀请为主，无稳定公开网页订阅档'),
-  'character-ai-plus': entry('https://character.ai/subscription', {
+  'character-ai-plus': entry('https://character.ai/subscribe', {
     plus_monthly: usd(9.99, 'c.ai+ 公开标价'),
+    plus_yearly: usd(7.92, 'c.ai+ 年付折合月价（$94.99/年）'),
   }),
   'replika-pro': entry('https://replika.com/pro', {
     pro_monthly: usd(19.99, 'Replika Pro 公开标价'),
@@ -140,15 +141,15 @@ const OFFICIAL_WEB_PRICES_BASE = {
   'doubao': entry('https://www.doubao.com', {
     plus_monthly: cny(39.9),
   }),
-  kimi: entry('https://www.kimi.com/zh-cn/help/membership/membership-pricing', {
-    andante_monthly: cny(49),
-    andante_yearly: cny(39, '连续包年折合月价（年付 ¥468）'),
-    moderato_monthly: cny(99),
-    moderato_yearly: cny(79, '连续包年折合月价（年付 ¥948）'),
-    allegretto_monthly: cny(199),
-    allegretto_yearly: cny(159, '连续包年折合月价（年付 ¥1,908）'),
-    allegro_monthly: cny(699),
-    allegro_yearly: cny(559, '连续包年折合月价（年付 ¥6,708）'),
+  kimi: entry('https://www.kimi.ai/help/membership/membership-pricing', {
+    moderato_monthly: usd(19, 'Moderato 月付'),
+    moderato_yearly: usd(15, 'Moderato 年付折合月价（年付 $180）'),
+    allegretto_monthly: usd(39, 'Allegretto 月付'),
+    allegretto_yearly: usd(31, 'Allegretto 年付折合月价（年付 $372）'),
+    allegro_monthly: usd(99, 'Allegro 月付'),
+    allegro_yearly: usd(79, 'Allegro 年付折合月价（年付 $948）'),
+    vivace_monthly: usd(199, 'Vivace 月付'),
+    vivace_yearly: usd(159, 'Vivace 年付折合月价（年付 $1,908）'),
   }),
   sparkdesk: entry('https://xinghuo.xfyun.cn', {
     plus_monthly: cny(36),
@@ -189,7 +190,10 @@ const OFFICIAL_WEB_PRICES_BASE = {
     agentic_yearly: usd(59, 'Agentic Platform 年付折合月价/席'),
   }),
   'replit-core': entry('https://replit.com/pricing', {
-    core_monthly: usd(25, 'Replit Core 公开标价'),
+    core_monthly: usd(20, 'Replit Core 公开标价'),
+    core_yearly: usd(17, 'Core 年付折合月价'),
+    pro_monthly: usd(100, 'Replit Pro 公开标价'),
+    pro_yearly: usd(95, 'Pro 年付折合月价'),
   }),
   'amazon-q': entry('https://aws.amazon.com/q/developer/pricing/', {
     pro_monthly: usd(19, 'Amazon Q Developer Pro 公开标价'),

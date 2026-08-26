@@ -156,6 +156,8 @@ const PLAN_LABELS = {
   allegretto_yearly: 'Allegretto 包年',
   allegro_monthly: 'Allegro 包月',
   allegro_yearly: 'Allegro 包年',
+  vivace_monthly: 'Vivace 包月',
+  vivace_yearly: 'Vivace 包年',
   apprentice_monthly: 'Apprentice 月付',
   artisan_monthly: 'Artisan 月付',
   hobbyist_monthly: 'Hobbyist 月付',

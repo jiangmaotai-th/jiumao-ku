@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-08-03 每日核对已更新差异档。切勿填入 App Store PPP。",
-    "updated": "2026-08-03",
+    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-09-04 每日核对已更新差异档（相对 main；先前 #9–#15 未合并，今日再核仍为同一组 6 产品差异，无新增）。切勿填入 App Store PPP。",
+    "updated": "2026-09-04",
     "lastScrapeAt": "2026-08-02T00:54:25.675Z",
     "byProduct": {
       "gemini-advanced": {
@@ -57,12 +57,14 @@
         "updatedAt": "2026-08-02T03:09:22.821Z"
       },
       "character-ai-plus": {
-        "status": "stale",
-        "pricingUrl": "https://character.ai/subscription",
-        "source": "generic:fetch-fail",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastError": "http_404",
-        "lastConfirmedAt": null
+        "status": "confirmed",
+        "pricingUrl": "https://character.ai/subscribe",
+        "source": "daily-verify:2026-09-04",
+        "updatedAt": "2026-09-04T10:30:00.000Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-09-04T10:30:00.000Z",
+        "partial": false,
+        "note": "月$9.99 / 年$94.99→折合月$7.92"
       },
       "replika-pro": {
         "status": "stale",
@@ -73,12 +75,14 @@
         "lastConfirmedAt": null
       },
       "mistral-le-chat": {
-        "status": "stale",
-        "pricingUrl": "https://mistral.ai/products/le-chat",
-        "source": "generic:no-match",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastError": "generic_no_amount_match",
-        "lastConfirmedAt": null
+        "status": "confirmed",
+        "pricingUrl": "https://mistral.ai/pricing",
+        "source": "daily-verify:2026-09-04",
+        "updatedAt": "2026-09-04T10:30:00.000Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-09-04T10:30:00.000Z",
+        "partial": false,
+        "note": "官网展示 USD $14.99 / Team $24.99；公开页未见年付档，已移除 team_yearly 幽灵"
       },
       "huggingface-pro": {
         "status": "confirmed",
@@ -126,13 +130,14 @@
         "partial": false
       },
       "kimi": {
-        "status": "live",
-        "pricingUrl": "https://www.kimi.com/zh-cn/help/membership/membership-pricing",
-        "source": "scrape:kimi-help",
-        "updatedAt": "2026-08-02T03:09:22.821Z",
-        "lastConfirmedAt": "2026-08-02T00:54:27.409Z",
+        "status": "confirmed",
+        "pricingUrl": "https://www.kimi.ai/help/membership/membership-pricing",
+        "source": "daily-verify:2026-09-04",
+        "updatedAt": "2026-09-04T10:30:00.000Z",
+        "lastConfirmedAt": "2026-09-04T10:30:00.000Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "USD Moderato/Allegretto/Allegro/Vivace；Andante 已下架"
       },
       "sparkdesk": {
         "status": "stale",
@@ -206,11 +211,12 @@
       "replit-core": {
         "status": "confirmed",
         "pricingUrl": "https://replit.com/pricing",
-        "source": "scrape:generic-confirm",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastConfirmedAt": "2026-08-02T00:55:03.807Z",
+        "source": "daily-verify:2026-09-04",
+        "updatedAt": "2026-09-04T10:30:00.000Z",
+        "lastConfirmedAt": "2026-09-04T10:30:00.000Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "Core $20/$17；Pro $100/$95"
       },
       "amazon-q": {
         "status": "confirmed",
@@ -310,12 +316,14 @@
         "lastConfirmedAt": null
       },
       "ideogram": {
-        "status": "stale",
+        "status": "confirmed",
         "pricingUrl": "https://ideogram.ai/pricing",
-        "source": "generic:fetch-fail",
-        "updatedAt": "2026-08-02T03:09:22.822Z",
-        "lastError": "http_403",
-        "lastConfirmedAt": null
+        "source": "daily-verify:2026-09-04",
+        "updatedAt": "2026-09-04T10:30:00.000Z",
+        "lastError": null,
+        "lastConfirmedAt": "2026-09-04T10:30:00.000Z",
+        "partial": false,
+        "note": "Plus $20/$15；Pro $60/$42；Team $30/$20；今日 ideogram.ai/pricing/ 直抓确认"
       },
       "flux-pro": {
         "status": "stale",
@@ -976,11 +984,12 @@
       "chatgpt": {
         "status": "confirmed",
         "pricingUrl": "https://openai.com/chatgpt/pricing",
-        "source": "daily-verify:2026-08-02",
-        "updatedAt": "2026-08-02T05:46:45.467Z",
-        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "source": "daily-verify:2026-09-04",
+        "updatedAt": "2026-09-04T10:30:00.000Z",
+        "lastConfirmedAt": "2026-09-04T10:30:00.000Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "补 Business Premium 席 $125/$100；Standard 仍 $25/$20。证据：openai.com/index/premium-seats-chatgpt-business/ 与 help.openai.com/en/articles/8792828"
       },
       "claude": {
         "status": "confirmed",
@@ -1407,75 +1416,75 @@
     }
   },
   "kimi": {
-    "andante_monthly": {
-      "base": {
-        "amount": 49,
-        "currency": "CNY",
-        "priceFormatted": "¥49",
-        "label": "官网标价（人民币）"
-      },
-      "locals": {}
-    },
-    "andante_yearly": {
-      "base": {
-        "amount": 39,
-        "currency": "CNY",
-        "priceFormatted": "¥39",
-        "label": "连续包年折合月价（年付 ¥468）"
-      },
-      "locals": {}
-    },
     "moderato_monthly": {
       "base": {
-        "amount": 99,
-        "currency": "CNY",
-        "priceFormatted": "¥99",
-        "label": "官网标价（人民币）"
+        "amount": 19,
+        "currency": "USD",
+        "priceFormatted": "$19.00",
+        "label": "Moderato 月付"
       },
       "locals": {}
     },
     "moderato_yearly": {
       "base": {
-        "amount": 79,
-        "currency": "CNY",
-        "priceFormatted": "¥79",
-        "label": "连续包年折合月价（年付 ¥948）"
+        "amount": 15,
+        "currency": "USD",
+        "priceFormatted": "$15.00",
+        "label": "Moderato 年付折合月价（年付 $180）"
       },
       "locals": {}
     },
     "allegretto_monthly": {
       "base": {
-        "amount": 199,
-        "currency": "CNY",
-        "priceFormatted": "¥199",
-        "label": "官网标价（人民币）"
+        "amount": 39,
+        "currency": "USD",
+        "priceFormatted": "$39.00",
+        "label": "Allegretto 月付"
       },
       "locals": {}
     },
     "allegretto_yearly": {
       "base": {
-        "amount": 159,
-        "currency": "CNY",
-        "priceFormatted": "¥159",
-        "label": "连续包年折合月价（年付 ¥1,908）"
+        "amount": 31,
+        "currency": "USD",
+        "priceFormatted": "$31.00",
+        "label": "Allegretto 年付折合月价（年付 $372）"
       },
       "locals": {}
     },
     "allegro_monthly": {
       "base": {
-        "amount": 699,
-        "currency": "CNY",
-        "priceFormatted": "¥699",
-        "label": "官网标价（人民币）"
+        "amount": 99,
+        "currency": "USD",
+        "priceFormatted": "$99.00",
+        "label": "Allegro 月付"
       },
       "locals": {}
     },
     "allegro_yearly": {
       "base": {
-        "amount": 559,
-        "currency": "CNY",
-        "priceFormatted": "¥559",
-        "label": "连续包年折合月价（年付 ¥6,708）"
+        "amount": 79,
+        "currency": "USD",
+        "priceFormatted": "$79.00",
+        "label": "Allegro 年付折合月价（年付 $948）"
+      },
+      "locals": {}
+    },
+    "vivace_monthly": {
+      "base": {
+        "amount": 199,
+        "currency": "USD",
+        "priceFormatted": "$199.00",
+        "label": "Vivace 月付"
+      },
+      "locals": {}
+    },
+    "vivace_yearly": {
+      "base": {
+        "amount": 159,
+        "currency": "USD",
+        "priceFormatted": "$159.00",
+        "label": "Vivace 年付折合月价（年付 $1,908）"
       },
       "locals": {}
     }
@@ -1954,10 +1963,10 @@
     },
     "plus_yearly": {
       "base": {
-        "amount": 7.99,
+        "amount": 7.92,
         "currency": "USD",
-        "priceFormatted": "$7.99",
-        "label": "c.ai+ 年付折合月价"
+        "priceFormatted": "$7.92",
+        "label": "c.ai+ 年付折合月价（$94.99/年）"
       },
       "locals": {}
     }
@@ -1986,8 +1995,8 @@
     "pro_monthly": {
       "base": {
         "amount": 14.99,
-        "currency": "EUR",
-        "priceFormatted": "€14.99",
+        "currency": "USD",
+        "priceFormatted": "$14.99",
         "label": "Le Chat Pro"
       },
       "locals": {}
@@ -1995,18 +2004,9 @@
     "team_monthly": {
       "base": {
         "amount": 24.99,
-        "currency": "EUR",
-        "priceFormatted": "€24.99",
-        "label": "Team 月付"
-      },
-      "locals": {}
-    },
-    "team_yearly": {
-      "base": {
-        "amount": 19.99,
-        "currency": "EUR",
-        "priceFormatted": "€19.99",
-        "label": "Team 年付折合月价"
+        "currency": "USD",
+        "priceFormatted": "$24.99",
+        "label": "Team 月付/席"
       },
       "locals": {}
     }
@@ -2374,18 +2374,18 @@
   "replit-core": {
     "core_monthly": {
       "base": {
-        "amount": 25,
+        "amount": 20,
         "currency": "USD",
-        "priceFormatted": "$25.00",
+        "priceFormatted": "$20.00",
         "label": "Core 月付"
       },
       "locals": {}
     },
     "core_yearly": {
       "base": {
-        "amount": 20,
+        "amount": 17,
         "currency": "USD",
-        "priceFormatted": "$20.00",
+        "priceFormatted": "$17.00",
         "label": "Core 年付折合月价"
       },
       "locals": {}
@@ -2396,6 +2396,15 @@
         "currency": "USD",
         "priceFormatted": "$100.00",
         "label": "Pro 月付"
+      },
+      "locals": {}
+    },
+    "pro_yearly": {
+      "base": {
+        "amount": 95,
+        "currency": "USD",
+        "priceFormatted": "$95.00",
+        "label": "Pro 年付折合月价"
       },
       "locals": {}
     }
@@ -2702,37 +2711,55 @@
   "ideogram": {
     "plus_monthly": {
       "base": {
-        "amount": 8,
+        "amount": 20,
         "currency": "USD",
-        "priceFormatted": "$8.00",
+        "priceFormatted": "$20.00",
         "label": "Plus 月付"
       },
       "locals": {}
     },
     "plus_yearly": {
       "base": {
-        "amount": 6,
+        "amount": 15,
         "currency": "USD",
-        "priceFormatted": "$6.00",
-        "label": "Plus 年付折合月价"
+        "priceFormatted": "$15.00",
+        "label": "Plus 年付折合月价（$180/年）"
       },
       "locals": {}
     },
     "pro_monthly": {
       "base": {
-        "amount": 20,
+        "amount": 60,
         "currency": "USD",
-        "priceFormatted": "$20.00",
+        "priceFormatted": "$60.00",
         "label": "Pro 月付"
       },
       "locals": {}
     },
     "pro_yearly": {
       "base": {
-        "amount": 15,
+        "amount": 42,
         "currency": "USD",
-        "priceFormatted": "$15.00",
-        "label": "Pro 年付折合月价"
+        "priceFormatted": "$42.00",
+        "label": "Pro 年付折合月价（$504/年）"
+      },
+      "locals": {}
+    },
+    "team_monthly": {
+      "base": {
+        "amount": 30,
+        "currency": "USD",
+        "priceFormatted": "$30.00",
+        "label": "Team 月付/席"
+      },
+      "locals": {}
+    },
+    "team_yearly": {
+      "base": {
+        "amount": 20,
+        "currency": "USD",
+        "priceFormatted": "$20.00",
+        "label": "Team 年付折合月价/席"
       },
       "locals": {}
     }
@@ -5108,7 +5135,7 @@
         "amount": 25,
         "currency": "USD",
         "priceFormatted": "$25.00",
-        "label": "Business 月付/席"
+        "label": "Business Standard 月付/席"
       },
       "locals": {}
     },
@@ -5117,7 +5144,25 @@
         "amount": 20,
         "currency": "USD",
         "priceFormatted": "$20.00",
-        "label": "Business 年付折合月价/席"
+        "label": "Business Standard 年付折合月价/席"
+      },
+      "locals": {}
+    },
+    "business_premium_monthly": {
+      "base": {
+        "amount": 125,
+        "currency": "USD",
+        "priceFormatted": "$125.00",
+        "label": "Business Premium 月付/席"
+      },
+      "locals": {}
+    },
+    "business_premium_yearly": {
+      "base": {
+        "amount": 100,
+        "currency": "USD",
+        "priceFormatted": "$100.00",
+        "label": "Business Premium 年付折合月价/席"
       },
       "locals": {}
     }

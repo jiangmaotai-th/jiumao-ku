@@ -27,12 +27,22 @@
       "business_monthly": {
         "amount": 25,
         "currency": "USD",
-        "label": "Business 月付/席"
+        "label": "Business Standard 月付/席"
       },
       "business_yearly": {
         "amount": 20,
         "currency": "USD",
-        "label": "Business 年付折合月价/席"
+        "label": "Business Standard 年付折合月价/席"
+      },
+      "business_premium_monthly": {
+        "amount": 125,
+        "currency": "USD",
+        "label": "Business Premium 月付/席"
+      },
+      "business_premium_yearly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Business Premium 年付折合月价/席"
       }
     }
   },
@@ -513,9 +523,9 @@
         "label": "Pro 月付"
       },
       "max_monthly": {
-        "amount": 70,
+        "amount": 105,
         "currency": "USD",
-        "label": "Max 月付"
+        "label": "Max 月付（默认 60k units）"
       },
       "business_monthly": {
         "amount": 200,
@@ -541,6 +551,193 @@
         "amount": 160,
         "currency": "USD",
         "label": "Business 年付折合月价"
+      }
+    }
+  },
+  "ideogram": {
+    "pricingUrl": "https://ideogram.ai/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "plus_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Plus 月付"
+      },
+      "plus_yearly": {
+        "amount": 15,
+        "currency": "USD",
+        "label": "Plus 年付折合月价（$180/年）"
+      },
+      "pro_monthly": {
+        "amount": 60,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_yearly": {
+        "amount": 42,
+        "currency": "USD",
+        "label": "Pro 年付折合月价（$504/年）"
+      },
+      "team_monthly": {
+        "amount": 30,
+        "currency": "USD",
+        "label": "Team 月付/席"
+      },
+      "team_yearly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Team 年付折合月价/席"
+      }
+    }
+  },
+  "kimi": {
+    "pricingUrl": "https://www.kimi.ai/help/membership/membership-pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "moderato_monthly": {
+        "amount": 19,
+        "currency": "USD",
+        "label": "Moderato 月付"
+      },
+      "moderato_yearly": {
+        "amount": 15,
+        "currency": "USD",
+        "label": "Moderato 年付折合月价（年付 $180）"
+      },
+      "allegretto_monthly": {
+        "amount": 39,
+        "currency": "USD",
+        "label": "Allegretto 月付"
+      },
+      "allegretto_yearly": {
+        "amount": 31,
+        "currency": "USD",
+        "label": "Allegretto 年付折合月价（年付 $372）"
+      },
+      "allegro_monthly": {
+        "amount": 99,
+        "currency": "USD",
+        "label": "Allegro 月付"
+      },
+      "allegro_yearly": {
+        "amount": 79,
+        "currency": "USD",
+        "label": "Allegro 年付折合月价（年付 $948）"
+      },
+      "vivace_monthly": {
+        "amount": 199,
+        "currency": "USD",
+        "label": "Vivace 月付"
+      },
+      "vivace_yearly": {
+        "amount": 159,
+        "currency": "USD",
+        "label": "Vivace 年付折合月价（年付 $1,908）"
+      }
+    }
+  },
+  "character-ai-plus": {
+    "pricingUrl": "https://character.ai/subscribe",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "plus_monthly": {
+        "amount": 9.99,
+        "currency": "USD",
+        "label": "c.ai+ 月付"
+      },
+      "plus_yearly": {
+        "amount": 7.92,
+        "currency": "USD",
+        "label": "c.ai+ 年付折合月价（$94.99/年）"
+      }
+    }
+  },
+  "replit-core": {
+    "pricingUrl": "https://replit.com/pricing",
+    "status": "priced",
+    "note": "",
+    "plans": {
+      "core_monthly": {
+        "amount": 20,
+        "currency": "USD",
+        "label": "Core 月付"
+      },
+      "core_yearly": {
+        "amount": 17,
+        "currency": "USD",
+        "label": "Core 年付折合月价"
+      },
+      "pro_monthly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_yearly": {
+        "amount": 95,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      }
+    }
+  },
+  "mistral-le-chat": {
+    "pricingUrl": "https://mistral.ai/pricing",
+    "status": "priced",
+    "note": "公开页未见 Team 年付",
+    "plans": {
+      "pro_monthly": {
+        "amount": 14.99,
+        "currency": "USD",
+        "label": "Le Chat Pro"
+      },
+      "team_monthly": {
+        "amount": 24.99,
+        "currency": "USD",
+        "label": "Team 月付/席"
+      }
+    }
+  },
+  "runway": {
+    "pricingUrl": "https://runwayml.com/pricing",
+    "status": "priced",
+    "note": "Team 年付折合月价待核实（公开页仅确认月付 $69/席）",
+    "plans": {
+      "standard_monthly": {
+        "amount": 15,
+        "currency": "USD",
+        "label": "Standard 月付"
+      },
+      "standard_yearly": {
+        "amount": 12,
+        "currency": "USD",
+        "label": "Standard 年付折合月价"
+      },
+      "pro_monthly": {
+        "amount": 35,
+        "currency": "USD",
+        "label": "Pro 月付"
+      },
+      "pro_yearly": {
+        "amount": 28,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
+      "max_monthly": {
+        "amount": 95,
+        "currency": "USD",
+        "label": "Unlimited / Max 月付"
+      },
+      "max_yearly": {
+        "amount": 76,
+        "currency": "USD",
+        "label": "Unlimited / Max 年付折合月价"
+      },
+      "team_monthly": {
+        "amount": 69,
+        "currency": "USD",
+        "label": "Team 月付/席"
       }
     }
   }

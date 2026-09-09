@@ -70,7 +70,12 @@ const OFFICIAL_WEB_PRICES_BASE = {
   chatgpt: entry('https://openai.com/chatgpt/pricing', {
     go_monthly: usd(8, '全球统一标价（公开定价）'),
     plus_monthly: usd(20, '全球统一标价（公开定价）'),
+    pro_5x_monthly: usd(100, 'Pro 5x 月付'),
     pro_monthly: usd(200, '全球统一标价（公开定价）'),
+    business_monthly: usd(25, 'Business Standard 月付/席'),
+    business_yearly: usd(20, 'Business Standard 年付折合月价/席'),
+    business_premium_monthly: usd(125, 'Business Premium 月付/席'),
+    business_premium_yearly: usd(100, 'Business Premium 年付折合月价/席'),
   }),
   claude: entry('https://claude.com/pricing', {
     pro_monthly: {
@@ -114,14 +119,16 @@ const OFFICIAL_WEB_PRICES_BASE = {
     premium_monthly: usd(19.99, 'Poe 公开标价'),
   }),
   'pi-premium': missing('Pi 以免费/邀请为主，无稳定公开网页订阅档'),
-  'character-ai-plus': entry('https://character.ai/subscription', {
+  'character-ai-plus': entry('https://character.ai/subscribe', {
     plus_monthly: usd(9.99, 'c.ai+ 公开标价'),
+    plus_yearly: usd(7.92, 'c.ai+ 年付折合月价（$94.99/年）'),
   }),
   'replika-pro': entry('https://replika.com/pro', {
     pro_monthly: usd(19.99, 'Replika Pro 公开标价'),
   }),
-  'mistral-le-chat': entry('https://mistral.ai/products/le-chat', {
-    pro_monthly: eur(14.99, 'Le Chat Pro 公开标价'),
+  'mistral-le-chat': entry('https://mistral.ai/pricing', {
+    pro_monthly: usd(14.99, 'Le Chat Pro 公开标价'),
+    team_monthly: usd(24.99, 'Team 月付/席'),
   }),
   'huggingface-pro': entry('https://huggingface.co/pricing', {
     pro_monthly: usd(9, 'Hugging Face Pro 公开标价'),
@@ -140,15 +147,15 @@ const OFFICIAL_WEB_PRICES_BASE = {
   'doubao': entry('https://www.doubao.com', {
     plus_monthly: cny(39.9),
   }),
-  kimi: entry('https://www.kimi.com/zh-cn/help/membership/membership-pricing', {
-    andante_monthly: cny(49),
-    andante_yearly: cny(39, '连续包年折合月价（年付 ¥468）'),
-    moderato_monthly: cny(99),
-    moderato_yearly: cny(79, '连续包年折合月价（年付 ¥948）'),
-    allegretto_monthly: cny(199),
-    allegretto_yearly: cny(159, '连续包年折合月价（年付 ¥1,908）'),
-    allegro_monthly: cny(699),
-    allegro_yearly: cny(559, '连续包年折合月价（年付 ¥6,708）'),
+  kimi: entry('https://www.kimi.ai/help/membership/membership-pricing', {
+    moderato_monthly: usd(19, 'Moderato 月付'),
+    moderato_yearly: usd(15, 'Moderato 年付折合月价（年付 $180）'),
+    allegretto_monthly: usd(39, 'Allegretto 月付'),
+    allegretto_yearly: usd(31, 'Allegretto 年付折合月价（年付 $372）'),
+    allegro_monthly: usd(99, 'Allegro 月付'),
+    allegro_yearly: usd(79, 'Allegro 年付折合月价（年付 $948）'),
+    vivace_monthly: usd(199, 'Vivace 月付'),
+    vivace_yearly: usd(159, 'Vivace 年付折合月价（年付 $1,908）'),
   }),
   sparkdesk: entry('https://xinghuo.xfyun.cn', {
     plus_monthly: cny(36),
@@ -189,7 +196,10 @@ const OFFICIAL_WEB_PRICES_BASE = {
     agentic_yearly: usd(59, 'Agentic Platform 年付折合月价/席'),
   }),
   'replit-core': entry('https://replit.com/pricing', {
-    core_monthly: usd(25, 'Replit Core 公开标价'),
+    core_monthly: usd(20, 'Replit Core 公开标价'),
+    core_yearly: usd(17, 'Core 年付折合月价'),
+    pro_monthly: usd(100, 'Replit Pro 公开标价'),
+    pro_yearly: usd(95, 'Pro 年付折合月价'),
   }),
   'amazon-q': entry('https://aws.amazon.com/q/developer/pricing/', {
     pro_monthly: usd(19, 'Amazon Q Developer Pro 公开标价'),
@@ -230,7 +240,12 @@ const OFFICIAL_WEB_PRICES_BASE = {
     artisan_monthly: usd(30, 'Artisan 公开标价'),
   }),
   ideogram: entry('https://ideogram.ai/pricing', {
-    plus_monthly: usd(8, 'Ideogram Plus 公开标价'),
+    plus_monthly: usd(20, 'Plus 月付'),
+    plus_yearly: usd(15, 'Plus 年付折合月价（$180/年）'),
+    pro_monthly: usd(60, 'Pro 月付'),
+    pro_yearly: usd(42, 'Pro 年付折合月价（$504/年）'),
+    team_monthly: usd(30, 'Team 月付/席'),
+    team_yearly: usd(20, 'Team 年付折合月价/席'),
   }),
   'flux-pro': entry('https://bfl.ai/pricing', {
     pro_monthly: usd(12, 'BFL / FLUX 公开入门档（按量档位折合参考）'),
@@ -241,11 +256,11 @@ const OFFICIAL_WEB_PRICES_BASE = {
   'krea-ai': entry('https://www.krea.ai/pricing', {
     basic_monthly: usd(9, 'Basic 月付'),
     pro_monthly: usd(35, 'Pro 月付'),
-    max_monthly: usd(70, 'Max 月付'),
+    max_monthly: usd(105, 'Max 月付（默认 60k units）'),
     business_monthly: usd(200, 'Business 月付'),
     basic_yearly: usd(5.25, 'Basic 年付折合月价'),
     pro_yearly: usd(21, 'Pro 年付折合月价'),
-    max_yearly: usd(63, 'Max 年付折合月价'),
+    max_yearly: usd(63, 'Max 年付折合月价（默认 60k）'),
     business_yearly: usd(160, 'Business 年付折合月价'),
   }),
   'magnific-ai': entry('https://magnific.ai/pricing', {
@@ -274,6 +289,8 @@ const OFFICIAL_WEB_PRICES_BASE = {
   runway: entry('https://runwayml.com/pricing', {
     standard_monthly: usd(15, 'Standard 公开标价'),
     pro_monthly: usd(35, 'Pro 公开标价'),
+    max_monthly: usd(95, 'Max 公开标价'),
+    team_monthly: usd(69, 'Team 月付/席'),
   }),
   pika: entry('https://pika.art/pricing', {
     standard_monthly: usd(10, 'Standard 月付'),
@@ -292,6 +309,11 @@ const OFFICIAL_WEB_PRICES_BASE = {
   }),
   heygen: entry('https://www.heygen.com/pricing', {
     creator_monthly: usd(29, 'Creator 公开标价'),
+    creator_yearly: usd(24, 'Creator 年付折合月价'),
+    pro_monthly: usd(49, 'Pro 入门公开标价'),
+    pro_yearly: usd(41, 'Pro 入门年付折合月价'),
+    business_monthly: usd(149, 'Business 公开标价（另+$20/席）'),
+    business_yearly: usd(119, 'Business 年付折合月价'),
   }),
   kling: entry('https://klingai.com/pricing', {
     standard_monthly: cny(66),

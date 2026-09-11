@@ -53,16 +53,17 @@ function cny(amount, label) {
 function buildPricePatches(byId) {
   const patches = {}
 
-  // ChatGPT — Pro 5x $100 between Plus and Pro; Pro $200; Business $25/mo seat
+  // ChatGPT — Pro $100（官网现价）；Business Standard/Premium
   patches.chatgpt = {
     pricingUrl: 'https://openai.com/chatgpt/pricing',
     plans: {
-      go_monthly: usd(5, 'Go 月付'),
+      go_monthly: usd(8, 'Go 月付'),
       plus_monthly: usd(20, 'Plus 月付'),
-      pro_5x_monthly: usd(100, 'Pro 5x 月付'),
-      pro_monthly: usd(200, 'Pro 月付'),
-      business_monthly: usd(25, 'Business 月付/席'),
-      business_yearly: usd(20, 'Business 年付折合月价/席'),
+      pro_monthly: usd(100, 'Pro 月付'),
+      business_monthly: usd(25, 'Business Standard 月付/席'),
+      business_yearly: usd(20, 'Business Standard 年付折合月价/席'),
+      business_premium_monthly: usd(125, 'Business Premium 月付/席'),
+      business_premium_yearly: usd(100, 'Business Premium 年付折合月价/席'),
     },
   }
 

@@ -33,7 +33,7 @@ export const DEDICATED = [
         plans: {
           go_monthly: staticUsdProduct('chatgpt', 'go_monthly', 8).plans.go_monthly,
           plus_monthly: staticUsdProduct('chatgpt', 'plus_monthly', 20).plans.plus_monthly,
-          pro_monthly: staticUsdProduct('chatgpt', 'pro_monthly', 200).plans.pro_monthly,
+          pro_monthly: staticUsdProduct('chatgpt', 'pro_monthly', 100).plans.pro_monthly,
         },
       })),
   },

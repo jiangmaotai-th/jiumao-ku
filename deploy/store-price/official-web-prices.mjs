@@ -112,6 +112,7 @@ const OFFICIAL_WEB_PRICES_BASE = {
     {
       m365_personal_monthly: usd(9.99, 'Microsoft 365 Personal 月付'),
       m365_premium_monthly: usd(19.99, 'Microsoft 365 Premium 月付（取代独立 Copilot Pro）'),
+      m365_pro_monthly: usd(99.99, 'Microsoft 365 Pro 月付（仅月付）'),
     },
   ),
   'poe-premium': entry('https://poe.com/premium', {
@@ -296,12 +297,12 @@ const OFFICIAL_WEB_PRICES_BASE = {
     team_monthly: usd(69, 'Team 月付/席'),
   }),
   pika: entry('https://pika.art/pricing', {
-    standard_monthly: usd(10, 'Standard 月付'),
-    standard_yearly: usd(8, 'Standard 年付折合月价'),
-    pro_monthly: usd(35, 'Pro 月付'),
-    pro_yearly: usd(28, 'Pro 年付折合月价'),
-    fancy_monthly: usd(95, 'Fancy 月付'),
-    fancy_yearly: usd(76, 'Fancy 年付折合月价'),
+    basic_monthly: usd(10, 'Basic 月付'),
+    basic_yearly: usd(8, 'Basic 年付折合月价'),
+    standard_monthly: usd(35, 'Standard 月付'),
+    standard_yearly: usd(28, 'Standard 年付折合月价'),
+    pro_monthly: usd(95, 'Pro 月付'),
+    pro_yearly: usd(76, 'Pro 年付折合月价'),
   }),
   'luma-dream-machine': entry('https://lumalabs.ai/dream-machine/pricing', {
     standard_monthly: usd(9.99, 'Standard 公开标价'),

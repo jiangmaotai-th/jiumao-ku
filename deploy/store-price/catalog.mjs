@@ -197,7 +197,12 @@ export const AI_PRODUCTS = [
     web: {
       pricingUrl:
         'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
-      planKeys: ['m365_premium_monthly', 'm365_personal_monthly', 'm365_family_monthly'],
+      planKeys: [
+        'm365_premium_monthly',
+        'm365_personal_monthly',
+        'm365_family_monthly',
+        'm365_pro_monthly',
+      ],
     },
     desktop: { store: 'ms', skuHints: ['copilot pro', 'microsoft 365 premium'] },
   }),
@@ -428,12 +433,12 @@ export const AI_PRODUCTS = [
     web: {
       pricingUrl: 'https://pika.art/pricing',
       planKeys: [
+        'basic_monthly',
+        'basic_yearly',
         'standard_monthly',
         'standard_yearly',
         'pro_monthly',
         'pro_yearly',
-        'fancy_monthly',
-        'fancy_yearly',
       ],
     },
   }),

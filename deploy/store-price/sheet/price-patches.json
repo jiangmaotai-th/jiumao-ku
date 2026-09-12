@@ -290,6 +290,11 @@
         "amount": 16.67,
         "currency": "USD",
         "label": "Microsoft 365 Premium 年付折合月价"
+      },
+      "m365_pro_monthly": {
+        "amount": 99.99,
+        "currency": "USD",
+        "label": "Microsoft 365 Pro 月付（仅月付）"
       }
     }
   },

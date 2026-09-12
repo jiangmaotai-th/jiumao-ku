@@ -76,18 +76,6 @@ export const PLAN_EXPANSIONS = {
       max_yearly: usd(166.67, 'Max 年付折合月价'),
     },
   },
-  'microsoft-copilot-pro': {
-    pricingUrl:
-      'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
-    plans: {
-      m365_personal_monthly: usd(9.99, 'Microsoft 365 Personal 月付'),
-      m365_personal_yearly: usd(8.33, 'Microsoft 365 Personal 年付折合月价'),
-      m365_family_monthly: usd(12.99, 'Microsoft 365 Family 月付'),
-      m365_family_yearly: usd(10.83, 'Microsoft 365 Family 年付折合月价'),
-      m365_premium_monthly: usd(19.99, 'Microsoft 365 Premium 月付'),
-      m365_premium_yearly: usd(16.67, 'Microsoft 365 Premium 年付折合月价'),
-    },
-  },
   'poe-premium': {
     pricingUrl: 'https://poe.com/premium',
     plans: {
@@ -381,12 +369,12 @@ export const PLAN_EXPANSIONS = {
   pika: {
     pricingUrl: 'https://pika.art/pricing',
     plans: {
-      standard_monthly: usd(10, 'Standard 月付'),
-      standard_yearly: usd(8, 'Standard 年付折合月价'),
-      pro_monthly: usd(35, 'Pro 月付'),
-      pro_yearly: usd(28, 'Pro 年付折合月价'),
-      fancy_monthly: usd(95, 'Fancy 月付'),
-      fancy_yearly: usd(76, 'Fancy 年付折合月价'),
+      basic_monthly: usd(10, 'Basic 月付'),
+      basic_yearly: usd(8, 'Basic 年付折合月价'),
+      standard_monthly: usd(35, 'Standard 月付'),
+      standard_yearly: usd(28, 'Standard 年付折合月价'),
+      pro_monthly: usd(95, 'Pro 月付'),
+      pro_yearly: usd(76, 'Pro 年付折合月价'),
     },
   },
   'luma-dream-machine': {
@@ -688,11 +676,16 @@ export const PLAN_EXPANSIONS = {
 
   // —— remaining singles: expand known multi-tier or monthly+yearly ——
   'microsoft-copilot-pro': {
-    pricingUrl: 'https://www.microsoft.com/microsoft-365/copilot/pricing',
+    pricingUrl:
+      'https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals',
     plans: {
-      pro_monthly: usd(20, 'Copilot Pro 个人月付'),
-      m365_personal_monthly: usd(9.99, 'Microsoft 365 Personal（含部分 AI）'),
-      m365_family_monthly: usd(12.99, 'Microsoft 365 Family'),
+      m365_personal_monthly: usd(9.99, 'Microsoft 365 Personal 月付'),
+      m365_personal_yearly: usd(8.33, 'Microsoft 365 Personal 年付折合月价'),
+      m365_family_monthly: usd(12.99, 'Microsoft 365 Family 月付'),
+      m365_family_yearly: usd(10.83, 'Microsoft 365 Family 年付折合月价'),
+      m365_premium_monthly: usd(19.99, 'Microsoft 365 Premium 月付'),
+      m365_premium_yearly: usd(16.67, 'Microsoft 365 Premium 年付折合月价'),
+      m365_pro_monthly: usd(99.99, 'Microsoft 365 Pro 月付（仅月付）'),
     },
   },
   'claude-code': {

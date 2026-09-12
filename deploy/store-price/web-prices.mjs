@@ -145,6 +145,9 @@ const PLAN_LABELS = {
   yearly: '年付',
   m365_personal_monthly: 'M365 Personal',
   m365_family_monthly: 'M365 Family',
+  m365_pro_monthly: 'M365 Pro',
+  basic_monthly: 'Basic 月付',
+  basic_yearly: 'Basic 包年',
   meta_ai_plus_yearly: 'Meta AI+ 包年',
 
   // Kimi（月之暗面）四档 × 包月/包年

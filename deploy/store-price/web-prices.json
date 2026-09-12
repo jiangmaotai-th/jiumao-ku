@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-09-11 每日核对（相对 main；先前每日 PR 未合并，先并入 09-10 基线再核）。今日新增：ChatGPT 官网消费档仅余 Pro $100（下架原 $200 Pro；原 Pro 5x 并入 Pro）；FLUX 官网声明无订阅/仅 PAYG，移除编造包月档。",
-    "updated": "2026-09-11",
+    "note": "网页/桌面定价：全目录多档套餐已按官网公开价补齐；2026-09-12 每日核对（相对 main；先前每日 PR 未合并，以 09-11 分支为基线再核）。今日差异：Microsoft 365 新增 Pro $99.99/月（仅月付）；Pika 付费档更名为 Basic/Standard/Pro（原 Standard/Pro/Fancy 价位上移），Fancy 有卡片但 SSR 无公开价故不收录；GitHub Copilot 移除无官网年付证据的 pro_yearly 幽灵档。",
+    "updated": "2026-09-12",
     "lastScrapeAt": "2026-08-02T00:54:25.675Z",
     "byProduct": {
       "gemini-advanced": {
@@ -34,12 +34,12 @@
       "microsoft-copilot-pro": {
         "status": "confirmed",
         "pricingUrl": "https://www.microsoft.com/en-us/microsoft-365-copilot/pricing/individuals",
-        "source": "daily-verify:2026-08-02",
-        "updatedAt": "2026-08-02T05:46:45.467Z",
-        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "source": "daily-verify:2026-09-12",
+        "updatedAt": "2026-09-12T10:06:26.899Z",
+        "lastConfirmedAt": "2026-09-12T10:06:26.899Z",
         "lastError": null,
         "partial": false,
-        "note": "Copilot Pro 已停售；个人档以 M365 Personal/Family/Premium 为准"
+        "note": "新增 Microsoft 365 Pro $99.99/月（Monthly billing only）；Personal/Family/Premium 月年付仍在。"
       },
       "poe-premium": {
         "status": "live",
@@ -424,12 +424,12 @@
       "pika": {
         "status": "confirmed",
         "pricingUrl": "https://pika.art/pricing",
-        "source": "daily-verify:2026-08-03",
-        "updatedAt": "2026-08-03T10:07:47.242Z",
-        "lastConfirmedAt": "2026-08-03T10:07:47.242Z",
+        "source": "daily-verify:2026-09-12",
+        "updatedAt": "2026-09-12T10:06:26.899Z",
+        "lastConfirmedAt": "2026-09-12T10:06:26.899Z",
         "lastError": null,
         "partial": false,
-        "note": "Basic 为 $0 免费档；付费为 Standard/Pro/Fancy"
+        "note": "付费档更名 Basic($10/$8)/Standard($35/$28)/Pro($95/$76)；原 Fancy 价位现为 Pro。Fancy 卡片仍在但无公开价→待核实未收录。"
       },
       "luma-dream-machine": {
         "status": "confirmed",
@@ -1017,12 +1017,13 @@
       },
       "github-copilot": {
         "status": "confirmed",
-        "pricingUrl": "https://github.com/features/copilot#pricing",
-        "source": "daily-verify:2026-08-02",
-        "updatedAt": "2026-08-02T05:46:45.467Z",
-        "lastConfirmedAt": "2026-08-02T05:46:45.467Z",
+        "pricingUrl": "https://github.com/features/copilot/plans",
+        "source": "daily-verify:2026-09-12",
+        "updatedAt": "2026-09-12T10:06:26.899Z",
+        "lastConfirmedAt": "2026-09-12T10:06:26.899Z",
         "lastError": null,
-        "partial": false
+        "partial": false,
+        "note": "个人/商业档均为月付公示；移除无年付证据的 pro_yearly $8.33 幽灵档。"
       }
     },
     "statusCounts": {
@@ -1172,6 +1173,15 @@
         "currency": "USD",
         "priceFormatted": "$16.67",
         "label": "Microsoft 365 Premium 年付折合月价"
+      },
+      "locals": {}
+    },
+    "m365_pro_monthly": {
+      "base": {
+        "amount": 99.99,
+        "currency": "USD",
+        "priceFormatted": "$99.99",
+        "label": "Microsoft 365 Pro 月付（仅月付）"
       },
       "locals": {}
     }
@@ -3039,57 +3049,57 @@
     }
   },
   "pika": {
-    "standard_monthly": {
+    "basic_monthly": {
       "base": {
         "amount": 10,
         "currency": "USD",
         "priceFormatted": "$10.00",
+        "label": "Basic 月付"
+      },
+      "locals": {}
+    },
+    "basic_yearly": {
+      "base": {
+        "amount": 8,
+        "currency": "USD",
+        "priceFormatted": "$8.00",
+        "label": "Basic 年付折合月价"
+      },
+      "locals": {}
+    },
+    "standard_monthly": {
+      "base": {
+        "amount": 35,
+        "currency": "USD",
+        "priceFormatted": "$35.00",
         "label": "Standard 月付"
       },
       "locals": {}
     },
     "standard_yearly": {
       "base": {
-        "amount": 8,
+        "amount": 28,
         "currency": "USD",
-        "priceFormatted": "$8.00",
+        "priceFormatted": "$28.00",
         "label": "Standard 年付折合月价"
       },
       "locals": {}
     },
     "pro_monthly": {
       "base": {
-        "amount": 35,
+        "amount": 95,
         "currency": "USD",
-        "priceFormatted": "$35.00",
+        "priceFormatted": "$95.00",
         "label": "Pro 月付"
       },
       "locals": {}
     },
     "pro_yearly": {
       "base": {
-        "amount": 28,
-        "currency": "USD",
-        "priceFormatted": "$28.00",
-        "label": "Pro 年付折合月价"
-      },
-      "locals": {}
-    },
-    "fancy_monthly": {
-      "base": {
-        "amount": 95,
-        "currency": "USD",
-        "priceFormatted": "$95.00",
-        "label": "Fancy 月付"
-      },
-      "locals": {}
-    },
-    "fancy_yearly": {
-      "base": {
         "amount": 76,
         "currency": "USD",
         "priceFormatted": "$76.00",
-        "label": "Fancy 年付折合月价"
+        "label": "Pro 年付折合月价"
       },
       "locals": {}
     }
@@ -5335,15 +5345,6 @@
         "currency": "USD",
         "priceFormatted": "$100.00",
         "label": "Max 月付"
-      },
-      "locals": {}
-    },
-    "pro_yearly": {
-      "base": {
-        "amount": 8.33,
-        "currency": "USD",
-        "priceFormatted": "$8.33",
-        "label": "Pro 年付折合月价（$100/年）"
       },
       "locals": {}
     }

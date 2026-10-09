@@ -118,6 +118,17 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
     }
 
+    # AI 大事（静态页）。日报正文在 /ai-daily/*.json，替换文件即可更新，不必改前端。
+    location /ai/ {
+        try_files $uri $uri/ /ai/index.html;
+    }
+
+    location /ai-daily/ {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        try_files $uri =404;
+    }
+
     location / {
         try_files $uri $uri/ /index.html;
     }

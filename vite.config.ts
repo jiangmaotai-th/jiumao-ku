@@ -16,6 +16,7 @@ export default defineConfig({
         store: resolve(root, 'store/index.html'),
         switch: resolve(root, 'switch/index.html'),
         legal: resolve(root, 'legal/index.html'),
+        ai: resolve(root, 'ai/index.html'),
       },
     },
   },

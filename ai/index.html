@@ -4,12 +4,9 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="九猫库 — 个人开发者的软件和游戏小站。"
-    />
+    <meta name="description" content="九猫库 — AI 大事。今天就能用的东西，以及当天的模型、论文、开源与行业动态。" />
     <meta name="theme-color" content="#0E1210" />
-    <title>九猫库 · maotaiworks.com</title>
+    <title>AI 大事 · 九猫库</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -25,29 +22,22 @@
         <a class="brand-mark" href="/">九猫库</a>
         <p class="brand-domain">maotaiworks.com</p>
       </div>
-      <nav class="site-nav" aria-label="分类筛选" id="category-nav">
-        <button type="button" class="cat-btn is-active" data-filter="all">全部</button>
-        <button type="button" class="cat-btn" data-filter="software">软件</button>
-        <button type="button" class="cat-btn" data-filter="game">游戏</button>
-        <button type="button" class="cat-btn" data-filter="other">其他</button>
+      <nav class="site-nav" aria-label="页面">
+        <a class="ai-board__more" href="/">返回首页</a>
       </nav>
     </header>
 
     <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <h1 id="hero-title" class="hero-title reveal">九猫库</h1>
-        <p class="hero-lead reveal">
-          个人开发者的软件和游戏小站
-        </p>
-      </section>
+      <header class="ai-page">
+        <h1 class="ai-page__title">AI 大事</h1>
+        <p class="ai-page-intro" data-ai-intro>今天的日报还在整理</p>
+        <p class="ai-page-updated" data-ai-updated></p>
+      </header>
 
       <div class="ai-boards" aria-label="今日 AI">
         <article class="ai-board ai-board--use" id="ai-usable" aria-labelledby="ai-usable-title">
           <header class="ai-board__head">
-            <h2 class="ai-board__title" id="ai-usable-title">
-              <a href="/ai/">今天就能用</a>
-            </h2>
-            <a class="ai-board__more" href="/ai/">查看全部</a>
+            <h2 class="ai-board__title" id="ai-usable-title">今天就能用</h2>
           </header>
           <div class="ai-board__body" data-ai-body>
             <p class="ai-empty">今天的日报还在整理</p>
@@ -57,40 +47,27 @@
         <article class="ai-board ai-board--news" id="ai-news" aria-labelledby="ai-news-title">
           <header class="ai-board__head">
             <div class="ai-board__heading">
-              <h2 class="ai-board__title" id="ai-news-title">
-                <a href="/ai/">AI 大事</a>
-              </h2>
-              <p class="ai-board__updated" data-ai-updated></p>
+              <h2 class="ai-board__title" id="ai-news-title">AI 大事</h2>
             </div>
-            <a class="ai-board__more" href="/ai/">查看全部</a>
           </header>
           <div class="ai-board__body" data-ai-body>
             <p class="ai-empty">今天的日报还在整理</p>
           </div>
         </article>
       </div>
-
-      <section id="catalog" class="catalog" aria-label="作品列表">
-        <div id="catalog-list" class="item-list" role="list"></div>
-      </section>
     </main>
 
     <footer class="site-footer">
       <div class="footer-left">
         <p class="footer-brand">九猫库</p>
-        <p class="visitor-count" id="visitor-count" hidden>累计访客 —</p>
       </div>
       <p class="footer-meta">
-        <a href="/legal/#terms">使用条款</a>
-        <span aria-hidden="true">·</span>
-        <a href="/legal/#privacy">隐私说明</a>
-        <span aria-hidden="true">·</span>
-        <a href="/legal/#credits">开源致谢</a>
+        <a href="/">返回首页</a>
         <span aria-hidden="true">·</span>
         <span>© <span id="year"></span> 九猫库</span>
       </p>
     </footer>
 
-    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/ai/main.ts"></script>
   </body>
 </html>

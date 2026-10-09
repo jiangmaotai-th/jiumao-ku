@@ -1,10 +1,12 @@
 import './styles/main.css'
+import './ai-daily/board.css'
 import {
   filterCatalog,
   type CatalogItem,
   type DownloadLink,
   type FilterTab,
 } from './data/apps'
+import { mountAiDaily } from './ai-daily/render'
 import { initVisitorCounter } from './visitor'
 
 const EMPTY_HINT: Record<FilterTab, string> = {
@@ -117,6 +119,7 @@ categoryNav?.addEventListener('click', (event) => {
 })
 
 applyFilter('all')
+void mountAiDaily()
 
 if (yearEl) {
   yearEl.textContent = String(new Date().getFullYear())

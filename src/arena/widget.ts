@@ -5,7 +5,7 @@
 import './arena.css'
 import { getLocale } from '../i18n'
 import { arenaExtra } from '../i18n/arena-extra'
-import { audioLog, musicEnabled, renderOffline, setMusic, setSound, sfx, toWav } from './audio'
+import { audioLog, musicEnabled, renderOffline, setMusic, setSound, sfx, shutdownAudio, toWav } from './audio'
 import { computeBattle, predictLeft } from './battle'
 import { arenaCopy, avatarKey, ensureModels, escapeHtml, fill, loadArenaData } from './data'
 import { ArenaEngine, type EngineLabels } from './engine'
@@ -292,6 +292,7 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
   function destroy() {
     runId++
     detachUnlock()
+    if (!embed) shutdownAudio()
     io?.disconnect()
     document.removeEventListener('visibilitychange', sync)
     engine.destroy()

@@ -40,6 +40,15 @@ export function setSound(on: boolean) {
   else { void ctx?.suspend() }
 }
 export const soundOn = () => enabled
+/** 窗口销毁时调用：停掉音乐调度并关闭 AudioContext，避免销毁后仍在发声、重挂载后两套叠加。 */
+export function shutdownAudio() {
+  enabled = false
+  player.wanted = false
+  player.halt()
+  const c = ctx
+  ctx = master = musicBus = sfxBus = null
+  if (c && c.state !== 'closed') void c.close()
+}
 export function setMusic(on: boolean) {
   musicOn = on
   if (musicBus && ctx) musicBus.gain.setTargetAtTime(on ? LIVE_MUSIC_VOL : 0, ctx.currentTime, 0.05)

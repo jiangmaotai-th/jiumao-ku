@@ -74,7 +74,7 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
           ${embed ? '' : `<button type="button" class="arena__btn" data-speed aria-pressed="false">${escapeHtml(ex.speed)} ×1</button>`}
           <button type="button" class="arena__btn" data-skip>${escapeHtml(ex.skip)}</button>
           <button type="button" class="arena__btn" data-replay>${escapeHtml(copy.replay)}</button>
-          <button type="button" class="arena__btn" data-sound aria-pressed="false">${escapeHtml(copy.soundOff)}</button>
+          ${embed ? '' : `<button type="button" class="arena__btn" data-sound aria-pressed="false">${escapeHtml(copy.soundOff)}</button>`}
           ${embed ? '' : `<button type="button" class="arena__btn" data-music aria-pressed="true">♪ ${escapeHtml(ex.music)}</button>`}
         </div>
         ${embed && opts.fullHref ? `<a class="arena-embed__full" href="${escapeHtml(opts.fullHref)}">${escapeHtml(ui.openFull)}</a>` : ''}
@@ -165,36 +165,9 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
     setMusic(!musicEnabled())
     ;(e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(musicEnabled()))
   })
-  // 声音：/arena/ 页面默认开启（浏览器要求首次点击或触摸后才能出声），首页嵌入预览保持静音。
-  // 用户手动关掉后记住，下次不再自动打开。
-  const SOUND_KEY = 'arena-sound'
-  const soundBtn = $('[data-sound]') as HTMLButtonElement
-  const paintSound = (on: boolean) => {
-    soundBtn.setAttribute('aria-pressed', String(on))
-    soundBtn.textContent = on ? copy.soundOn : copy.soundOff
-  }
-  let detachUnlock = () => {}
-  let savedOff = false
-  try { savedOff = localStorage.getItem(SOUND_KEY) === 'off' } catch { /* */ }
-  if (!embed && !savedOff) {
-    paintSound(true)
-    // iOS Safari 只认 touchend / click 里的用户激活，pointerdown 不够，所以几种都监听，先到先用。
-    const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'click', 'keydown'] as const
-    const unlock = (e: Event) => {
-      // pointerdown 在 iOS 上可能还不算激活，先试着开声，但不拆监听，等 touchend / click / keydown 再收尾。
-      if (e.type !== 'pointerdown') detachUnlock()
-      if (soundBtn.contains(e.target as Node)) return // 用户第一下点的就是声音按钮，交给按钮处理
-      if (soundBtn.getAttribute('aria-pressed') === 'true') setSound(true)
-    }
-    UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, true))
-    detachUnlock = () => UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true))
-  }
-  soundBtn.addEventListener('click', () => {
-    const on = soundBtn.getAttribute('aria-pressed') !== 'true'
-    setSound(on)
-    paintSound(on)
-    try { localStorage.setItem(SOUND_KEY, on ? 'on' : 'off') } catch { /* */ }
-  })
+  // 声音（仅 /arena/ 页面；首页嵌入预览不渲染声音按钮，始终静音，也不读写设置）：
+  // 默认开启，浏览器要求首次点击、触摸或按键后才能出声；用户手动关掉后记住。
+  const detachUnlock = embed ? () => {} : mountSoundToggle($('[data-sound]') as HTMLButtonElement, copy)
 
   // ---- battle ----
   const titleOf = (m: ArenaModel) => {
@@ -324,4 +297,36 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
     engine.destroy()
   }
   return { destroy }
+}
+
+const SOUND_KEY = 'arena-sound'
+/** iOS Safari 只认 touchend / click 里的用户激活，所以几种都监听；pointerdown 时先试着开声但不拆监听。 */
+const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'click', 'keydown'] as const
+
+/** 绑定 /arena/ 页面的声音开关，返回拆除函数（组件 destroy 时调用）。 */
+function mountSoundToggle(btn: HTMLButtonElement, copy: { soundOn: string; soundOff: string }): () => void {
+  const paint = (on: boolean) => {
+    btn.setAttribute('aria-pressed', String(on))
+    btn.textContent = on ? copy.soundOn : copy.soundOff
+  }
+  let savedOff = false
+  try { savedOff = localStorage.getItem(SOUND_KEY) === 'off' } catch { /* */ }
+  let detach = () => {}
+  if (!savedOff) {
+    paint(true)
+    const unlock = (e: Event) => {
+      if (e.type !== 'pointerdown') detach()
+      if (btn.contains(e.target as Node)) return // 第一下点的就是声音按钮，交给按钮处理
+      if (btn.getAttribute('aria-pressed') === 'true') setSound(true)
+    }
+    UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, true))
+    detach = () => UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true))
+  }
+  btn.addEventListener('click', () => {
+    const on = btn.getAttribute('aria-pressed') !== 'true'
+    setSound(on)
+    paint(on)
+    try { localStorage.setItem(SOUND_KEY, on ? 'on' : 'off') } catch { /* */ }
+  })
+  return () => detach()
 }

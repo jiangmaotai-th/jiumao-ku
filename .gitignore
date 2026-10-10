@@ -37,3 +37,10 @@ data/accounts.json
 data/mail.json
 data/notes.json
 data/*.tmp
+
+# Runtime data (updated daily on server; backed up server-side)
+public/ai-daily/
+public/ai-skills/
+public/arena-data/
+data/serials.json
+data/goose-board.json

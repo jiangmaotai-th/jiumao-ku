@@ -20,7 +20,6 @@ export default defineConfig({
   reporter: [['list']],
   use: {
     ...devices['Desktop Chrome'],
-    channel: 'chrome',
     baseURL,
     viewport: { width: 1280, height: 900 },
     navigationTimeout: 120_000,

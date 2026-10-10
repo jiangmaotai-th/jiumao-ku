@@ -98,10 +98,10 @@ export const PLAN_EXPANSIONS = {
     },
   },
   'character-ai-plus': {
-    pricingUrl: 'https://character.ai/subscription',
+    pricingUrl: 'https://character.ai/subscribe',
     plans: {
       plus_monthly: usd(9.99, 'c.ai+ 月付'),
-      plus_yearly: usd(7.99, 'c.ai+ 年付折合月价'),
+      plus_yearly: usd(7.92, 'c.ai+ 年付折合月价（$94.99/年）'),
     },
   },
   'replika-pro': {
@@ -112,11 +112,10 @@ export const PLAN_EXPANSIONS = {
     },
   },
   'mistral-le-chat': {
-    pricingUrl: 'https://mistral.ai/products/le-chat',
+    pricingUrl: 'https://mistral.ai/pricing',
     plans: {
-      pro_monthly: eur(14.99, 'Le Chat Pro'),
-      team_monthly: eur(24.99, 'Team 月付'),
-      team_yearly: eur(19.99, 'Team 年付折合月价'),
+      pro_monthly: usd(14.99, 'Le Chat Pro'),
+      team_monthly: usd(24.99, 'Team 月付/席'),
     },
   },
   'huggingface-pro': {
@@ -258,9 +257,10 @@ export const PLAN_EXPANSIONS = {
   'replit-core': {
     pricingUrl: 'https://replit.com/pricing',
     plans: {
-      core_monthly: usd(25, 'Core 月付'),
-      core_yearly: usd(20, 'Core 年付折合月价'),
+      core_monthly: usd(20, 'Core 月付'),
+      core_yearly: usd(17, 'Core 年付折合月价'),
       pro_monthly: usd(100, 'Pro 月付'),
+      pro_yearly: usd(95, 'Pro 年付折合月价'),
     },
   },
   'sourcegraph-cody': {
@@ -312,10 +312,12 @@ export const PLAN_EXPANSIONS = {
   ideogram: {
     pricingUrl: 'https://ideogram.ai/pricing',
     plans: {
-      plus_monthly: usd(8, 'Plus 月付'),
-      plus_yearly: usd(6, 'Plus 年付折合月价'),
-      pro_monthly: usd(20, 'Pro 月付'),
-      pro_yearly: usd(15, 'Pro 年付折合月价'),
+      plus_monthly: usd(20, 'Plus 月付'),
+      plus_yearly: usd(15, 'Plus 年付折合月价（$180/年）'),
+      pro_monthly: usd(60, 'Pro 月付'),
+      pro_yearly: usd(42, 'Pro 年付折合月价（$504/年）'),
+      team_monthly: usd(30, 'Team 月付/席'),
+      team_yearly: usd(20, 'Team 年付折合月价/席'),
     },
   },
   'canva-pro': {

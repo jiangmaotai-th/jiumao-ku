@@ -145,7 +145,16 @@ export const AI_PRODUCTS = [
     },
     web: {
       pricingUrl: 'https://openai.com/chatgpt/pricing',
-      planKeys: ['go_monthly', 'plus_monthly', 'pro_monthly'],
+      planKeys: [
+        'go_monthly',
+        'plus_monthly',
+        'pro_5x_monthly',
+        'pro_monthly',
+        'business_monthly',
+        'business_yearly',
+        'business_premium_monthly',
+        'business_premium_yearly',
+      ],
     },
     desktop: { store: 'mac', skuHints: ['plus', 'pro', 'go'] },
   }),
@@ -202,14 +211,20 @@ export const AI_PRODUCTS = [
   }),
   p('character-ai-plus', 'Character.AI Plus', 'Character.AI Plus', 'chat', 'Character.AI', {
     appstore: { trackId: 1607652642, planHints: ['c.ai+', 'plus', 'character'] },
-    web: { planKeys: ['plus_monthly'] },
+    web: {
+      pricingUrl: 'https://character.ai/subscribe',
+      planKeys: ['plus_monthly', 'plus_yearly'],
+    },
   }),
   p('replika-pro', 'Replika Pro', 'Replika Pro', 'chat', 'Luka', {
     appstore: { trackId: 1158555867, planHints: ['pro', 'replika'] },
     web: { planKeys: ['pro_monthly'] },
   }),
   p('mistral-le-chat', 'Mistral Le Chat', 'Mistral（Le Chat）', 'chat', 'Mistral', {
-    web: { planKeys: ['pro_monthly'] },
+    web: {
+      pricingUrl: 'https://mistral.ai/pricing',
+      planKeys: ['pro_monthly', 'team_monthly'],
+    },
   }),
   p('huggingface-pro', 'Hugging Face Pro', 'Hugging Face Pro', 'chat', 'Hugging Face', {
     web: {
@@ -231,16 +246,16 @@ export const AI_PRODUCTS = [
   }),
   p('kimi', 'Kimi', 'Kimi', 'chat', '月之暗面', {
     web: {
-      pricingUrl: 'https://www.kimi.com/zh-cn/help/membership/membership-pricing',
+      pricingUrl: 'https://www.kimi.ai/help/membership/membership-pricing',
       planKeys: [
-        'andante_monthly',
-        'andante_yearly',
         'moderato_monthly',
         'moderato_yearly',
         'allegretto_monthly',
         'allegretto_yearly',
         'allegro_monthly',
         'allegro_yearly',
+        'vivace_monthly',
+        'vivace_yearly',
       ],
     },
   }),
@@ -310,7 +325,10 @@ export const AI_PRODUCTS = [
     },
   }),
   p('replit-core', 'Replit Core', 'Replit Core', 'coding', 'Replit', {
-    web: { planKeys: ['core_monthly'] },
+    web: {
+      pricingUrl: 'https://replit.com/pricing',
+      planKeys: ['core_monthly', 'core_yearly', 'pro_monthly', 'pro_yearly'],
+    },
   }),
   p('amazon-q', 'Amazon Q Developer', 'Amazon Q Developer', 'coding', 'Amazon', {
     web: { planKeys: ['pro_monthly'] },
@@ -348,7 +366,17 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['apprentice_monthly'] },
   }),
   p('ideogram', 'Ideogram', 'Ideogram', 'image', 'Ideogram', {
-    web: { planKeys: ['plus_monthly'] },
+    web: {
+      pricingUrl: 'https://ideogram.ai/pricing',
+      planKeys: [
+        'plus_monthly',
+        'plus_yearly',
+        'pro_monthly',
+        'pro_yearly',
+        'team_monthly',
+        'team_yearly',
+      ],
+    },
   }),
   p('flux-pro', 'FLUX Pro', 'FLUX Pro', 'image', 'Black Forest Labs', {
     web: { planKeys: ['pro_monthly'] },

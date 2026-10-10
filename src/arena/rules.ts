@@ -78,7 +78,7 @@ export function resolveRound(r: RoundInput): RoundResult {
 }
 
 export interface BattleRound extends RoundResult {
-  /** 本回合实际扣掉的血（K.O. 后为 0） */
+  /** 本回合实际扣掉的血（补刀时不超过对方剩余血量；K.O. 后为 0）。画面上的伤害数字显示这个值。 */
   applied: number
   hpA: number
   hpB: number
@@ -112,9 +112,9 @@ export function resolveBattle(inputs: RoundInput[]): BattleResult {
     if (res.winner === 'a') roundWinsA++
     if (res.winner === 'b') roundWinsB++
     if (!afterKo && res.winner) {
-      applied = res.damage
-      if (res.winner === 'a') { hpB = Math.max(0, hpB - applied); if (hpB === 0) ko = 'b' }
-      else { hpA = Math.max(0, hpA - applied); if (hpA === 0) ko = 'a' }
+      // applied = 实际扣掉的血；补刀时不超过对方剩余血量
+      if (res.winner === 'a') { applied = Math.min(res.damage, hpB); hpB -= applied; if (hpB === 0) ko = 'b' }
+      else { applied = Math.min(res.damage, hpA); hpA -= applied; if (hpA === 0) ko = 'a' }
     }
     return { ...res, applied, hpA, hpB, afterKo }
   })

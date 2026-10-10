@@ -60,4 +60,7 @@ b = resolveBattle([crush, crush, crush, crush, crush, { ...crush }])
 assert.equal(pickPreviewRound(b.rounds), 0)
 assert.equal(pickPreviewRound(resolveBattle([block, block]).rounds), 0)
 assert.equal(pickPreviewRound([resolveRound(hitA), resolveRound(crush)]), 1)
+// 补刀：剩 12 血时一下 22，applied 记 12
+b = resolveBattle([crush, crush, crush, crush, crush])
+assert.equal(b.rounds[4].hpB, 0); assert.equal(b.rounds[4].applied, 12); assert.equal(b.rounds[4].damage, 22)
 console.log('rules.check: all passed')

@@ -1,3 +1,4 @@
+import { fetchLocalizedJson } from './localized'
 import {
   AI_DAILY_ACCESS,
   AI_DAILY_CATEGORIES,
@@ -37,7 +38,6 @@ function readItem(value: unknown): AiDailyItem | null {
     access: raw.access,
     usable: raw.usable === true,
   }
-
   if (typeof raw.accessNote === 'string' && raw.accessNote.trim() !== '') {
     item.accessNote = raw.accessNote.trim()
   }
@@ -46,9 +46,7 @@ function readItem(value: unknown): AiDailyItem | null {
 
 /** Accepts the public JSON shape and drops entries that don't match the type. */
 export function parseAiDailyIssue(value: unknown): AiDailyIssue {
-  if (!value || typeof value !== 'object') {
-    throw new Error('AI daily JSON is not an object')
-  }
+  if (!value || typeof value !== 'object') throw new Error('AI daily JSON is not an object')
   const raw = value as Record<string, unknown>
   if (typeof raw.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw.date)) {
     throw new Error('AI daily JSON is missing date')
@@ -56,48 +54,23 @@ export function parseAiDailyIssue(value: unknown): AiDailyIssue {
   if (typeof raw.updatedAt !== 'string' || raw.updatedAt.trim() === '') {
     throw new Error('AI daily JSON is missing updatedAt')
   }
-  if (typeof raw.intro !== 'string') {
-    throw new Error('AI daily JSON is missing intro')
-  }
-  if (!Array.isArray(raw.items)) {
-    throw new Error('AI daily JSON is missing items')
-  }
+  if (!Array.isArray(raw.items)) throw new Error('AI daily JSON is missing items')
 
   const items: AiDailyItem[] = []
   for (const entry of raw.items) {
     const item = readItem(entry)
     if (item) items.push(item)
   }
-
   return {
     date: raw.date,
     updatedAt: raw.updatedAt.trim(),
-    intro: raw.intro.trim(),
+    intro: typeof raw.intro === 'string' ? raw.intro.trim() : '',
     items,
   }
 }
 
-/** Beijing wall time, taken from the timestamp in the JSON. */
-export function formatUpdatedAt(iso: string): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return '更新于 —'
-  const formatted = new Intl.DateTimeFormat('zh-CN', {
-    timeZone: 'Asia/Shanghai',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  }).format(date)
-  return `更新于 ${formatted}（北京时间）`
-}
-
+/** Fetch today's issue in the current site language (falls back to Chinese), bypassing caches. */
 export async function loadLatestAiDaily(): Promise<AiDailyIssue> {
-  const url = `${AI_DAILY_LATEST_PATH}?t=${Date.now()}`
-  const response = await fetch(url, { cache: 'no-store' })
-  if (!response.ok) {
-    throw new Error(`AI daily JSON failed: ${response.status}`)
-  }
-  return parseAiDailyIssue(await response.json())
+  const { raw, translated } = await fetchLocalizedJson(AI_DAILY_LATEST_PATH, parseAiDailyIssue)
+  return { ...parseAiDailyIssue(raw), translated }
 }

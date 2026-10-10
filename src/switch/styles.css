@@ -10,7 +10,7 @@
   --green: #7dba8a;
   --surface: rgba(232, 228, 217, 0.03);
   --font-display: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
-  --font-body: 'DM Sans', 'Noto Sans SC', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
   --max: 920px;
   --pad: clamp(1.25rem, 4vw, 2.5rem);
   color-scheme: dark;

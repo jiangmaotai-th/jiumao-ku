@@ -1,0 +1,285 @@
+/* 「AI 最新 Skill」board — homepage (below「AI 大事」) and /ai/. Reuses .ai-board / .ai-access / .ai-source from ai-daily/board.css. */
+
+/* The host sits right after #ai-boards, which already pads the bottom. */
+.ai-skills-host {
+  padding-top: 0;
+}
+
+.ai-board--skills {
+  border-color: rgba(94, 168, 122, 0.32);
+  background:
+    radial-gradient(ellipse 55% 75% at 100% 0%, rgba(94, 168, 122, 0.13), transparent 60%),
+    radial-gradient(ellipse 50% 65% at 0% 100%, rgba(144, 118, 211, 0.08), transparent 60%),
+    var(--tile);
+  box-shadow: 0 14px 34px rgba(94, 168, 122, 0.08);
+  animation-delay: 0.34s;
+}
+
+.ai-board--skills .ai-board__kicker {
+  background: rgba(94, 168, 122, 0.14);
+  color: #2f7a4d;
+}
+
+.ai-board--skills .ai-board__kicker::before {
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(94, 168, 122, 0.22);
+}
+
+.ai-board--skills .ai-board__count {
+  background: var(--green);
+}
+
+.ai-skill-groups {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.ai-board--skills .ai-group__title {
+  color: #2f7a4d;
+}
+
+.ai-board--skills .ai-group__count {
+  background: rgba(94, 168, 122, 0.14);
+  color: #2f7a4d;
+}
+
+.ai-skill-grid {
+  list-style: none;
+  margin: 0.55rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.ai-skill-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.95rem 1rem 0.9rem;
+  border: 1px solid rgba(94, 168, 122, 0.18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.18s ease;
+}
+
+.ai-skill-card:hover {
+  border-color: rgba(94, 168, 122, 0.4);
+  box-shadow: 0 12px 28px rgba(94, 168, 122, 0.12);
+  transform: translateY(-2px);
+}
+
+.ai-skill-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ai-skill-card__date {
+  color: var(--ink-muted);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-skill-src {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.55rem;
+  border-radius: var(--radius-btn);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--gold-dim);
+  background: rgba(144, 118, 211, 0.1);
+}
+
+.ai-skill-src--official {
+  color: #2f7a4d;
+  background: rgba(94, 168, 122, 0.14);
+}
+
+.ai-skill-src--x {
+  color: #fff;
+  background: var(--ink);
+}
+
+.ai-skill-src--github {
+  color: var(--ink-soft);
+  background: rgba(61, 61, 72, 0.08);
+}
+
+.ai-skill-src--hn,
+.ai-skill-src--reddit {
+  color: #a35f00;
+  background: rgba(255, 178, 64, 0.18);
+}
+
+.ai-skill-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.ai-skill-card__title a {
+  transition: color 0.18s ease;
+}
+
+.ai-skill-card__title a:hover {
+  color: #2f7a4d;
+}
+
+.ai-skill-card__summary,
+.ai-skill-card__how-text {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.62;
+  overflow-wrap: anywhere;
+}
+
+.ai-skill-card__how {
+  padding: 0.45rem 0.6rem;
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+.ai-skill-card__how-label {
+  margin-right: 0.4rem;
+  color: var(--gold-dim);
+  font-weight: 700;
+}
+
+.ai-skill-card__foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--line);
+}
+
+.ai-skill-card__access {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+}
+
+.ai-skill-card__note {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.ai-skill-card__links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.ai-skill-group__more {
+  display: inline-block;
+  margin-top: 0.55rem;
+  color: #2f7a4d;
+  font-size: 0.84rem;
+  font-weight: 600;
+  transition: color 0.18s ease;
+}
+
+.ai-skill-group__more:hover {
+  color: var(--ink);
+}
+
+.ai-skill-card__how-text {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+}
+
+/* Homepage: platform panels side by side, a couple of short cards each; /ai/ shows everything. */
+.ai-boards--home .ai-skill-groups {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 0.4rem 1.1rem;
+}
+
+.ai-boards--home .ai-skill-grid {
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+}
+
+.ai-boards--home .ai-skill-card__summary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+.ai-boards--home .ai-skill-card__how-text,
+.ai-boards--home .ai-skill-card__note {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+/* Rail entry */
+.app-rail__item--ai-skills:not(.is-active) {
+  color: #2f7a4d;
+}
+
+.app-rail__item--ai-skills:not(.is-active)::before {
+  background: rgba(94, 168, 122, 0.12);
+  border-color: rgba(94, 168, 122, 0.3);
+}
+
+@media (max-width: 1000px) {
+  .ai-skill-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .ai-boards--home .ai-skill-groups {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .ai-skill-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-skill-card,
+  .ai-skill-card__title a,
+  .ai-skill-group__more {
+    transition: none;
+  }
+
+  .ai-skill-card:hover {
+    transform: none;
+  }
+}
+
+/* On /ai/ the skills host follows #ai-boards; keep the same gap as between boards. */
+.ai-boards--page:not(.ai-skills-host) {
+  padding-bottom: 1.25rem;
+}

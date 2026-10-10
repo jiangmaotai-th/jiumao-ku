@@ -4,6 +4,9 @@
 
 当前上架：
 
+- **每日刮刮乐** — 网页游戏 `/scratch/`（游戏分类；每天登陆可领 10 次金币）
+- **AI 订阅低价区查询器** — 网页版 `/store/`
+- **一键转 Markdown** — 网页版 `/markdown/`（文档本地转 MD；音视频/OCR 需 macOS 版）
 - **小午的图片转换** — 网页版 `/image/`（点开即用，本地 JPEG/PNG/WebP/BMP 互转）
 - **魔书** — 网页版 `/ebook/`
 - **MoyeeConverte** — 网页版 `/moyee/`（点开即用）+ macOS/Windows 安装包
@@ -80,16 +83,7 @@ public/downloads/moyi/mac.dmg
 - `game` → 游戏
 - `other` → 其他
 
-首页右上角可按「全部 / 软件 / 游戏 / 其他」筛选。筛选不会拿掉作品列表上方的两个日报模块。
-
-## AI 大事
-
-首页在作品列表之上有两个固定模块，数据都来自同一份静态 JSON：
-
-- 「今天就能用」：`usable: true` 的条目（能打开、下载、报名或读论文）
-- 「AI 大事」：当天全部条目，按类别分组
-
-编辑 `public/ai-daily/latest.json`（并按日期另存一份，例如 `public/ai-daily/2026-10-09.json`）后刷新即可，不必改组件。完整页在 `/ai/`。字段见 `src/ai-daily/types.ts`。
+首页右上角可按「全部 / 软件 / 游戏 / 其他」筛选。
 
 ## 部署到服务器
 

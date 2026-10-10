@@ -133,16 +133,35 @@ export function buildFfmpegArgs(
     args.push('-c', 'copy')
   } else {
     args.push('-c:v', vc)
-    if (vc === 'libx264') {
+    const crfDefault = mode === 'compress' ? 28 : 23
+    if (vc === 'libx264' || vc === 'libx265') {
       args.push('-preset', mode === 'compress' ? 'fast' : 'medium')
       if (profile.bitrateMode === 'crf') {
-        args.push('-crf', String(profile.crf ?? (mode === 'compress' ? 28 : 23)))
+        args.push('-crf', String(profile.crf ?? crfDefault))
       } else if (profile.videoBitrateKbps) {
         args.push('-b:v', `${profile.videoBitrateKbps}k`)
       }
       args.push('-pix_fmt', 'yuv420p')
+      if (vc === 'libx265') args.push('-tag:v', 'hvc1')
     } else if (vc === 'libvpx-vp9') {
-      args.push('-b:v', `${profile.videoBitrateKbps ?? 2000}k`, '-row-mt', '1')
+      args.push('-row-mt', '1')
+      if (profile.bitrateMode === 'crf') {
+        args.push('-crf', String(profile.crf ?? 32), '-b:v', '0')
+      } else {
+        args.push('-b:v', `${profile.videoBitrateKbps ?? 2000}k`)
+      }
+    } else if (vc === 'libaom-av1' || vc === 'libsvtav1') {
+      if (profile.bitrateMode === 'crf') {
+        args.push('-crf', String(profile.crf ?? 32), '-b:v', '0', '-cpu-used', '6')
+      } else if (profile.videoBitrateKbps) {
+        args.push('-b:v', `${profile.videoBitrateKbps}k`, '-cpu-used', '6')
+      } else {
+        args.push('-crf', '32', '-b:v', '0', '-cpu-used', '6')
+      }
+    } else if (profile.bitrateMode === 'crf') {
+      args.push('-crf', String(profile.crf ?? crfDefault))
+    } else if (profile.videoBitrateKbps) {
+      args.push('-b:v', `${profile.videoBitrateKbps}k`)
     }
 
     if (!profile.keepOriginalFrameRate && profile.frameRate) {
@@ -155,7 +174,13 @@ export function buildFfmpegArgs(
     if (ac === 'copy') {
       args.push('-c:a', 'copy')
     } else {
-      args.push('-c:a', ac === 'libvorbis' || profile.container === 'webm' ? (profile.container === 'webm' ? 'libopus' : ac) : ac)
+      const audio =
+        profile.container === 'webm'
+          ? profile.audioCodec || 'libopus'
+          : ac === 'libvorbis'
+            ? ac
+            : ac
+      args.push('-c:a', audio)
       if (profile.audioBitrateKbps) args.push('-b:a', `${profile.audioBitrateKbps}k`)
       if (profile.sampleRate) args.push('-ar', String(profile.sampleRate))
       if (profile.channels) args.push('-ac', String(profile.channels))

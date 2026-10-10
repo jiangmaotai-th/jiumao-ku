@@ -3,9 +3,8 @@ import mammoth from 'mammoth'
 import { PDFDocument } from 'pdf-lib'
 import * as pdfjs from 'pdfjs-dist'
 import type { EbookFormat } from '../formats'
-import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
-
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker
+import { assertNoDrm, asDrmErrorIfMatched, DrmProtectedError } from './drmDetect'
+pdfjs.GlobalWorkerOptions.workerSrc = `${typeof window !== 'undefined' ? window.location.origin : ''}/pdf.worker.min.mjs`
 
 export interface ConvertResult {
   blob: Blob
@@ -72,6 +71,10 @@ async function extractTxt(
     return { text: format === 'html' ? stripHtml(raw) : raw, warnings }
   }
 
+  if (format === 'doc') {
+    throw new Error('旧版 DOC 请使用服务器转换通道（或另存为 DOCX）。')
+  }
+
   if (format === 'docx') {
     const result = await mammoth.extractRawText({ arrayBuffer: await readAsArrayBuffer(file) })
     if (result.messages?.length) warnings.push('DOCX 部分样式已忽略，仅保留正文。')
@@ -99,7 +102,7 @@ async function extractTxt(
   if (format === 'mobi') {
     const text = extractMobiText(new Uint8Array(await readAsArrayBuffer(file)))
     if (!text.trim()) {
-      throw new Error('无法从该 MOBI 提取文本（可能已加密或为非常用结构）')
+      throw new DrmProtectedError('无法提取正文，文件可能已加密')
     }
     warnings.push('MOBI 为尽力提取，复杂排版可能丢失。')
     return { text, warnings }
@@ -118,11 +121,8 @@ async function extractFromZipEbook(
   try {
     zip = await JSZip.loadAsync(await readAsArrayBuffer(file))
   } catch {
-    throw new Error(
-      format === 'azw3'
-        ? '无法打开该 AZW3（可能已加密或非 KF8 结构）'
-        : '无法打开该 EPUB 文件',
-    )
+    if (format === 'azw3') throw new DrmProtectedError('无法打开该 AZW3')
+    throw new Error('无法打开该 EPUB 文件')
   }
   const htmlFiles = Object.keys(zip.files)
     .filter((n) => /\.(xhtml|html|htm)$/i.test(n) && !zip.files[n].dir)
@@ -134,7 +134,7 @@ async function extractFromZipEbook(
     if (t) chunks.push(t)
   }
   if (!chunks.length) throw new Error('未能提取到正文')
-  if (format === 'azw3') warnings.push('AZW3 按 KF8/ZIP 结构解包，加密书籍无法处理。')
+  if (format === 'azw3') warnings.push('AZW3 按 KF8/ZIP 结构解包，复杂排版可能简化。')
   return { text: chunks.join('\n\n'), warnings }
 }
 
@@ -289,7 +289,19 @@ export async function convertEbook(
     throw new Error('请使用服务器转换通道生成 AZW3/MOBI。')
   }
 
-  const { text, warnings } = await extractTxt(file, from)
+  await assertNoDrm(file, from)
+
+  let text: string
+  let warnings: string[]
+  try {
+    ;({ text, warnings } = await extractTxt(file, from))
+  } catch (e) {
+    if (e instanceof DrmProtectedError) throw e
+    const msg = e instanceof Error ? e.message : String(e)
+    const drm = asDrmErrorIfMatched(msg)
+    if (drm) throw drm
+    throw e
+  }
   if (!text.trim()) throw new Error('没有提取到可转换的正文')
 
   const title = stemOf(file.name)

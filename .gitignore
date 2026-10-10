@@ -9,6 +9,7 @@ lerna-debug.log*
 
 node_modules
 dist
+dist-goose
 dist-ssr
 *.local
 
@@ -31,3 +32,8 @@ deploy/store-price/sheet/latest.xlsx
 *.njsproj
 *.sln
 *.sw?
+
+data/accounts.json
+data/mail.json
+data/notes.json
+data/*.tmp

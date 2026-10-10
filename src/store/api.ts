@@ -20,6 +20,10 @@ export type PriceRow = {
   billingPeriod?: string
   billingLabel?: string
   billingMonths?: number | null
+  /** Same IAP name listed at other prices in this storefront (period not stated by Apple). */
+  alt?: { amount: number; currency: string; priceFormatted: string; cny?: number | null }[]
+  ambiguous?: boolean
+  fetchedAt?: string | null
   rank?: number | null
   isLowest?: boolean
   totalRegions?: number
@@ -39,6 +43,9 @@ export type PriceBase = {
   priceFormatted: string
   cny: number
   label?: string
+  sourceUrl?: string | null
+  checkedAt?: string | null
+  stale?: boolean
 }
 
 export type PriceAnomaly = {
@@ -248,8 +255,22 @@ export function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-export const CHANNEL_LABELS: Record<string, string> = {
-  appstore: 'App Store',
-  web: '网页',
-  desktop: '桌面',
+export type FxDoc = {
+  updatedAt?: string
+  base: string
+  rates: Record<string, number>
+}
+
+export function fetchFx() {
+  return get<FxDoc>('/fx')
+}
+
+export function channelLabel(
+  channel: string | null | undefined,
+  t: (key: string) => string,
+): string {
+  if (channel === 'web') return t('store.channelWeb')
+  if (channel === 'desktop') return t('store.channelDesktop')
+  if (channel === 'appstore') return t('store.channelAppStore')
+  return channel || ''
 }

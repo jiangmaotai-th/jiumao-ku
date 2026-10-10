@@ -1,4 +1,4 @@
-/** Categories shown under「AI 大事」, in display order. */
+/** Categories shown under「AI 大事」, in display order. Values are the JSON strings. */
 export const AI_DAILY_CATEGORIES = [
   '模型与产品',
   '论文与研究',
@@ -10,17 +10,10 @@ export const AI_DAILY_CATEGORIES = [
 
 export type AiDailyCategory = (typeof AI_DAILY_CATEGORIES)[number]
 
-/** Whether a reader in China can open the thing itself. */
+/** Whether a reader in mainland China can open the thing itself. */
 export const AI_DAILY_ACCESS = ['direct', 'restricted', 'unavailable', 'na'] as const
 
 export type AiDailyAccess = (typeof AI_DAILY_ACCESS)[number]
-
-export const AI_DAILY_ACCESS_LABEL: Record<AiDailyAccess, string> = {
-  direct: '可直接使用',
-  restricted: '需特殊网络或海外账号',
-  unavailable: '不可用或未开放',
-  na: '不适用（融资/政策等）',
-}
 
 /**
  * One day's digest. Both homepage boards read this same object:
@@ -40,6 +33,8 @@ export interface AiDailyItem {
 }
 
 export interface AiDailyIssue {
+  /** Set by the loader: true when the text is in the page language. */
+  translated?: boolean
   /** YYYY-MM-DD */
   date: string
   /** ISO 8601 with an explicit offset, expected `+08:00`. */

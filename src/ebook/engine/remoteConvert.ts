@@ -1,3 +1,4 @@
+import { assertNoDrm, asDrmErrorIfMatched } from './drmDetect'
 import type { EbookFormat } from '../formats'
 import type { ConvertResult } from './convert'
 import { pdfLooksScanned } from './pdfScan'
@@ -6,7 +7,13 @@ const REFLOWABLE: EbookFormat[] = ['epub', 'mobi', 'azw3', 'txt']
 
 /** Formats that always require Calibre on the server. */
 export function needsRemoteConvert(from: EbookFormat, to: EbookFormat): boolean {
-  return to === 'azw3' || to === 'mobi' || from === 'azw3' || from === 'mobi'
+  return (
+    to === 'azw3' ||
+    to === 'mobi' ||
+    from === 'azw3' ||
+    from === 'mobi' ||
+    from === 'doc'
+  )
 }
 
 /** Whether this job should use the server (Calibre and/or OCR). */
@@ -27,6 +34,8 @@ export async function convertEbookRemote(
   from: EbookFormat,
   to: EbookFormat,
 ): Promise<ConvertResult> {
+  await assertNoDrm(file, from)
+
   const body = new FormData()
   body.append('file', file, file.name)
   body.append('from', from)
@@ -46,7 +55,8 @@ export async function convertEbookRemote(
     } catch {
       /* ignore */
     }
-    throw new Error(message)
+    const drm = asDrmErrorIfMatched(message)
+    throw drm ?? new Error(message)
   }
 
   const blob = await res.blob()

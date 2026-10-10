@@ -1,0 +1,354 @@
+:root {
+  --bg: #0e1210;
+  --bg-panel: #151a17;
+  --bg-elev: #1a211c;
+  --ink: #e8e4d9;
+  --ink-muted: #9a9588;
+  --line: rgba(196, 163, 90, 0.22);
+  --gold: #c4a35a;
+  --gold-soft: #d4b87a;
+  --gold-dim: #8a7340;
+  --danger: #e07860;
+  --ok: #7cb89a;
+  --accent: #c4a35a;
+  --accent-deep: #8a7340;
+  --font-display: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR', 'Noto Sans Thai', 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 20% 0%, rgba(196, 163, 90, 0.08), transparent 40%),
+    var(--bg);
+  color: var(--ink);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+.vm-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.vm-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: rgba(14, 18, 16, 0.85);
+}
+
+.vm-brand {
+  color: var(--gold-soft);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  letter-spacing: 0.06em;
+}
+
+.vm-top-right {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.vm-home {
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+
+.vm-home:hover {
+  color: var(--gold-dim);
+}
+
+.vm-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) min(340px, 34vw);
+  min-height: 0;
+}
+
+.vm-left {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 1.1rem 1.25rem 1.25rem;
+  border-right: 1px solid var(--line);
+}
+
+.vm-left-head h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  letter-spacing: 0.04em;
+}
+
+.vm-left-head p {
+  margin: 0.35rem 0 0.9rem;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.vm-dropzone {
+  flex: 1;
+  min-height: 360px;
+  display: flex;
+  border-radius: 14px;
+  transition:
+    box-shadow 0.15s ease,
+    outline-color 0.15s ease;
+}
+
+.vm-dropzone.is-dragover {
+  outline: 2px solid rgba(196, 163, 90, 0.75);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(196, 163, 90, 0.12);
+}
+
+.vm-stage {
+  flex: 1;
+  min-height: 360px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
+  display: flex;
+}
+
+.vm-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+
+.vm-empty {
+  flex: 1;
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px dashed rgba(196, 163, 90, 0.45);
+  border-radius: 14px;
+  background: rgba(196, 163, 90, 0.04);
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.vm-empty strong {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--gold-dim);
+}
+
+.vm-empty span {
+  color: var(--ink-muted);
+  font-size: 0.9rem;
+}
+
+.vm-filebar {
+  margin-top: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg-panel);
+}
+
+.vm-file-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
+  min-width: 0;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+
+.vm-file-meta strong {
+  color: var(--ink);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vm-file-placeholder {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+
+.vm-right {
+  display: flex;
+  flex-direction: column;
+  padding: 1.1rem 1rem 1.25rem;
+  background: var(--bg-panel);
+  min-width: 0;
+}
+
+.vm-right-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: 0.04em;
+}
+
+.vm-right-head p {
+  margin: 0.45rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.vm-error {
+  margin: 1rem 0 0;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(224, 120, 96, 0.45);
+  background: rgba(224, 120, 96, 0.12);
+  color: #b54a35;
+  font-size: 0.8rem;
+}
+
+.vm-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1.25rem;
+}
+
+.vm-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--gold);
+  background: rgba(196, 163, 90, 0.22);
+  color: var(--ink);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.vm-cta:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.vm-cta.is-progress {
+  justify-content: space-between;
+  border-color: rgba(62, 180, 110, 0.55);
+  background: rgba(18, 28, 22, 0.95);
+  color: #f2fff6;
+  opacity: 1;
+  cursor: progress;
+}
+
+.vm-cta.is-progress:disabled {
+  opacity: 1;
+  color: #f2fff6;
+}
+
+.vm-cta.is-done {
+  cursor: default;
+}
+
+.vm-cta.is-progress::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--cta-progress, 0%);
+  background: linear-gradient(90deg, #1f8f52 0%, #35c46f 55%, #4adf86 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: width 0.18s ease-out;
+  z-index: 0;
+}
+
+.vm-cta .cta-label,
+.vm-cta .cta-pct {
+  position: relative;
+  z-index: 1;
+}
+
+.vm-cta .cta-pct {
+  min-width: 2.75rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.vm-btn {
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold-soft);
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.vm-btn:hover {
+  background: rgba(196, 163, 90, 0.12);
+}
+
+.vm-btn.ghost {
+  border-color: transparent;
+  color: var(--ink-muted);
+}
+
+.vm-privacy {
+  margin: 0.85rem 0 0;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .vm-main {
+    grid-template-columns: 1fr;
+  }
+
+  .vm-left {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .vm-stage,
+  .vm-empty {
+    min-height: 280px;
+  }
+}

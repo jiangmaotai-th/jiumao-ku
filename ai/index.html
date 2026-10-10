@@ -4,70 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="九猫库 — AI 大事。今天就能用的东西，以及当天的模型、论文、开源与行业动态。" />
-    <meta name="theme-color" content="#0E1210" />
-    <title>AI 大事 · 九猫库</title>
+    <meta name="description" content="九猫库 AI 日报：今天就能上手的 AI 新东西，以及当天全球模型、论文、开源、行业、政策与 X 热议，每条附来源并标注国内能否直接使用。" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <title>AI 大事 · 中国大陆能用的 AI · 九猫库</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=ZCOOL+XiaoWei&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body>
+  <body class="ai-page-body">
     <div class="atmosphere" aria-hidden="true"></div>
-
-    <header class="site-header">
-      <div class="brand-block">
-        <a class="brand-mark" href="/">九猫库</a>
-        <p class="brand-domain">maotaiworks.com</p>
-      </div>
-      <nav class="site-nav" aria-label="页面">
-        <a class="ai-board__more" href="/">返回首页</a>
-      </nav>
-    </header>
-
-    <main>
-      <header class="ai-page">
-        <h1 class="ai-page__title">AI 大事</h1>
-        <p class="ai-page-intro" data-ai-intro>今天的日报还在整理</p>
-        <p class="ai-page-updated" data-ai-updated></p>
-      </header>
-
-      <div class="ai-boards" aria-label="今日 AI">
-        <article class="ai-board ai-board--use" id="ai-usable" aria-labelledby="ai-usable-title">
-          <header class="ai-board__head">
-            <h2 class="ai-board__title" id="ai-usable-title">今天就能用</h2>
-          </header>
-          <div class="ai-board__body" data-ai-body>
-            <p class="ai-empty">今天的日报还在整理</p>
-          </div>
-        </article>
-
-        <article class="ai-board ai-board--news" id="ai-news" aria-labelledby="ai-news-title">
-          <header class="ai-board__head">
-            <div class="ai-board__heading">
-              <h2 class="ai-board__title" id="ai-news-title">AI 大事</h2>
-            </div>
-          </header>
-          <div class="ai-board__body" data-ai-body>
-            <p class="ai-empty">今天的日报还在整理</p>
-          </div>
-        </article>
-      </div>
-    </main>
-
-    <footer class="site-footer">
-      <div class="footer-left">
-        <p class="footer-brand">九猫库</p>
-      </div>
-      <p class="footer-meta">
-        <a href="/">返回首页</a>
-        <span aria-hidden="true">·</span>
-        <span>© <span id="year"></span> 九猫库</span>
-      </p>
-    </footer>
-
+    <div id="ai-root"></div>
     <script type="module" src="/src/ai/main.ts"></script>
   </body>
 </html>

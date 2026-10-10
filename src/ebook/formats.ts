@@ -1,4 +1,4 @@
-export type EbookFormat = 'epub' | 'pdf' | 'txt' | 'docx' | 'mobi' | 'azw3' | 'html'
+export type EbookFormat = 'epub' | 'pdf' | 'txt' | 'doc' | 'docx' | 'mobi' | 'azw3' | 'html'
 
 export interface ConversionRoute {
   id: string
@@ -14,6 +14,7 @@ export const FORMAT_LABEL: Record<EbookFormat, string> = {
   epub: 'EPUB',
   pdf: 'PDF',
   txt: 'TXT',
+  doc: 'DOC',
   docx: 'DOCX',
   mobi: 'MOBI',
   azw3: 'AZW3',
@@ -24,6 +25,7 @@ export const FORMAT_COLOR: Record<EbookFormat, string> = {
   epub: '#3B82F6',
   pdf: '#EF4444',
   txt: '#6B7280',
+  doc: '#1D4ED8',
   docx: '#2563EB',
   mobi: '#10B981',
   azw3: '#475569',
@@ -47,7 +49,9 @@ export const CONVERSION_ROUTES: ConversionRoute[] = [
 ]
 
 export function detectFormat(fileName: string): EbookFormat | null {
-  const ext = fileName.split('.').pop()?.toLowerCase()
+  const base = fileName.trim().split(/[\\/]/).pop() || fileName
+  const cleaned = base.split('?')[0].split('#')[0]
+  const ext = cleaned.includes('.') ? cleaned.split('.').pop()?.toLowerCase() : undefined
   switch (ext) {
     case 'epub':
       return 'epub'
@@ -57,6 +61,8 @@ export function detectFormat(fileName: string): EbookFormat | null {
     case 'text':
     case 'md':
       return 'txt'
+    case 'doc':
+      return 'doc'
     case 'docx':
       return 'docx'
     case 'mobi':
@@ -74,11 +80,12 @@ export function detectFormat(fileName: string): EbookFormat | null {
 }
 
 export function acceptFor(from?: EbookFormat | null): string {
-  if (!from) return '.epub,.pdf,.txt,.text,.md,.docx,.mobi,.prc,.azw3,.azw,.html,.htm'
+  if (!from) return '.epub,.pdf,.txt,.text,.md,.doc,.docx,.mobi,.prc,.azw3,.azw,.html,.htm'
   const map: Record<EbookFormat, string> = {
     epub: '.epub',
     pdf: '.pdf',
     txt: '.txt,.text,.md',
+    doc: '.doc',
     docx: '.docx',
     mobi: '.mobi,.prc',
     azw3: '.azw3,.azw',

@@ -1,0 +1,42 @@
+/* Homepage-only light theme — purple + orange + white.
+   Inner apps keep their own dark gold :root tokens and must NOT import this file. */
+:root {
+  --bg: #ffffff;
+  --bg-elevated: #f6f5f8;
+  --bg-2: #f6f5f8;
+  --bg-panel: #f6f5f8;
+  --bg-elev: #f3f0fa;
+  --panel: rgba(246, 245, 248, 0.96);
+  --ink: #1a1a1a;
+  --ink-soft: #3d3d48;
+  --ink-muted: #6b6b76;
+  --muted: #6b6b76;
+  --line: rgba(144, 118, 211, 0.18);
+  --line-strong: rgba(144, 118, 211, 0.32);
+  --gold: #9076d3;
+  --gold-soft: #a48ee0;
+  --gold-dim: #7a63b8;
+  --copper: #9076d3;
+  --copper-deep: #7a63b8;
+  --accent: #ffb240;
+  --accent-deep: #f5a623;
+  --surface: rgba(144, 118, 211, 0.06);
+  --tile: #ffffff;
+  --tile-hover: #faf8ff;
+  --green: #5ea87a;
+  --leaf: #5ea87a;
+  --ok: #5ea87a;
+  --danger: #e07860;
+  --warn: #ffb240;
+  --radius-btn: 999px;
+  --radius-tile: 24px;
+  --font-display: 'DM Sans', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR',
+    'Noto Sans Thai', 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR',
+    'Noto Sans Thai', 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+  --font: var(--font-body);
+  --display: var(--font-display);
+  --max: 1120px;
+  --pad: clamp(1.25rem, 4vw, 2.5rem);
+  color-scheme: light;
+}

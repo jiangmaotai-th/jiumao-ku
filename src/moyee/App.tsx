@@ -1,22 +1,44 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import { useMoyeeStore } from './store'
 import {
   AUDIO_CONTAINERS,
+  CONVERT_AUDIO_BITRATE_OPTIONS,
+  CONVERT_AUDIO_CODECS,
+  CONVERT_FORMAT_GROUPS,
+  CONVERT_VIDEO_CODECS,
   PLATFORM_PRESETS,
   VIDEO_CONTAINERS,
+  WEBM_AUDIO_CODEC_IDS,
   audioCodecFor,
+  convertAudioCodecId,
+  convertBitrateOptions,
+  convertVideoCodecId,
+  isPhoneShell,
+  platformShellKind,
   videoCodecFor,
+  type PlatformShellKind,
 } from './domain/platforms'
-import type { AppMode, ExtractMode, OutputProfile } from './types'
-
-const NAV: { id: AppMode | 'manual'; label: string }[] = [
-  { id: 'convert', label: '视频转换' },
-  { id: 'compress', label: '视频压缩' },
-  { id: 'music', label: '音频' },
-  { id: 'merge', label: '合并' },
-  { id: 'extract', label: '提取' },
-  { id: 'manual', label: '说明' },
-]
+import {
+  COMPRESS_CODECS,
+  COMPRESS_MODE_ORDER,
+  COMPRESS_RESOLUTIONS,
+  applyCompressCodec,
+  applyCompressResolution,
+  codecIdFromProfile,
+  effectiveDurationSecs,
+  estimateCompressBytes,
+  firstAvailableCompressMode,
+  isCompressPresetAvailable,
+  resolutionIdFromProfile,
+  sourceBitrateMbps,
+  validateTargetMb,
+  type CompressCodecId,
+  type CompressResId,
+  type CompressStrategy,
+} from './domain/compress'
+import type { AppMode, CompressMode, ExtractMode, OutputProfile } from './types'
 
 function formatBytes(n: number): string {
   if (n < 1024) return `${n} B`
@@ -25,11 +47,51 @@ function formatBytes(n: number): string {
   return `${(n / 1024 ** 3).toFixed(2)} GB`
 }
 
-function statusLabel(status: string, progress: number): string {
+function statusLabel(
+  status: string,
+  progress: number,
+  translate: (path: string, vars?: Record<string, string | number>) => string,
+): string {
   if (status === 'running') return `${progress}%`
-  if (status === 'completed') return '完成'
-  if (status === 'failed') return '失败'
-  return '就绪'
+  if (status === 'completed') return translate('moyee.statusCompleted')
+  if (status === 'failed') return translate('moyee.statusFailed')
+  return translate('moyee.statusReady')
+}
+
+function modeTitle(
+  mode: AppMode,
+  translate: (path: string, vars?: Record<string, string | number>) => string,
+): string {
+  switch (mode) {
+    case 'convert':
+      return translate('moyee.modeConvert')
+    case 'compress':
+      return translate('moyee.modeCompress')
+    case 'music':
+      return translate('moyee.modeMusic')
+    case 'merge':
+      return translate('moyee.modeMerge')
+    case 'extract':
+      return translate('moyee.modeExtract')
+  }
+}
+
+function modeLead(
+  mode: AppMode,
+  translate: (path: string, vars?: Record<string, string | number>) => string,
+): string {
+  switch (mode) {
+    case 'convert':
+      return translate('moyee.leadConvert')
+    case 'compress':
+      return translate('moyee.leadCompress')
+    case 'music':
+      return translate('moyee.leadMusic')
+    case 'merge':
+      return translate('moyee.leadMerge')
+    case 'extract':
+      return translate('moyee.leadExtract')
+  }
 }
 
 export function App() {
@@ -51,21 +113,70 @@ export function App() {
   const banner = useMoyeeStore((s) => s.banner)
   const compressMode = useMoyeeStore((s) => s.compressMode)
   const compressQuality = useMoyeeStore((s) => s.compressQuality)
+  const compressStrategy = useMoyeeStore((s) => s.compressStrategy)
+  const compressTargetMb = useMoyeeStore((s) => s.compressTargetMb)
   const setCompressMode = useMoyeeStore((s) => s.setCompressMode)
   const setCompressQuality = useMoyeeStore((s) => s.setCompressQuality)
+  const setCompressStrategy = useMoyeeStore((s) => s.setCompressStrategy)
+  const setCompressTargetMb = useMoyeeStore((s) => s.setCompressTargetMb)
 
+  const { t, lh } = useT()
   const [panel, setPanel] = useState<AppMode | 'manual'>('convert')
   const [dragOver, setDragOver] = useState(false)
+  const [targetDraftInvalid, setTargetDraftInvalid] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const videoNav = useMemo(
+    () =>
+      [
+        { id: 'convert' as const, label: t('moyee.modeConvert') },
+        { id: 'compress' as const, label: t('moyee.modeCompress') },
+        { id: 'merge' as const, label: t('moyee.modeMerge') },
+      ] satisfies { id: AppMode; label: string }[],
+    [t],
+  )
+
+  const audioNav = useMemo(
+    () =>
+      [
+        { id: 'music' as const, label: t('moyee.modeMusic') },
+        { id: 'extract' as const, label: t('moyee.modeExtract') },
+      ] satisfies { id: AppMode; label: string }[],
+    [t],
+  )
 
   useEffect(() => {
     void ensureEngine()
   }, [ensureEngine])
 
+  useEffect(() => {
+    if (mode !== 'compress' || compressStrategy !== 'targetSize') {
+      setTargetDraftInvalid(false)
+    }
+  }, [mode, compressStrategy])
+
   const selected = useMemo(
     () => jobs.find((j) => j.id === selectedId) ?? null,
     [jobs, selectedId],
   )
+
+  const previewMeta = useMemo(() => {
+    if (!selected) return null
+    return selected.status === 'completed' && selected.outputMeta
+      ? selected.outputMeta
+      : selected.meta
+  }, [selected])
+
+  const compressTargetInvalid = useMemo(() => {
+    if (mode !== 'compress' || compressStrategy !== 'targetSize' || !selected) return false
+    if (targetDraftInvalid) return true
+    const duration = effectiveDurationSecs(
+      selected.meta.durationSecs,
+      selected.profile.trimStartSecs,
+      selected.profile.trimEndSecs,
+    )
+    return !validateTargetMb(compressTargetMb, selected.meta.fileSize, duration).ok
+  }, [mode, compressStrategy, compressTargetMb, selected, targetDraftInvalid])
 
   const onPickMode = (id: AppMode | 'manual') => {
     setPanel(id)
@@ -77,47 +188,83 @@ export function App() {
     updateProfile(selected.id, next)
   }
 
+  const openPicker = () => inputRef.current?.click()
+
+  const accept =
+    mode === 'music' ? 'audio/*,video/*' : 'video/*,audio/*'
+
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="/moyee/">
-          魔叶Converte
+        <a className="brand" href={lh('/moyee/')}>
+          {t('moyee.heroTitle')}
         </a>
         <div className="topbar-meta">
           <span>
             {engineLoading
-              ? '引擎加载中…'
+              ? t('moyee.engineLoading')
               : engineReady
-                ? 'FFmpeg 就绪 · 本地处理'
+                ? t('moyee.engineReady')
                 : engineError
-                  ? `引擎失败：${engineError}`
-                  : '准备引擎…'}
+                  ? engineError
+                  : t('moyee.engineLoading')}
           </span>
-          <a href="/">返回九猫库</a>
+          <a href={lh('/')}>{t('common.backHome')}</a>
+          <LangSwitchHost />
         </div>
       </header>
 
       <aside className="sidebar">
-        {NAV.map((item) => (
+        <div className="nav-group">
+          <p className="nav-group-label">{t('moyee.navVideo')}</p>
+          {videoNav.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`nav-btn ${panel === item.id ? 'active' : ''}`}
+              onClick={() => onPickMode(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <div className="nav-group">
+          <p className="nav-group-label">{t('moyee.navAudio')}</p>
+          {audioNav.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`nav-btn ${panel === item.id ? 'active' : ''}`}
+              onClick={() => onPickMode(item.id)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <div className="nav-group nav-group-tail">
+          <p className="nav-group-label">{t('moyee.navOther')}</p>
           <button
-            key={item.id}
             type="button"
-            className={`nav-btn ${panel === item.id ? 'active' : ''}`}
-            onClick={() => onPickMode(item.id)}
+            className={`nav-btn ${panel === 'manual' ? 'active' : ''}`}
+            onClick={() => onPickMode('manual')}
           >
-            {item.label}
+            {t('moyee.modeManual')}
           </button>
-        ))}
+        </div>
       </aside>
 
       <main className="main">
         {panel === 'manual' ? (
           <ManualPanel />
         ) : (
-          <>
+          <div className="stage">
+            <header className="stage-header">
+              <h1>{modeTitle(mode, t)}</h1>
+              <p>{modeLead(mode, t)}</p>
+            </header>
+
             <div
-              className={`dropzone ${dragOver ? 'dragover' : ''}`}
-              onClick={() => inputRef.current?.click()}
+              className={`stage-canvas ${dragOver ? 'dragover' : ''} ${previewMeta ? 'has-media' : ''}`}
               onDragOver={(e) => {
                 e.preventDefault()
                 setDragOver(true)
@@ -128,162 +275,249 @@ export function App() {
                 setDragOver(false)
                 void addFiles(e.dataTransfer.files)
               }}
+              onClick={!previewMeta ? openPicker : undefined}
+              role={!previewMeta ? 'button' : undefined}
+              tabIndex={!previewMeta ? 0 : undefined}
+              onKeyDown={
+                !previewMeta
+                  ? (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        openPicker()
+                      }
+                    }
+                  : undefined
+              }
             >
-              <strong>拖放文件到这里，或点击选择</strong>
-              <span>
-                {mode === 'merge'
-                  ? '合并模式：按顺序添加至少 2 个视频'
-                  : mode === 'music'
-                    ? '支持常见音频 / 视频（提取音轨）'
-                    : '文件只在浏览器内处理，不会上传到服务器'}
-              </span>
-              <input
-                ref={inputRef}
-                type="file"
-                multiple
-                accept={
-                  mode === 'music'
-                    ? 'audio/*,video/*'
-                    : 'video/*,audio/*'
-                }
-                hidden
-                onChange={(e) => {
-                  if (e.target.files) void addFiles(e.target.files)
-                  e.target.value = ''
-                }}
-              />
+              {previewMeta ? (
+                <StagePreview
+                  previewUrl={previewMeta.previewUrl}
+                  hasVideo={previewMeta.hasVideo}
+                  fileName={previewMeta.fileName}
+                  platformFrame={
+                    mode === 'convert' &&
+                    selected?.profile.platformId &&
+                    selected.profile.width &&
+                    selected.profile.height
+                      ? {
+                          platformId: selected.profile.platformId,
+                          width: selected.profile.width,
+                          height: selected.profile.height,
+                          aspectMode: selected.profile.aspectMode,
+                          maxDurationSecs: selected.profile.maxDurationSecs ?? null,
+                        }
+                      : null
+                  }
+                />
+              ) : (
+                <div className="stage-empty">
+                  <strong>{t('moyee.dropToPreview')}</strong>
+                  <span>
+                    {mode === 'merge'
+                      ? t('moyee.dropMergeHint')
+                      : mode === 'music'
+                        ? t('moyee.dropMusicHint')
+                        : t('moyee.dropHint')}
+                  </span>
+                </div>
+              )}
             </div>
 
-            {jobs.length === 0 ? (
-              <p className="empty-hint">还没有任务。添加媒体后可在右侧调整参数。</p>
-            ) : (
-              <div className="task-list">
-                {jobs.map((job) => {
-                  const shown =
-                    job.status === 'completed' && job.outputMeta ? job.outputMeta : job.meta
-                  const isImageThumb =
-                    /\.(jpg|jpeg|png|gif|webp)$/i.test(shown.fileName) && !shown.hasVideo
-                  return (
-                  <article
-                    key={job.id}
-                    className={`task-card ${job.id === selectedId ? 'selected' : ''}`}
-                    onClick={() => selectJob(job.id)}
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept={accept}
+              hidden
+              onChange={(e) => {
+                if (e.target.files) void addFiles(e.target.files)
+                e.target.value = ''
+              }}
+            />
+
+            {selected && previewMeta ? (
+              <div className="file-bar">
+                <div className="file-bar-info">
+                  <span className="file-bar-name" title={previewMeta.fileName}>
+                    {previewMeta.fileName}
+                  </span>
+                  <span className="file-bar-meta">
+                    {formatBytes(previewMeta.fileSize)}
+                    {previewMeta.durationSecs
+                      ? ` · ${previewMeta.durationSecs.toFixed(1)}s`
+                      : ''}
+                    {previewMeta.width && previewMeta.height
+                      ? ` · ${previewMeta.width}×${previewMeta.height}`
+                      : ''}
+                    {mode === 'convert' &&
+                    selected.profile.platformId &&
+                    selected.profile.width &&
+                    selected.profile.height
+                      ? ` → ${selected.profile.width}×${selected.profile.height}`
+                      : ''}
+                    {selected.status === 'completed' ? ` · ${t('moyee.outputMarker')}` : ''}
+                    {` · ${statusLabel(selected.status, selected.progress, t)}`}
+                  </span>
+                </div>
+                <div className="file-bar-actions">
+                  {selected.status === 'completed' ? (
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={() => downloadJob(selected.id)}
+                    >
+                      {t('moyee.download')}
+                    </button>
+                  ) : null}
+                  <button type="button" className="btn" onClick={openPicker}>
+                    {t('moyee.reselectFile')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn ghost"
+                    onClick={() => removeJob(selected.id)}
                   >
-                    {shown.hasVideo ? (
-                      <video className="task-thumb" src={shown.previewUrl} muted />
-                    ) : isImageThumb ? (
-                      <img className="task-thumb" src={shown.previewUrl} alt="" />
-                    ) : (
-                      <div className="task-thumb audio">AUDIO</div>
-                    )}
-                    <div>
-                      <p className="task-name">{shown.fileName}</p>
-                      <p className="task-meta">
-                        {formatBytes(shown.fileSize)}
-                        {shown.durationSecs
-                          ? ` · ${shown.durationSecs.toFixed(1)}s`
-                          : ''}
-                        {shown.width && shown.height
-                          ? ` · ${shown.width}×${shown.height}`
-                          : ''}
-                        {job.status === 'completed' ? ' · 输出' : ''}
-                      </p>
-                    </div>
-                    <div className="task-actions">
-                      <span
-                        className={`chip ${
-                          job.status === 'completed'
-                            ? 'ok'
-                            : job.status === 'failed'
-                              ? 'bad'
-                              : job.status === 'running'
-                                ? 'run'
-                                : ''
-                        }`}
-                      >
-                        {statusLabel(job.status, job.progress)}
-                      </span>
-                      {job.status === 'completed' ? (
-                        <button
-                          type="button"
-                          className="btn"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            downloadJob(job.id)
-                          }}
-                        >
-                          下载
-                        </button>
-                      ) : null}
-                      <button
-                        type="button"
-                        className="btn ghost"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          removeJob(job.id)
-                        }}
-                      >
-                        移除
-                      </button>
-                    </div>
-                  </article>
-                  )
-                })}
+                    {t('moyee.remove')}
+                  </button>
+                </div>
               </div>
-            )}
-          </>
+            ) : null}
+
+            {jobs.length > 1 ? (
+              <section className="queue">
+                <p className="queue-label">{t('moyee.queueLabel')}</p>
+                <div className="queue-list">
+                  {jobs.map((job) => {
+                    const shown =
+                      job.status === 'completed' && job.outputMeta ? job.outputMeta : job.meta
+                    const isImageThumb =
+                      /\.(jpg|jpeg|png|gif|webp)$/i.test(shown.fileName) && !shown.hasVideo
+                    return (
+                      <button
+                        key={job.id}
+                        type="button"
+                        className={`queue-item ${job.id === selectedId ? 'selected' : ''}`}
+                        onClick={() => selectJob(job.id)}
+                      >
+                        {shown.hasVideo ? (
+                          <video className="queue-thumb" src={shown.previewUrl} muted />
+                        ) : isImageThumb ? (
+                          <img className="queue-thumb" src={shown.previewUrl} alt="" />
+                        ) : (
+                          <div className="queue-thumb audio">{t('moyee.audioBadge')}</div>
+                        )}
+                        <span className="queue-name">{shown.fileName}</span>
+                        <span
+                          className={`chip ${
+                            job.status === 'completed'
+                              ? 'ok'
+                              : job.status === 'failed'
+                                ? 'bad'
+                                : job.status === 'running'
+                                  ? 'run'
+                                  : ''
+                          }`}
+                        >
+                          {statusLabel(job.status, job.progress, t)}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </div>
         )}
       </main>
 
       <aside className="inspector">
         {panel === 'manual' ? (
           <>
-            <h2>网页版说明</h2>
-            <p className="banner">
-              对齐桌面版核心工作流：转换、压缩、音频、合并、提取与平台预设。处理在本地浏览器完成。
-            </p>
+            <h2>{t('moyee.webGuideTitle')}</h2>
+            <p className="banner">{t('moyee.webGuideLead')}</p>
           </>
         ) : !selected ? (
           <>
-            <h2>输出设置</h2>
-            <p className="banner">选择一个任务后可编辑参数。</p>
+            <h2>{t('moyee.settingsTitle')}</h2>
+            <p className="banner">{t('moyee.settingsNoSelection')}</p>
+            <button type="button" className="btn primary inspector-cta" onClick={openPicker}>
+              {t('moyee.dropHint')}
+            </button>
           </>
         ) : (
-          <Inspector
-            mode={mode}
-            profile={selected.profile}
-            previewUrl={
-              selected.status === 'completed' && selected.outputMeta
-                ? selected.outputMeta.previewUrl
-                : selected.meta.previewUrl
-            }
-            hasVideo={
-              selected.status === 'completed' && selected.outputMeta
-                ? selected.outputMeta.hasVideo
-                : selected.meta.hasVideo
-            }
-            fileName={
-              selected.status === 'completed' && selected.outputMeta
-                ? selected.outputMeta.fileName
-                : selected.meta.fileName
-            }
-            durationSecs={
-              selected.status === 'completed' && selected.outputMeta
-                ? selected.outputMeta.durationSecs
-                : selected.meta.durationSecs
-            }
-            compressMode={compressMode}
-            compressQuality={compressQuality}
-            onCompressMode={setCompressMode}
-            onCompressQuality={setCompressQuality}
-            onChange={applyProfile}
-          />
+          <>
+            <Inspector
+              mode={mode}
+              profile={selected.profile}
+              sourceMeta={selected.meta}
+              durationSecs={
+                selected.status === 'completed' && selected.outputMeta
+                  ? selected.outputMeta.durationSecs
+                  : selected.meta.durationSecs
+              }
+              compressMode={compressMode}
+              compressQuality={compressQuality}
+              compressStrategy={compressStrategy}
+              compressTargetMb={compressTargetMb}
+              onCompressMode={setCompressMode}
+              onCompressQuality={setCompressQuality}
+              onCompressStrategy={setCompressStrategy}
+              onCompressTargetMb={setCompressTargetMb}
+              onTargetDraftInvalidChange={setTargetDraftInvalid}
+              onChange={applyProfile}
+            />
+            <div className="inspector-actions">
+              <button
+                type="button"
+                className={`btn primary inspector-cta${
+                  selected.status === 'running' ? ' is-progress' : ''
+                }`}
+                style={
+                  selected.status === 'running'
+                    ? ({ '--cta-progress': `${selected.progress}%` } as CSSProperties)
+                    : undefined
+                }
+                disabled={selected.status === 'running' || compressTargetInvalid}
+                onClick={() => void runSelected()}
+              >
+                <span className="cta-label">
+                  {selected.status === 'running'
+                    ? t('moyee.processing')
+                    : mode === 'merge'
+                      ? t('moyee.startMerge')
+                      : t('moyee.start')}
+                </span>
+                {selected.status === 'running' ? (
+                  <span className="cta-pct">{selected.progress}%</span>
+                ) : null}
+              </button>
+              {mode !== 'merge' && jobs.length > 1 ? (
+                <button
+                  type="button"
+                  className="btn"
+                  disabled={!jobs.length}
+                  onClick={() => void runAll()}
+                >
+                  {t('moyee.startAll')}
+                </button>
+              ) : null}
+              {selected.status === 'completed' ? (
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => downloadJob(selected.id)}
+                >
+                  {t('moyee.downloadResult')}
+                </button>
+              ) : null}
+            </div>
+          </>
         )}
       </aside>
 
       <footer className="footer">
         <div className="footer-copy">
-          <p className="banner">{banner ?? '魔叶Converte 网页版 · maotaiworks.com'}</p>
+          <p className="banner">{banner ?? t('moyee.footerBrand')}</p>
           <p className="privacy-note">
             <span className="local-mark" aria-hidden="true">
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -292,38 +526,366 @@ export function App() {
                 <circle cx="8" cy="7" r="1.35" fill="currentColor" />
               </svg>
             </span>
-            本地处理｜转换压缩全在本机完成，不上传、不联网，隐私零泄露。{' '}
-            <a href="/legal/#privacy">隐私说明</a>
+            {t('moyee.privacyNote')}{' '}
+            <a href={lh('/legal/#privacy')}>{t('common.privacy')}</a>
             {' · '}
-            <a href="/legal/#terms">使用条款</a>
+            <a href={lh('/legal/#terms')}>{t('common.terms')}</a>
             {' · '}
-            <a href="/legal/#credits">开源致谢</a>
+            <a href={lh('/legal/#credits')}>{t('common.credits')}</a>
           </p>
         </div>
-        <div className="footer-actions">
-          <button
-            type="button"
-            className="btn primary"
-            disabled={!selected || selected.status === 'running' || panel === 'manual'}
-            onClick={() => void runSelected()}
-          >
-            {mode === 'merge' ? '开始合并' : '开始转换'}
-          </button>
-          <button
-            type="button"
-            className="btn"
-            disabled={!jobs.length || panel === 'manual' || mode === 'merge'}
-            onClick={() => void runAll()}
-          >
-            全部开始
-          </button>
-          {selected?.status === 'completed' ? (
-            <button type="button" className="btn" onClick={() => downloadJob(selected.id)}>
-              下载结果
-            </button>
-          ) : null}
-        </div>
       </footer>
+    </div>
+  )
+}
+
+function PhoneAppChrome({
+  skin,
+  platformName,
+}: {
+  skin: PlatformShellKind
+  platformName: string
+}) {
+  const { t } = useT()
+  if (skin === 'xhs') {
+    return (
+      <div className="app-chrome app-xhs" aria-hidden="true">
+        <div className="app-xhs-top">
+          <span className="app-xhs-back">‹</span>
+          <div className="app-xhs-top-right">
+            <span className="app-xhs-ico-btn search" />
+            <span className="app-xhs-ico-btn share" />
+          </div>
+        </div>
+        <div className="app-xhs-meta">
+          <div className="app-xhs-user">
+            <span className="app-xhs-avatar" />
+            <strong>{platformName}</strong>
+            <em>{t('moyee.platformShellFollow')}</em>
+          </div>
+          <p className="app-xhs-title">{t('moyee.platformShellXhsTitle')}</p>
+          <p className="app-xhs-tags">#Moyee #预览</p>
+          <div className="app-xhs-progress">
+            <i />
+          </div>
+        </div>
+        <div className="app-xhs-dock">
+          <span className="app-xhs-input">{t('moyee.platformShellXhsComment')}</span>
+          <span className="app-xhs-dock-act">
+            <i className="heart" />
+            1226
+          </span>
+          <span className="app-xhs-dock-act">
+            <i className="star" />
+            155
+          </span>
+          <span className="app-xhs-dock-act">
+            <i className="chat" />
+            93
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  if (skin === 'douyin') {
+    return (
+      <div className="app-chrome app-douyin" aria-hidden="true">
+        <div className="app-dy-live">{t('moyee.platformShellForYou')}</div>
+        <div className="app-dy-side">
+          <div className="app-dy-avatar-wrap">
+            <span className="app-dy-avatar" />
+            <span className="app-dy-plus">+</span>
+          </div>
+          <div className="app-dy-act">
+            <span>♡</span>
+            <b>8.6万</b>
+          </div>
+          <div className="app-dy-act">
+            <span>💬</span>
+            <b>2311</b>
+          </div>
+          <div className="app-dy-act">
+            <span>☆</span>
+            <b>1.1万</b>
+          </div>
+          <div className="app-dy-act">
+            <span>↗</span>
+            <b>{t('moyee.platformShellShare')}</b>
+          </div>
+          <span className="app-dy-disc" />
+        </div>
+        <div className="app-dy-bottom">
+          <strong>@{platformName}</strong>
+          <p>{t('moyee.platformShellCaption')}</p>
+          <span className="app-dy-music">♪ {t('moyee.platformShellMusic')}</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (skin === 'reels') {
+    return (
+      <div className="app-chrome app-reels" aria-hidden="true">
+        <div className="app-reels-top">
+          <strong>Reels</strong>
+          <span>📷</span>
+        </div>
+        <div className="app-reels-side">
+          <span>♡</span>
+          <span>💬</span>
+          <span>↗</span>
+          <span>···</span>
+        </div>
+        <div className="app-reels-bottom">
+          <div className="app-reels-user">
+            <i />
+            <strong>{platformName}</strong>
+            <em>{t('moyee.platformShellFollow')}</em>
+          </div>
+          <p>{t('moyee.platformShellCaption')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (skin === 'shorts') {
+    return (
+      <div className="app-chrome app-shorts" aria-hidden="true">
+        <div className="app-shorts-top">
+          <span>Shorts</span>
+          <span>🔍</span>
+        </div>
+        <div className="app-shorts-side">
+          <span>♡</span>
+          <span>💬</span>
+          <span>↗</span>
+          <span>↻</span>
+        </div>
+        <div className="app-shorts-bottom">
+          <strong>@{platformName}</strong>
+          <p>{t('moyee.platformShellCaption')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // wechat channels
+  return (
+    <div className="app-chrome app-wechat" aria-hidden="true">
+      <div className="app-wc-top">
+        <span>‹</span>
+        <strong>{t('moyee.platformShellChannels')}</strong>
+        <span>···</span>
+      </div>
+      <div className="app-wc-bottom">
+        <strong>{platformName}</strong>
+        <p>{t('moyee.platformShellCaption')}</p>
+        <div className="app-wc-actions">
+          <span>♡ 赞</span>
+          <span>💬 评论</span>
+          <span>☆ 推荐</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StagePreview({
+  previewUrl,
+  hasVideo,
+  fileName,
+  platformFrame,
+}: {
+  previewUrl: string
+  hasVideo: boolean
+  fileName: string
+  platformFrame: {
+    platformId: string
+    width: number
+    height: number
+    aspectMode: OutputProfile['aspectMode']
+    maxDurationSecs: number | null
+  } | null
+}) {
+  const { t } = useT()
+  const shellVideoRef = useRef<HTMLVideoElement>(null)
+  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName) && !hasVideo
+
+  if (hasVideo && platformFrame) {
+    const isPortrait = platformFrame.height > platformFrame.width
+    const isSquare = platformFrame.height === platformFrame.width
+    const shell = platformShellKind(platformFrame.platformId)
+    const phone = isPhoneShell(shell)
+    const immersive = phone || shell === 'feed' || shell === 'shop'
+    // Show the complete video inside the platform canvas (letterbox/pillarbox when AR differs).
+    // Crop is a user choice — not the default platform-preview behavior.
+    const fit =
+      platformFrame.aspectMode === 'crop' || platformFrame.aspectMode === 'stretch'
+        ? 'cover'
+        : 'contain'
+    const platformName = t(`moyee.plat.${platformFrame.platformId}`)
+    const orientation = isPortrait ? 'portrait' : isSquare ? 'square' : 'landscape'
+    const toggleShellPlayback = () => {
+      const el = shellVideoRef.current
+      if (!el) return
+      if (el.paused) void el.play()
+      else el.pause()
+    }
+    const media = (
+      <video
+        ref={shellVideoRef}
+        key={`${previewUrl}-${platformFrame.platformId}`}
+        className="platform-preview-media"
+        style={{ objectFit: fit }}
+        src={previewUrl}
+        controls={!immersive}
+        playsInline
+        preload="metadata"
+        muted={immersive}
+        autoPlay={immersive}
+        loop={immersive}
+        onClick={immersive ? toggleShellPlayback : undefined}
+      />
+    )
+    const arStyle = {
+      '--platform-ar': `${platformFrame.width} / ${platformFrame.height}`,
+    } as CSSProperties
+
+    return (
+      <div className={`platform-preview is-${orientation} shell-${shell}`}>
+        {phone ? (
+          <div className={`shell-phone skin-${shell}`}>
+            <div className="shell-phone-bezel">
+              <div className="shell-phone-screen" style={arStyle}>
+                <div className="shell-phone-status" aria-hidden="true">
+                  <span>9:41</span>
+                  <span className="shell-phone-island" />
+                  <span className="shell-phone-status-right">
+                    <i />
+                    <i />
+                    <i />
+                  </span>
+                </div>
+                <div className="shell-phone-stage">{media}</div>
+                <PhoneAppChrome skin={shell} platformName={platformName} />
+                <div className="shell-phone-home" aria-hidden="true" />
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {shell === 'youtube' ? (
+          <div className="shell-youtube">
+            <div className="shell-yt-chrome">
+              <span className="shell-yt-mark">▶</span>
+              <span className="shell-yt-brand">YouTube</span>
+              <span className="shell-yt-search" aria-hidden="true" />
+            </div>
+            <div className="shell-yt-player" style={arStyle}>
+              {media}
+            </div>
+            <div className="shell-yt-meta">
+              <p className="shell-yt-title">{platformName}</p>
+              <p className="shell-yt-sub">
+                {platformFrame.width}×{platformFrame.height} · {t('moyee.platformShellYtViews')}
+              </p>
+              <div className="shell-yt-row" aria-hidden="true">
+                <span>{t('moyee.platformShellYtLike')}</span>
+                <span>{t('moyee.platformShellYtShare')}</span>
+                <span>{t('moyee.platformShellYtSave')}</span>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {shell === 'feed' ? (
+          <div className="shell-feed">
+            <div className="shell-feed-head">
+              <span className="shell-feed-avatar" aria-hidden="true" />
+              <div>
+                <strong>{platformName}</strong>
+                <span>{t('moyee.platformShellFeedHint')}</span>
+              </div>
+              <em className="shell-feed-follow">{t('moyee.platformShellFollow')}</em>
+            </div>
+            <div className={`shell-feed-media is-${orientation}`} style={arStyle}>
+              {media}
+            </div>
+            <div className="shell-feed-actions" aria-hidden="true">
+              <span>♡</span>
+              <span>💬</span>
+              <span>☆</span>
+              <span>↗</span>
+            </div>
+            <p className="shell-feed-caption">
+              <strong>moyee</strong> {t('moyee.platformShellCaption')}
+            </p>
+          </div>
+        ) : null}
+
+        {shell === 'desktop' ? (
+          <div className="shell-desktop">
+            <div className="shell-desktop-bar">
+              <span />
+              <span />
+              <span />
+              <em>{platformName}</em>
+            </div>
+            <div className="shell-desktop-player" style={arStyle}>
+              {media}
+            </div>
+          </div>
+        ) : null}
+
+        {shell === 'shop' ? (
+          <div className="shell-shop">
+            <div className={`shell-shop-media is-${orientation}`} style={arStyle}>
+              {media}
+              <span className="shell-shop-tag">{t('moyee.platformShellShopTag')}</span>
+            </div>
+            <div className="shell-shop-foot">
+              <strong>{platformName}</strong>
+              <button type="button" className="shell-shop-buy" tabIndex={-1}>
+                {t('moyee.platformShellShopCta')}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        <p className="platform-preview-badge">
+          {t('moyee.platformPreviewBadge', {
+            platform: platformName,
+            size: `${platformFrame.width}×${platformFrame.height}`,
+          })}
+          {platformFrame.maxDurationSecs
+            ? ` · ≤${platformFrame.maxDurationSecs}s`
+            : ''}
+        </p>
+      </div>
+    )
+  }
+
+  if (hasVideo) {
+    return (
+      <video
+        key={previewUrl}
+        className="stage-media"
+        src={previewUrl}
+        controls
+        playsInline
+        preload="metadata"
+      />
+    )
+  }
+  if (isImage) {
+    return <img key={previewUrl} className="stage-media image" src={previewUrl} alt={fileName} />
+  }
+  return (
+    <div className="stage-audio">
+      <p className="stage-audio-badge">{t('moyee.audioBadge')}</p>
+      <audio key={previewUrl} src={previewUrl} controls preload="metadata" />
+      <p className="stage-audio-name">{fileName}</p>
     </div>
   )
 }
@@ -331,100 +893,75 @@ export function App() {
 function Inspector({
   mode,
   profile,
-  previewUrl,
-  hasVideo,
-  fileName,
+  sourceMeta,
   durationSecs,
   compressMode,
   compressQuality,
+  compressStrategy,
+  compressTargetMb,
   onCompressMode,
   onCompressQuality,
+  onCompressStrategy,
+  onCompressTargetMb,
+  onTargetDraftInvalidChange,
   onChange,
 }: {
   mode: AppMode
   profile: OutputProfile
-  previewUrl: string
-  hasVideo: boolean
-  fileName: string
+  sourceMeta: { fileSize: number; durationSecs?: number; width?: number; height?: number }
   durationSecs?: number
-  compressMode: 'standard' | 'highQuality' | 'maxCompress'
+  compressMode: CompressMode
   compressQuality: number
-  onCompressMode: (m: 'standard' | 'highQuality' | 'maxCompress') => void
+  compressStrategy: CompressStrategy
+  compressTargetMb: number | null
+  onCompressMode: (m: CompressMode) => void
   onCompressQuality: (q: number) => void
+  onCompressStrategy: (s: CompressStrategy) => void
+  onCompressTargetMb: (mb: number | null) => void
+  onTargetDraftInvalidChange: (invalid: boolean) => void
   onChange: (p: OutputProfile) => void
 }) {
+  const { t } = useT()
   const containers = mode === 'music' || mode === 'extract' ? AUDIO_CONTAINERS : VIDEO_CONTAINERS
-  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName) && !hasVideo
 
   return (
     <>
       <h2>
-        {mode === 'convert'
-          ? '转换'
-          : mode === 'compress'
-            ? '压缩'
-            : mode === 'music'
-              ? '音频'
-              : mode === 'merge'
-                ? '合并'
-                : '提取'}
+        {mode === 'compress'
+          ? t('moyee.compressTitle')
+          : mode === 'convert'
+            ? t('moyee.convertSettings')
+            : t('moyee.settingsTitle')}
       </h2>
 
-      <section className="field-group">
-        <h3>预览</h3>
-        <div className="preview-box">
-          {hasVideo ? (
-            <video key={previewUrl} src={previewUrl} controls playsInline preload="metadata" />
-          ) : isImage ? (
-            <img key={previewUrl} src={previewUrl} alt={fileName} style={{ width: '100%', display: 'block' }} />
-          ) : (
-            <audio key={previewUrl} src={previewUrl} controls preload="metadata" />
-          )}
-        </div>
-        <p className="banner">{fileName}</p>
-      </section>
-
-      {mode === 'merge' ? (
-        <p className="banner">将按任务列表顺序拼接（尽量使用相同编码的视频）。</p>
-      ) : null}
+      {mode === 'merge' ? <p className="banner">{t('moyee.mergeHint')}</p> : null}
 
       {mode === 'compress' ? (
-        <section className="field-group">
-          <h3>压缩</h3>
-          <div className="field">
-            <label htmlFor="cmode">模式</label>
-            <select
-              id="cmode"
-              value={compressMode}
-              onChange={(e) =>
-                onCompressMode(e.target.value as 'standard' | 'highQuality' | 'maxCompress')
-              }
-            >
-              <option value="standard">标准</option>
-              <option value="highQuality">高质量</option>
-              <option value="maxCompress">极限压缩</option>
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="cq">画质 {compressQuality}</label>
-            <input
-              id="cq"
-              type="range"
-              min={0}
-              max={100}
-              value={compressQuality}
-              onChange={(e) => onCompressQuality(Number(e.target.value))}
-            />
-          </div>
-          <p className="banner">CRF ≈ {profile.crf ?? '—'} · 保持原容器 {profile.container.toUpperCase()}</p>
-        </section>
+        <CompressSettings
+          profile={profile}
+          sourceMeta={sourceMeta}
+          compressMode={compressMode}
+          compressQuality={compressQuality}
+          compressStrategy={compressStrategy}
+          compressTargetMb={compressTargetMb}
+          onCompressMode={onCompressMode}
+          onCompressQuality={onCompressQuality}
+          onCompressStrategy={onCompressStrategy}
+          onCompressTargetMb={onCompressTargetMb}
+          onDraftInvalidChange={onTargetDraftInvalidChange}
+          onChange={onChange}
+        />
+      ) : null}
+
+      {mode === 'convert' ? (
+        <ConvertSettings profile={profile} sourceMeta={sourceMeta} onChange={onChange} />
       ) : null}
 
       {mode === 'extract' ? (
         <section className="field-group">
-          <h3>提取类型</h3>
+          <h3>{t('moyee.extractTitle')}</h3>
           <div className="field">
-            <label htmlFor="ex">模式</label>
+            <label htmlFor="ex">{t('moyee.modeLabel')}</label>
             <select
               id="ex"
               value={profile.extractMode ?? 'audio'}
@@ -439,57 +976,21 @@ function Inspector({
                 }
               }}
             >
-              <option value="audio">提取音频</option>
-              <option value="gif">转 GIF</option>
-              <option value="cover">封面图</option>
+              <option value="audio">{t('moyee.extractAudio')}</option>
+              <option value="gif">{t('moyee.extractGif')}</option>
+              <option value="cover">{t('moyee.extractCover')}</option>
             </select>
           </div>
         </section>
       ) : null}
 
-      {mode === 'convert' ? (
+      {mode !== 'merge' &&
+      mode !== 'compress' &&
+      mode !== 'convert' &&
+      !(mode === 'extract' && profile.extractMode !== 'audio') ? (
         <section className="field-group">
-          <h3>平台预设</h3>
           <div className="field">
-            <label htmlFor="plat">一键规格</label>
-            <select
-              id="plat"
-              value={profile.platformId ?? ''}
-              onChange={(e) => {
-                const id = e.target.value
-                if (!id) {
-                  onChange({ ...profile, platformId: null })
-                  return
-                }
-                const preset = PLATFORM_PRESETS.find((p) => p.id === id)
-                if (preset) onChange({ ...preset.profile })
-              }}
-            >
-              <option value="">自定义</option>
-              <optgroup label="社交平台">
-                {PLATFORM_PRESETS.filter((p) => p.category === 'social').map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="卖家">
-                {PLATFORM_PRESETS.filter((p) => p.category === 'seller').map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-          </div>
-        </section>
-      ) : null}
-
-      {mode !== 'merge' && !(mode === 'extract' && profile.extractMode !== 'audio') ? (
-        <section className="field-group">
-          <h3>格式</h3>
-          <div className="field">
-            <label htmlFor="fmt">容器</label>
+            <label htmlFor="fmt">{t('moyee.outputFormat')}</label>
             <select
               id="fmt"
               value={profile.container}
@@ -512,10 +1013,10 @@ function Inspector({
               ))}
             </select>
           </div>
-          {mode === 'convert' || mode === 'music' ? (
+          {mode === 'music' ? (
             <div className="field-row">
               <div className="field">
-                <label htmlFor="ab">音频码率</label>
+                <label htmlFor="ab">{t('moyee.audioBitrate')}</label>
                 <input
                   id="ab"
                   type="number"
@@ -528,7 +1029,7 @@ function Inspector({
                 />
               </div>
               <div className="field">
-                <label htmlFor="ar">采样率</label>
+                <label htmlFor="ar">{t('moyee.sampleRate')}</label>
                 <select
                   id="ar"
                   value={profile.sampleRate ?? ''}
@@ -540,60 +1041,22 @@ function Inspector({
                     })
                   }
                 >
-                  <option value="">原始</option>
+                  <option value="">{t('moyee.original')}</option>
                   <option value="44100">44100</option>
                   <option value="48000">48000</option>
                 </select>
               </div>
             </div>
           ) : null}
-          {mode === 'convert' ? (
-            <div className="field-row">
-              <div className="field">
-                <label htmlFor="w">宽</label>
-                <input
-                  id="w"
-                  type="number"
-                  placeholder="原画"
-                  value={profile.width ?? ''}
-                  onChange={(e) =>
-                    onChange({
-                      ...profile,
-                      width: e.target.value ? Number(e.target.value) : null,
-                      keepOriginalResolution: !e.target.value,
-                      platformId: null,
-                    })
-                  }
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="h">高</label>
-                <input
-                  id="h"
-                  type="number"
-                  placeholder="原画"
-                  value={profile.height ?? ''}
-                  onChange={(e) =>
-                    onChange({
-                      ...profile,
-                      height: e.target.value ? Number(e.target.value) : null,
-                      keepOriginalResolution: !e.target.value,
-                      platformId: null,
-                    })
-                  }
-                />
-              </div>
-            </div>
-          ) : null}
         </section>
       ) : null}
 
-      {mode !== 'merge' ? (
+      {mode !== 'merge' && mode !== 'convert' ? (
         <section className="field-group">
-          <h3>时间范围</h3>
+          <h3>{t('moyee.timeRange')}</h3>
           <div className="field-row">
             <div className="field">
-              <label htmlFor="ts">起点（秒）</label>
+              <label htmlFor="ts">{t('moyee.trimStart')}</label>
               <input
                 id="ts"
                 type="number"
@@ -609,7 +1072,7 @@ function Inspector({
               />
             </div>
             <div className="field">
-              <label htmlFor="te">终点（秒）</label>
+              <label htmlFor="te">{t('moyee.trimEnd')}</label>
               <input
                 id="te"
                 type="number"
@@ -631,149 +1094,570 @@ function Inspector({
             className="btn"
             onClick={() => onChange({ ...profile, trimStartSecs: null, trimEndSecs: null })}
           >
-            清除裁剪
+            {t('moyee.clearTrim')}
           </button>
         </section>
-      ) : null}
-
-      {mode === 'convert' ? (
-        <>
-          <section className="field-group">
-            <h3>画面</h3>
-            <div className="field">
-              <label htmlFor="rot">旋转</label>
-              <select
-                id="rot"
-                value={profile.rotateDegrees ?? 0}
-                onChange={(e) =>
-                  onChange({ ...profile, rotateDegrees: Number(e.target.value), platformId: null })
-                }
-              >
-                <option value={0}>0°</option>
-                <option value={90}>90°</option>
-                <option value={180}>180°</option>
-                <option value={270}>270°</option>
-              </select>
-            </div>
-            <div className="field-row">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={!!profile.hFlip}
-                  onChange={(e) => onChange({ ...profile, hFlip: e.target.checked })}
-                />{' '}
-                水平翻转
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={!!profile.vFlip}
-                  onChange={(e) => onChange({ ...profile, vFlip: e.target.checked })}
-                />{' '}
-                垂直翻转
-              </label>
-            </div>
-            <div className="field">
-              <label htmlFor="aspect">比例模式</label>
-              <select
-                id="aspect"
-                value={profile.aspectMode}
-                onChange={(e) =>
-                  onChange({
-                    ...profile,
-                    aspectMode: e.target.value as OutputProfile['aspectMode'],
-                  })
-                }
-              >
-                <option value="keep">保持（补边）</option>
-                <option value="crop">裁切填充</option>
-                <option value="stretch">拉伸</option>
-              </select>
-            </div>
-          </section>
-
-          <section className="field-group">
-            <h3>水印 / 响度</h3>
-            <label>
-              <input
-                type="checkbox"
-                checked={!!profile.watermarkEnabled}
-                onChange={(e) => onChange({ ...profile, watermarkEnabled: e.target.checked })}
-              />{' '}
-              启用文字水印
-            </label>
-            <div className="field">
-              <label htmlFor="wm">水印文字</label>
-              <input
-                id="wm"
-                type="text"
-                value={profile.watermarkText ?? ''}
-                onChange={(e) => onChange({ ...profile, watermarkText: e.target.value })}
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="wmp">位置</label>
-              <select
-                id="wmp"
-                value={profile.watermarkPosition ?? 'br'}
-                onChange={(e) =>
-                  onChange({
-                    ...profile,
-                    watermarkPosition: e.target.value as OutputProfile['watermarkPosition'],
-                  })
-                }
-              >
-                <option value="tl">左上</option>
-                <option value="tr">右上</option>
-                <option value="bl">左下</option>
-                <option value="br">右下</option>
-                <option value="center">居中</option>
-              </select>
-            </div>
-            <label>
-              <input
-                type="checkbox"
-                checked={!!profile.loudnormEnabled}
-                onChange={(e) => onChange({ ...profile, loudnormEnabled: e.target.checked })}
-              />{' '}
-              响度标准化
-            </label>
-          </section>
-        </>
       ) : null}
     </>
   )
 }
 
-function ManualPanel() {
+function ConvertSettings({
+  profile,
+  sourceMeta,
+  onChange,
+}: {
+  profile: OutputProfile
+  sourceMeta: { fileSize: number; durationSecs?: number; width?: number; height?: number }
+  onChange: (p: OutputProfile) => void
+}) {
+  const { t } = useT()
+  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const sourceMbps = sourceBitrateMbps(sourceMeta.fileSize, sourceMeta.durationSecs)
+  const videoCodecId = convertVideoCodecId(profile.videoCodec)
+  const audioCodecId = convertAudioCodecId(profile.audioCodec)
+  const bitrateOptions = convertBitrateOptions(sourceMbps)
+  const sourceBitrateOption = bitrateOptions.find((o) => o.isSource)
+  const activeBitrate =
+    profile.bitrateMode === 'bitrate' && profile.videoBitrateKbps
+      ? profile.videoBitrateKbps
+      : sourceBitrateOption?.kbps ?? bitrateOptions[bitrateOptions.length - 1]?.kbps
+
+  const setContainer = (container: string) => {
+    const nextVideo =
+      container === 'webm'
+        ? videoCodecId === 'h264' || videoCodecId === 'h265'
+          ? 'libvpx-vp9'
+          : CONVERT_VIDEO_CODECS.find((c) => c.id === videoCodecId)?.ffmpeg ?? 'libvpx-vp9'
+        : videoCodecId === 'vp9' || videoCodecId === 'av1'
+          ? container === 'mkv'
+            ? CONVERT_VIDEO_CODECS.find((c) => c.id === videoCodecId)?.ffmpeg
+            : 'libx264'
+          : CONVERT_VIDEO_CODECS.find((c) => c.id === videoCodecId)?.ffmpeg ?? videoCodecFor(container)
+    const nextAudio =
+      container === 'webm'
+        ? WEBM_AUDIO_CODEC_IDS.has(audioCodecId)
+          ? CONVERT_AUDIO_CODECS.find((c) => c.id === audioCodecId)?.ffmpeg ?? 'libopus'
+          : 'libopus'
+        : CONVERT_AUDIO_CODECS.find((c) => c.id === audioCodecId)?.ffmpeg ?? audioCodecFor(container)
+    onChange({
+      ...profile,
+      container,
+      platformId: null,
+      videoCodec: nextVideo ?? 'libx264',
+      audioCodec: nextAudio,
+      rotateDegrees: 0,
+      hFlip: false,
+      vFlip: false,
+      watermarkEnabled: false,
+      loudnormEnabled: false,
+    })
+  }
+
+  const setVideoCodec = (id: (typeof CONVERT_VIDEO_CODECS)[number]['id']) => {
+    const codec = CONVERT_VIDEO_CODECS.find((c) => c.id === id)
+    if (!codec) return
+    let container = profile.container
+    if ((id === 'vp9' || id === 'av1') && !['webm', 'mkv'].includes(container)) container = 'webm'
+    if ((id === 'h264' || id === 'h265') && container === 'webm') container = 'mp4'
+    onChange({
+      ...profile,
+      container,
+      videoCodec: codec.ffmpeg,
+      platformId: null,
+      audioCodec:
+        container === 'webm' && !WEBM_AUDIO_CODEC_IDS.has(convertAudioCodecId(profile.audioCodec))
+          ? 'libopus'
+          : profile.audioCodec,
+    })
+  }
+
+  const setAudioCodec = (id: (typeof CONVERT_AUDIO_CODECS)[number]['id']) => {
+    const codec = CONVERT_AUDIO_CODECS.find((c) => c.id === id)
+    if (!codec) return
+    onChange({
+      ...profile,
+      audioCodec: codec.ffmpeg,
+      // Lossless / PCM: bitrate control does not apply.
+      audioBitrateKbps: id === 'flac' || id === 'pcm' ? null : profile.audioBitrateKbps ?? 192,
+      platformId: null,
+    })
+  }
+
+  const losslessAudio = audioCodecId === 'flac' || audioCodecId === 'pcm'
+
   return (
-    <div className="manual" style={{ padding: '1.25rem 1.5rem', overflow: 'auto' }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.06em' }}>使用说明</h2>
-      <p>
-        MoyeeConverter 是一款全能视频音频转换器，格式转换、体积压缩、参数精调一站式搞定。网页版在浏览器内用
-        FFmpeg（WebAssembly）处理媒体，文件不会上传到服务器。
-      </p>
-      <h3>功能对齐</h3>
+    <>
+      <section className="field-group">
+        <div className="field">
+          <label htmlFor="plat">{t('moyee.platformOneClick')}</label>
+          <select
+            id="plat"
+            value={profile.platformId ?? ''}
+            onChange={(e) => {
+              const id = e.target.value
+              if (!id) {
+                onChange({ ...profile, platformId: null })
+                return
+              }
+              const preset = PLATFORM_PRESETS.find((p) => p.id === id)
+              if (preset) {
+                onChange({
+                  ...preset.profile,
+                  rotateDegrees: 0,
+                  hFlip: false,
+                  vFlip: false,
+                  watermarkEnabled: false,
+                  loudnormEnabled: false,
+                })
+              }
+            }}
+          >
+            <option value="">{t('moyee.platformOneClickPlaceholder')}</option>
+            <optgroup label={t('moyee.platformSocial')}>
+              {PLATFORM_PRESETS.filter((p) => p.category === 'social').map((p) => (
+                <option key={p.id} value={p.id}>
+                  {t(`moyee.plat.${p.id}`)}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('moyee.platformSeller')}>
+              {PLATFORM_PRESETS.filter((p) => p.category === 'seller').map((p) => (
+                <option key={p.id} value={p.id}>
+                  {t(`moyee.plat.${p.id}`)}
+                </option>
+              ))}
+            </optgroup>
+          </select>
+        </div>
+      </section>
+
+      <section className="field-group">
+        <div className="field">
+          <span className="field-label">{t('moyee.outputFormat')}</span>
+          <div className="format-groups" role="group" aria-label={t('moyee.outputFormat')}>
+            {CONVERT_FORMAT_GROUPS.map((group) => (
+              <div key={group.id} className="format-group">
+                <span className="format-group-label">
+                  {group.id === 'common'
+                    ? t('moyee.formatGroupCommon')
+                    : t('moyee.formatGroupOther')}
+                </span>
+                <div className="format-group-items">
+                  {group.items.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`format-item ${profile.container === c ? 'active' : ''}`}
+                      onClick={() => setContainer(c)}
+                    >
+                      .{c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <details
+        className="advanced-details"
+        open={advancedOpen}
+        onToggle={(e) => setAdvancedOpen((e.target as HTMLDetailsElement).open)}
+      >
+        <summary className="advanced-summary">{t('moyee.advancedSettings')}</summary>
+        <div className="advanced-form">
+          <div className="field">
+            <label htmlFor="vcodec">{t('moyee.videoCodec')}</label>
+            <select
+              id="vcodec"
+              value={videoCodecId}
+              onChange={(e) =>
+                setVideoCodec(e.target.value as (typeof CONVERT_VIDEO_CODECS)[number]['id'])
+              }
+            >
+              {CONVERT_VIDEO_CODECS.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+            {videoCodecId === 'h265' ? (
+              <p className="field-hint">{t('moyee.codecHintH265')}</p>
+            ) : null}
+          </div>
+
+          <div className="field">
+            <label htmlFor="acodec">{t('moyee.audioCodec')}</label>
+            <select
+              id="acodec"
+              value={audioCodecId}
+              onChange={(e) =>
+                setAudioCodec(e.target.value as (typeof CONVERT_AUDIO_CODECS)[number]['id'])
+              }
+            >
+              {CONVERT_AUDIO_CODECS.map((c) => {
+                const disabled =
+                  profile.container === 'webm' && !WEBM_AUDIO_CODEC_IDS.has(c.id)
+                return (
+                  <option key={c.id} value={c.id} disabled={disabled}>
+                    {c.label}
+                  </option>
+                )
+              })}
+            </select>
+          </div>
+
+          <div className="field">
+            <label htmlFor="abitrate">{t('moyee.audioBitrate')}</label>
+            <select
+              id="abitrate"
+              disabled={losslessAudio}
+              value={profile.audioBitrateKbps ?? 192}
+              onChange={(e) =>
+                onChange({
+                  ...profile,
+                  audioBitrateKbps: Number(e.target.value),
+                  platformId: null,
+                })
+              }
+            >
+              {CONVERT_AUDIO_BITRATE_OPTIONS.map((kbps) => (
+                <option key={kbps} value={kbps}>
+                  {kbps} kbps
+                </option>
+              ))}
+            </select>
+            {losslessAudio ? (
+              <p className="field-hint">{t('moyee.audioBitrateLosslessHint')}</p>
+            ) : null}
+          </div>
+
+          <div className="field">
+            <label htmlFor="vbitrate">{t('moyee.videoBitrate')}</label>
+            <select
+              id="vbitrate"
+              value={activeBitrate}
+              onChange={(e) =>
+                onChange({
+                  ...profile,
+                  bitrateMode: 'bitrate',
+                  videoBitrateKbps: Number(e.target.value),
+                  crf: null,
+                  platformId: null,
+                })
+              }
+            >
+              {bitrateOptions.map((opt) => (
+                <option key={opt.kbps} value={opt.kbps}>
+                  {opt.isSource ? `${opt.label}（${t('moyee.sourceTag')}）` : opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </details>
+    </>
+  )
+}
+
+function CompressSettings({
+  profile,
+  sourceMeta,
+  compressMode,
+  compressQuality,
+  compressStrategy,
+  compressTargetMb,
+  onCompressMode,
+  onCompressQuality,
+  onCompressStrategy,
+  onCompressTargetMb,
+  onDraftInvalidChange,
+  onChange,
+}: {
+  profile: OutputProfile
+  sourceMeta: { fileSize: number; durationSecs?: number; width?: number; height?: number }
+  compressMode: CompressMode
+  compressQuality: number
+  compressStrategy: CompressStrategy
+  compressTargetMb: number | null
+  onCompressMode: (m: CompressMode) => void
+  onCompressQuality: (q: number) => void
+  onCompressStrategy: (s: CompressStrategy) => void
+  onCompressTargetMb: (mb: number | null) => void
+  onDraftInvalidChange: (invalid: boolean) => void
+  onChange: (p: OutputProfile) => void
+}) {
+  const { t } = useT()
+  const codecId = codecIdFromProfile(profile)
+  const resId = resolutionIdFromProfile(profile)
+  const duration = effectiveDurationSecs(
+    sourceMeta.durationSecs,
+    profile.trimStartSecs,
+    profile.trimEndSecs,
+  )
+  const sourceMbps = sourceBitrateMbps(sourceMeta.fileSize, sourceMeta.durationSecs)
+  const lastValidTargetRef = useRef<number | null>(compressTargetMb)
+  const [targetDraft, setTargetDraft] = useState(
+    compressTargetMb != null ? String(compressTargetMb) : '',
+  )
+  const [targetError, setTargetError] = useState<string | null>(null)
+  const [draftInvalid, setDraftInvalid] = useState(false)
+
+  const outW = profile.keepOriginalResolution ? sourceMeta.width : profile.width ?? sourceMeta.width
+  const outH = profile.keepOriginalResolution ? sourceMeta.height : profile.height ?? sourceMeta.height
+
+  useEffect(() => {
+    if (compressStrategy !== 'targetSize') {
+      setTargetDraft(compressTargetMb != null ? String(compressTargetMb) : '')
+      setTargetError(null)
+      setDraftInvalid(false)
+      onDraftInvalidChange(false)
+    }
+  }, [compressStrategy, compressTargetMb, onDraftInvalidChange])
+
+  useEffect(() => {
+    onDraftInvalidChange(draftInvalid)
+  }, [draftInvalid, onDraftInvalidChange])
+
+  useEffect(() => {
+    if (compressStrategy !== 'quality') return
+    if (isCompressPresetAvailable(compressMode, sourceMbps, outW, outH)) return
+    onCompressMode(firstAvailableCompressMode(sourceMbps, outW, outH))
+  }, [compressStrategy, compressMode, sourceMbps, outW, outH, onCompressMode])
+
+  const estimate = estimateCompressBytes({
+    originalBytes: sourceMeta.fileSize,
+    strategy: compressStrategy,
+    targetMb: compressTargetMb,
+    crf: profile.crf ?? 28,
+    quality: compressQuality,
+    mode: compressMode,
+    codecId,
+    resId,
+    durationSecs: duration,
+    width: sourceMeta.width,
+    height: sourceMeta.height,
+  })
+
+  const onCodec = (id: CompressCodecId) => {
+    onChange(applyCompressCodec(profile, id))
+  }
+
+  const onResolution = (id: CompressResId) => {
+    onChange(applyCompressResolution(profile, id, sourceMeta.width, sourceMeta.height))
+  }
+
+  const errorForTargetIssue = (issue: ReturnType<typeof validateTargetMb>['issue']) => {
+    if (issue === 'tooLarge') return t('moyee.compressTargetMustSmaller')
+    if (issue === 'tooSmall') return t('moyee.compressTargetTooSmallQuality')
+    return t('moyee.compressTargetEmpty')
+  }
+
+  const onTargetDraftChange = (raw: string) => {
+    setTargetDraft(raw)
+
+    // Empty / unfinished decimal: no error tip yet.
+    if (raw.trim() === '' || raw === '.' || /^-?\d+\.$/.test(raw.trim())) {
+      setTargetError(null)
+      setDraftInvalid(false)
+      return
+    }
+
+    const value = Number(raw)
+    if (!Number.isFinite(value)) {
+      setTargetError(t('moyee.compressTargetEmpty'))
+      setDraftInvalid(true)
+      return
+    }
+
+    const check = validateTargetMb(value, sourceMeta.fileSize, duration)
+    if (!check.ok) {
+      setTargetError(errorForTargetIssue(check.issue))
+      setDraftInvalid(true)
+      // Keep last valid value in store so encode/estimate stay sane.
+      onCompressTargetMb(lastValidTargetRef.current)
+      return
+    }
+
+    setTargetError(null)
+    setDraftInvalid(false)
+    lastValidTargetRef.current = value
+    onCompressTargetMb(value)
+  }
+
+  const targetInfo = `${t('moyee.compressOriginalSize', {
+    size: formatBytes(sourceMeta.fileSize),
+  })} ${t('moyee.compressTargetMustSmaller')}`
+
+  return (
+    <section className="compress-panel">
+      <div className="compress-estimate-row">
+        <span>{t('moyee.compressEstimate', { size: formatBytes(estimate.bytes) })}</span>
+        {sourceMbps != null ? (
+          <span className="compress-estimate-meta">
+            {t('moyee.compressSourceBitrate', { rate: `${sourceMbps.toFixed(1)} Mbps` })}
+          </span>
+        ) : null}
+      </div>
+
+      <div className="compress-strategy" role="tablist" aria-label={t('moyee.compressTitle')}>
+        <button
+          type="button"
+          role="tab"
+          className={compressStrategy === 'quality' ? 'active' : ''}
+          aria-selected={compressStrategy === 'quality'}
+          onClick={() => onCompressStrategy('quality')}
+        >
+          {t('moyee.compressTabQuality')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          className={compressStrategy === 'targetSize' ? 'active' : ''}
+          aria-selected={compressStrategy === 'targetSize'}
+          onClick={() => onCompressStrategy('targetSize')}
+        >
+          {t('moyee.compressTabTarget')}
+        </button>
+      </div>
+
+      {compressStrategy === 'quality' ? (
+        <div className="compress-block">
+          <div className="preset-list" role="radiogroup" aria-label={t('moyee.compressTabQuality')}>
+            {COMPRESS_MODE_ORDER.map((modeId) => {
+              const available = isCompressPresetAvailable(modeId, sourceMbps, outW, outH)
+              const label =
+                modeId === 'highQuality'
+                  ? t('moyee.compressHighQuality')
+                  : modeId === 'standard'
+                    ? t('moyee.compressStandard')
+                    : t('moyee.compressMaxCompress')
+              const hint =
+                !available
+                  ? t('moyee.compressPresetUnavailable')
+                  : modeId === 'maxCompress'
+                    ? t('moyee.compressPresetMaxHint')
+                    : modeId === 'standard'
+                      ? t('moyee.compressPresetLowHint')
+                      : null
+              return (
+                <button
+                  key={modeId}
+                  type="button"
+                  role="radio"
+                  aria-checked={compressMode === modeId}
+                  aria-disabled={!available}
+                  disabled={!available}
+                  className={`preset-option ${compressMode === modeId ? 'active' : ''} ${available ? '' : 'disabled'}`}
+                  onClick={() => {
+                    if (available) onCompressMode(modeId)
+                  }}
+                >
+                  <span className="preset-option-title">{label}</span>
+                  {hint ? <span className="preset-option-hint">{hint}</span> : null}
+                </button>
+              )
+            })}
+          </div>
+          <div className="field">
+            <label htmlFor="cq">{t('moyee.qualityLabel', { value: compressQuality })}</label>
+            <input
+              id="cq"
+              type="range"
+              min={0}
+              max={100}
+              value={compressQuality}
+              onChange={(e) => onCompressQuality(Number(e.target.value))}
+            />
+          </div>
+          <p className="field-hint">
+            {t('moyee.crfHint', {
+              crf: profile.crf ?? '-',
+              container: profile.container.toUpperCase(),
+            })}
+          </p>
+        </div>
+      ) : (
+        <div className="compress-block">
+          <div className="field">
+            <label htmlFor="targetMb">{t('moyee.compressTargetSize')}</label>
+            <input
+              id="targetMb"
+              type="number"
+              min={0.05}
+              step={0.1}
+              placeholder={t('moyee.compressTargetPlaceholder')}
+              value={targetDraft}
+              onChange={(e) => onTargetDraftChange(e.target.value)}
+              aria-invalid={draftInvalid}
+            />
+            <p className="field-hint">{targetInfo}</p>
+            {targetError ? <p className="field-error">{targetError}</p> : null}
+          </div>
+        </div>
+      )}
+
+      <div className="field-row compress-output-row">
+        <div className="field">
+          <label htmlFor="cres">{t('moyee.compressResolution')}</label>
+          <select
+            id="cres"
+            value={resId}
+            onChange={(e) => onResolution(e.target.value as CompressResId)}
+          >
+            {COMPRESS_RESOLUTIONS.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.id === 'original'
+                  ? t('moyee.compressResOriginal')
+                  : t(`moyee.compressRes${r.id}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="field">
+          <label htmlFor="ccodec">{t('moyee.compressCodec')}</label>
+          <select
+            id="ccodec"
+            value={codecId}
+            onChange={(e) => onCodec(e.target.value as CompressCodecId)}
+          >
+            {COMPRESS_CODECS.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ManualPanel() {
+  const { t, tList, lh } = useT()
+
+  return (
+    <div className="manual">
+      <h2>{t('moyee.manualTitle')}</h2>
+      <p>{t('moyee.manualIntro')}</p>
+      <h3>{t('moyee.manualFeatureTitle')}</h3>
       <ul>
-        <li>视频转换：格式、分辨率、平台预设（抖音 / 小红书 / YouTube 等）</li>
-        <li>视频压缩：标准 / 高质量 / 极限 + 画质滑杆</li>
-        <li>音频转换：MP3 / M4A / WAV / FLAC / OGG</li>
-        <li>合并：多段视频顺序拼接</li>
-        <li>提取：音轨 / GIF / 封面</li>
-        <li>裁剪时间、旋转翻转、文字水印、响度标准化</li>
+        {tList('moyee.manualFeatures').map((item) => (
+          <li key={item}>{item}</li>
+        ))}
       </ul>
-      <h3>与桌面版差异</h3>
+      <h3>{t('moyee.manualDifferenceTitle')}</h3>
       <ul>
-        <li>大文件会更慢，并受浏览器内存限制（建议单文件 &lt; 500MB）</li>
-        <li>图片水印、外挂字幕烧录、硬件加速等以桌面版为准</li>
-        <li>首次打开需下载约 25MB 的 FFmpeg 引擎（可缓存）</li>
+        {tList('moyee.manualDifferences').map((item) => (
+          <li key={item}>{item}</li>
+        ))}
       </ul>
       <p>
-        需要完整批量与桌面体验时，请到{' '}
-        <a href="/" style={{ color: 'var(--gold-soft)' }}>
-          九猫库
-        </a>{' '}
-        下载安装包。
+        {t('moyee.manualDownloadPrefix')}{' '}
+        <a href={lh('/')}>{t('common.brand')}</a>{' '}
+        {t('moyee.manualDownloadSuffix')}
       </p>
     </div>
   )

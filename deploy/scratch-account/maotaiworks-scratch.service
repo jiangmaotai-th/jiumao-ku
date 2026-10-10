@@ -1,0 +1,19 @@
+[Unit]
+Description=maotaiworks.com daily scratch account API
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/maotaiworks/scratch-account
+Environment=PORT=3194
+Environment=SCRATCH_ROOT=/var/lib/maotaiworks/scratch
+Environment=CORS_ORIGIN=https://maotaiworks.com
+EnvironmentFile=-/etc/maotaiworks/scratch-mail.env
+ExecStart=/usr/bin/node /opt/maotaiworks/scratch-account/server.mjs
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

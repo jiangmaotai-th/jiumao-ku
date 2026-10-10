@@ -1,7 +1,6 @@
 import * as pdfjs from 'pdfjs-dist'
-import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 
-pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker
+pdfjs.GlobalWorkerOptions.workerSrc = `${typeof window !== 'undefined' ? window.location.origin : ''}/pdf.worker.min.mjs`
 
 /** Heuristic: average extractable chars/page below this ⇒ treat as scanned. */
 const MIN_CHARS_PER_PAGE = 40

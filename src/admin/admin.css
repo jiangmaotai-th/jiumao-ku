@@ -1,0 +1,271 @@
+:root {
+  --bg: #0e1210;
+  --ink: #e8e4d9;
+  --muted: #9a9588;
+  --gold: #c4a35a;
+  --line: rgba(196, 163, 90, 0.22);
+  --font: 'DM Sans', 'Noto Sans SC', system-ui, sans-serif;
+  --display: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 70% 45% at 20% 0%, rgba(196, 163, 90, 0.12), transparent 55%),
+    var(--bg);
+}
+
+.admin-shell {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 4rem;
+}
+
+.admin-shell.wide {
+  max-width: 1100px;
+}
+
+.login-card h1,
+.admin-head h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.login-card p,
+.admin-head p {
+  margin: 0.5rem 0 0;
+}
+
+#login-form {
+  margin-top: 1.75rem;
+  display: grid;
+  gap: 1rem;
+}
+
+#login-form label {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+}
+
+#login-form input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(232, 228, 217, 0.04);
+  color: var(--ink);
+  font: inherit;
+}
+
+#login-form button,
+.actions button {
+  min-height: 2.6rem;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--gold);
+  font: inherit;
+  cursor: pointer;
+}
+
+#login-form button:hover,
+.actions button:hover {
+  background: rgba(196, 163, 90, 0.12);
+  color: var(--ink);
+}
+
+#login-form button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.error {
+  margin: 0;
+  color: #e08a7a;
+  font-size: 0.92rem;
+}
+
+.admin-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions .ghost {
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+}
+
+.stat-cards article {
+  padding: 1rem 1.1rem 0.95rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(196, 163, 90, 0.06);
+}
+
+.stat-cards p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.stat-cards strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: var(--display);
+  font-size: 1.85rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  padding: 0.85rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(196, 163, 90, 0.12);
+  vertical-align: top;
+}
+
+th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 0.82rem;
+}
+
+th small,
+td small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 400;
+  margin-top: 0.15rem;
+}
+
+td small {
+  display: inline;
+  margin-left: 0.15rem;
+}
+
+.name {
+  min-width: 10rem;
+}
+
+.name .id {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.hint {
+  margin-top: 1.25rem;
+  font-size: 0.88rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0 0 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-tabs button {
+  min-height: 2.2rem;
+  padding: 0.35rem 0.9rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.admin-tabs button:hover {
+  color: var(--ink);
+  background: rgba(196, 163, 90, 0.08);
+}
+
+.admin-tabs button.is-on {
+  color: var(--gold);
+  background: rgba(196, 163, 90, 0.12);
+}
+
+.note-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.note-card {
+  padding: 0.95rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(232, 228, 217, 0.04);
+}
+
+.note-card header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.85rem;
+  margin-bottom: 0.55rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.note-card p {
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  th:nth-child(3),
+  td:nth-child(3) {
+    display: none;
+  }
+}

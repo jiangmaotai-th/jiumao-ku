@@ -1,3 +1,21 @@
+/* Legal follows the classic dark site chrome (not homepage light theme). */
+:root {
+  --bg: #0e1210;
+  --bg-elevated: #151a17;
+  --ink: #e8e4d9;
+  --ink-muted: #9a9588;
+  --line: rgba(196, 163, 90, 0.22);
+  --gold: #c4a35a;
+  --gold-soft: #d4b87a;
+  --gold-dim: #8a7340;
+  --surface: rgba(232, 228, 217, 0.03);
+  --font-display: 'ZCOOL XiaoWei', 'Noto Serif SC', 'Noto Serif TC', serif;
+  --font-body: 'DM Sans', 'Noto Sans SC', 'Noto Sans TC', 'Noto Sans JP', 'Noto Sans KR',
+    'Noto Sans Thai', 'Noto Sans Devanagari', 'Noto Sans', sans-serif;
+  --radius-btn: 6px;
+  color-scheme: dark;
+}
+
 .legal-nav {
   display: flex;
   flex-wrap: wrap;
@@ -82,6 +100,31 @@
 .credit-list strong {
   color: var(--ink);
   font-weight: 600;
+}
+
+.contact-line {
+  margin: 0 0 0.65rem;
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--gold-soft);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.contact-link:hover,
+.contact-link:focus-visible {
+  color: var(--ink);
+}
+
+.contact-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex-shrink: 0;
+  opacity: 0.92;
 }
 
 @media (max-width: 640px) {

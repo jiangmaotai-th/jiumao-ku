@@ -1,0 +1,246 @@
+#mw-note {
+  --note-ink: #5a3a28;
+  --note-muted: #8a7468;
+  --note-line: #eadfd6;
+  --note-orange: #e8944a;
+  --note-orange-deep: #d47c32;
+  position: fixed;
+  right: 0;
+  /* notice + header + hero padding — matches the big 九猫库 title */
+  top: calc(6.4rem + clamp(2.5rem, 8vh, 5rem));
+  bottom: auto;
+  z-index: 2147483000;
+  font-family: 'DM Sans', 'Noto Sans SC', system-ui, sans-serif;
+  color: var(--note-ink);
+  pointer-events: none;
+}
+
+#mw-note * {
+  box-sizing: border-box;
+}
+
+#mw-note .mw-note__tab,
+#mw-note .mw-note__panel,
+#mw-note .mw-note__close,
+#mw-note .mw-note__send {
+  pointer-events: auto;
+}
+
+#mw-note .mw-note__tab {
+  display: block;
+  width: 80px;
+  height: 80px;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  transform: translateX(28px);
+  transition: transform 0.22s ease;
+}
+
+#mw-note .mw-note__tab:hover,
+#mw-note .mw-note__tab:focus-visible {
+  transform: translateX(6px);
+  outline: none;
+}
+
+#mw-note.is-open .mw-note__tab {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#mw-note .mw-note__tab .mw-note__cat {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 1px rgba(255, 255, 255, 0.85))
+    drop-shadow(-2px 3px 6px rgba(0, 0, 0, 0.28));
+}
+
+#mw-note .mw-note__panel {
+  display: none;
+  position: absolute;
+  right: 16px;
+  top: 36px;
+  bottom: auto;
+  width: min(340px, calc(100vw - 24px));
+  padding: 2.6rem 1.15rem 1.15rem;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(70, 42, 28, 0.18);
+}
+
+#mw-note.is-open .mw-note__panel {
+  display: block;
+}
+
+#mw-note .mw-note__peek {
+  position: absolute;
+  top: -46px;
+  left: 50%;
+  width: 72px;
+  height: 72px;
+  overflow: visible;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+#mw-note .mw-note__peek .mw-note__cat {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.22));
+}
+
+#mw-note .mw-note__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #b4a49a;
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#mw-note .mw-note__close:hover {
+  background: #f6f0ea;
+  color: var(--note-ink);
+}
+
+#mw-note .mw-note__title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+#mw-note .mw-note__title em {
+  font-style: normal;
+  color: var(--note-orange-deep);
+}
+
+#mw-note .mw-note__hint {
+  margin: 0.45rem 0 0.85rem;
+  color: var(--note-muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+#mw-note .mw-note__field {
+  position: relative;
+}
+
+#mw-note textarea {
+  display: block;
+  width: 100%;
+  min-height: 118px;
+  margin: 0;
+  padding: 0.7rem 0.75rem 1.5rem;
+  border: 1px solid var(--note-line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--note-ink);
+  font: inherit;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: none;
+}
+
+#mw-note textarea:focus {
+  outline: 2px solid rgba(232, 148, 74, 0.35);
+  border-color: var(--note-orange);
+}
+
+#mw-note textarea::placeholder {
+  color: #c2b4aa;
+}
+
+#mw-note .mw-note__count {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  color: var(--note-muted);
+  font-size: 0.72rem;
+  pointer-events: none;
+}
+
+#mw-note .mw-note__send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 2.7rem;
+  margin: 0.85rem 0 0;
+  padding: 0.55rem 1rem;
+  border: 0;
+  border-radius: 10px;
+  background: var(--note-orange);
+  color: #fff;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+#mw-note .mw-note__send:hover:not(:disabled) {
+  background: var(--note-orange-deep);
+}
+
+#mw-note .mw-note__send:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+#mw-note .mw-note__send svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+#mw-note .mw-note__status {
+  margin: 0.5rem 0 0;
+  min-height: 1.2em;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+#mw-note .mw-note__status.is-ok {
+  color: #5ea87a;
+}
+
+#mw-note .mw-note__status.is-err {
+  color: #d0654e;
+}
+
+@media (max-width: 640px) {
+  #mw-note {
+    top: calc(7.2rem + 2.5rem);
+  }
+
+  #mw-note .mw-note__tab,
+  #mw-note .mw-note__tab .mw-note__cat {
+    width: 64px;
+    height: 64px;
+  }
+
+  #mw-note .mw-note__tab {
+    transform: translateX(22px);
+  }
+}

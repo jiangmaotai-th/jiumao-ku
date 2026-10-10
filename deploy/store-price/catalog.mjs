@@ -156,16 +156,7 @@ export const AI_PRODUCTS = [
     },
     web: {
       pricingUrl: 'https://claude.com/pricing',
-      planKeys: [
-        'pro_monthly',
-        'pro_yearly',
-        'max_monthly',
-        'max_20x_monthly',
-        'team_monthly',
-        'team_yearly',
-        'team_premium_monthly',
-        'team_premium_yearly',
-      ],
+      planKeys: ['pro_monthly', 'max_monthly', 'max_20x_monthly'],
     },
     desktop: { store: 'mac', skuHints: ['pro', 'max', 'max 20x'] },
   }),
@@ -212,10 +203,7 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['pro_monthly'] },
   }),
   p('huggingface-pro', 'Hugging Face Pro', 'Hugging Face Pro', 'chat', 'Hugging Face', {
-    web: {
-      pricingUrl: 'https://huggingface.co/pricing',
-      planKeys: ['pro_monthly', 'team_monthly', 'enterprise_monthly'],
-    },
+    web: { planKeys: ['pro_monthly'] },
   }),
   p('zhipu-glm', 'Zhipu Qingyan', '智谱清言（GLM）', 'chat', '智谱', {
     web: { planKeys: ['plus_monthly'] },
@@ -277,15 +265,9 @@ export const AI_PRODUCTS = [
   p('cursor', 'Cursor', 'Cursor', 'coding', 'Anysphere', {
     web: {
       pricingUrl: 'https://www.cursor.com/pricing',
-      planKeys: [
-        'pro_monthly',
-        'pro_plus_monthly',
-        'ultra_monthly',
-        'teams_standard_monthly',
-        'teams_premium_monthly',
-      ],
+      planKeys: ['pro_monthly', 'pro_plus_monthly', 'ultra_monthly'],
     },
-    desktop: { store: 'none', skuHints: ['pro', 'pro+', 'ultra', 'teams'] },
+    desktop: { store: 'none', skuHints: ['pro', 'pro+', 'ultra'] },
   }),
   p('github-copilot', 'GitHub Copilot', 'GitHub Copilot', 'coding', 'GitHub', {
     web: {
@@ -304,10 +286,7 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['pro_monthly'] },
   }),
   p('tabnine-pro', 'Tabnine Pro', 'Tabnine Pro', 'coding', 'Tabnine', {
-    web: {
-      pricingUrl: 'https://www.tabnine.com/pricing',
-      planKeys: ['code_assistant_yearly', 'agentic_yearly'],
-    },
+    web: { planKeys: ['pro_monthly'] },
   }),
   p('replit-core', 'Replit Core', 'Replit Core', 'coding', 'Replit', {
     web: { planKeys: ['core_monthly'] },
@@ -357,21 +336,7 @@ export const AI_PRODUCTS = [
     appstore: { trackId: 1477376905, planHints: ['pro', 'canva pro'] },
     web: { planKeys: ['pro_monthly'] },
   }),
-  p('krea-ai', 'Krea AI', 'Krea AI', 'image', 'Krea', {
-    web: {
-      pricingUrl: 'https://www.krea.ai/pricing',
-      planKeys: [
-        'basic_monthly',
-        'pro_monthly',
-        'max_monthly',
-        'business_monthly',
-        'basic_yearly',
-        'pro_yearly',
-        'max_yearly',
-        'business_yearly',
-      ],
-    },
-  }),
+  p('krea-ai', 'Krea AI', 'Krea AI', 'image', 'Krea', { web: { planKeys: ['pro_monthly'] } }),
   p('magnific-ai', 'Magnific AI', 'Magnific AI', 'image', 'Magnific', { web: { planKeys: ['pro_monthly'] } }),
   p('topaz-photo-ai', 'Topaz Photo AI', 'Topaz Photo AI', 'image', 'Topaz', { web: { planKeys: ['monthly'] }, desktop: { store: 'none' } }),
   p('luminar-neo', 'Luminar Neo', 'Luminar Neo', 'image', 'Skylum', { web: { planKeys: ['pro_monthly'] } }),
@@ -385,19 +350,7 @@ export const AI_PRODUCTS = [
 
   // —— 视频 ——
   p('runway', 'Runway', 'Runway', 'video', 'Runway', { web: { planKeys: ['standard_monthly'] } }),
-  p('pika', 'Pika', 'Pika', 'video', 'Pika', {
-    web: {
-      pricingUrl: 'https://pika.art/pricing',
-      planKeys: [
-        'standard_monthly',
-        'standard_yearly',
-        'pro_monthly',
-        'pro_yearly',
-        'fancy_monthly',
-        'fancy_yearly',
-      ],
-    },
-  }),
+  p('pika', 'Pika', 'Pika', 'video', 'Pika', { web: { planKeys: ['standard_monthly'] } }),
   p('luma-dream-machine', 'Luma Dream Machine', 'Luma Dream Machine', 'video', 'Luma', {
     web: { pricingUrl: 'https://lumalabs.ai/pricing', planKeys: ['plus_monthly', 'pro_monthly', 'ultra_monthly'] },
   }),
@@ -414,19 +367,7 @@ export const AI_PRODUCTS = [
     appstore: { trackId: 1541027222, planHints: ['pro', 'captions'] },
     web: { planKeys: ['pro_monthly'] },
   }),
-  p('descript', 'Descript', 'Descript', 'video', 'Descript', {
-    web: {
-      pricingUrl: 'https://www.descript.com/pricing',
-      planKeys: [
-        'hobbyist_monthly',
-        'hobbyist_yearly',
-        'creator_monthly',
-        'creator_yearly',
-        'business_monthly',
-        'business_yearly',
-      ],
-    },
-  }),
+  p('descript', 'Descript', 'Descript', 'video', 'Descript', { web: { planKeys: ['hobbyist_monthly'] } }),
   p('opus-clip', 'Opus Clip', 'Opus Clip', 'video', 'Opus', { web: { planKeys: ['pro_monthly'] } }),
   p('veed-io', 'Veed.io', 'Veed.io', 'video', 'VEED', { web: { planKeys: ['pro_monthly'] } }),
   p('capcut-pro', 'CapCut Pro', 'CapCut Pro（剪映）', 'video', 'ByteDance', {
@@ -466,11 +407,8 @@ export const AI_PRODUCTS = [
     },
   }),
   p('grammarly-premium', 'Grammarly Premium', 'Grammarly Premium', 'writing', 'Grammarly', {
-    appstore: { trackId: 1158872862, planHints: ['premium', 'grammarly', 'pro'] },
-    web: {
-      pricingUrl: 'https://www.grammarly.com/plans',
-      planKeys: ['premium_monthly', 'premium_yearly'],
-    },
+    appstore: { trackId: 1158872862, planHints: ['premium', 'grammarly'] },
+    web: { planKeys: ['premium_monthly'] },
   }),
   p('jasper', 'Jasper', 'Jasper', 'writing', 'Jasper', {
     web: { pricingUrl: 'https://www.jasper.ai/pricing', planKeys: ['pro_monthly', 'pro_yearly'] },
@@ -750,6 +688,12 @@ const PRODUCT_DOMAINS = {
   'huggingface-pro': 'huggingface.co',
 }
 
+function isFragileExternalIcon(url) {
+  const u = String(url || '')
+  // Google favicon host is often blocked on CN iPad/Safari — never ship it to clients.
+  return /google\.[^/]+\/s2\/favicons/i.test(u) || /gstatic\.com\/favicon/i.test(u)
+}
+
 export function iconFromDomain(domain) {
   const d = String(domain || '')
     .replace(/^https?:\/\//, '')
@@ -757,18 +701,19 @@ export function iconFromDomain(domain) {
     .split('/')[0]
     .trim()
   if (!d) return ''
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=128`
+  // Same-origin proxy (see deploy/store-price/icon-proxy.mjs) — reliable on iPad.
+  return `/api/store/icon?domain=${encodeURIComponent(d)}`
 }
 
 /**
  * Resolve display icon:
- * 1) explicit product.icon
+ * 1) explicit product.icon (except fragile Google favicon URLs)
  * 2) App Store artwork (via getAppIcon(trackId))
- * 3) website favicon from pricingUrl / vendor domain
+ * 3) website favicon via same-origin proxy
  */
 export function resolveProductIcon(product, getAppIcon) {
   if (!product) return ''
-  if (product.icon) return product.icon
+  if (product.icon && !isFragileExternalIcon(product.icon)) return product.icon
   const trackId = product.channels?.appstore?.trackId
   if (trackId && typeof getAppIcon === 'function') {
     const fromStore = getAppIcon(trackId)
@@ -778,7 +723,9 @@ export function resolveProductIcon(product, getAppIcon) {
   if (trackId && typeof getAppIcon === 'function') {
     for (const other of AI_PRODUCTS) {
       if (other.productId === product.productId) continue
-      if (other.channels?.appstore?.trackId === trackId && other.icon) return other.icon
+      if (other.channels?.appstore?.trackId === trackId && other.icon && !isFragileExternalIcon(other.icon)) {
+        return other.icon
+      }
     }
   }
   // Same-vendor sibling that already has App Store artwork cached.

@@ -2,7 +2,7 @@
  * 8-bit synth + original chiptune battle theme on WebAudio.
  * Everything is scheduled through `Out` so the same code can play live
  * (AudioContext) or render offline (OfflineAudioContext, used for videos).
- * Muted by default; the context is created on the first user unmute.
+ * Starts muted; the widget turns it on after the first user gesture on /arena/ (homepage embed stays muted).
  */
 export type Out = { ctx: BaseAudioContext; sfx: AudioNode; music: AudioNode }
 

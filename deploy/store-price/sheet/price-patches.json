@@ -64,12 +64,22 @@
       "team_monthly": {
         "amount": 25,
         "currency": "USD",
-        "label": "Team 月付/席"
+        "label": "Team Standard 月付/席"
       },
       "team_yearly": {
         "amount": 20,
         "currency": "USD",
-        "label": "Team 年付折合月价/席"
+        "label": "Team Standard 年付折合月价/席"
+      },
+      "team_premium_monthly": {
+        "amount": 125,
+        "currency": "USD",
+        "label": "Team Premium 月付/席"
+      },
+      "team_premium_yearly": {
+        "amount": 100,
+        "currency": "USD",
+        "label": "Team Premium 年付折合月价/席"
       }
     }
   },
@@ -190,6 +200,16 @@
         "amount": 200,
         "currency": "USD",
         "label": "Ultra 月付"
+      },
+      "teams_standard_monthly": {
+        "amount": 40,
+        "currency": "USD",
+        "label": "Teams Standard 月付/席"
+      },
+      "teams_premium_monthly": {
+        "amount": 120,
+        "currency": "USD",
+        "label": "Teams Premium 月付/席"
       }
     }
   },
@@ -485,22 +505,42 @@
       "basic_monthly": {
         "amount": 9,
         "currency": "USD",
-        "label": "Basic"
+        "label": "Basic 月付"
       },
       "pro_monthly": {
         "amount": 35,
         "currency": "USD",
-        "label": "Pro"
+        "label": "Pro 月付"
       },
       "max_monthly": {
         "amount": 70,
         "currency": "USD",
-        "label": "Max"
+        "label": "Max 月付"
       },
       "business_monthly": {
         "amount": 200,
         "currency": "USD",
         "label": "Business 月付"
+      },
+      "basic_yearly": {
+        "amount": 5.25,
+        "currency": "USD",
+        "label": "Basic 年付折合月价"
+      },
+      "pro_yearly": {
+        "amount": 21,
+        "currency": "USD",
+        "label": "Pro 年付折合月价"
+      },
+      "max_yearly": {
+        "amount": 63,
+        "currency": "USD",
+        "label": "Max 年付折合月价"
+      },
+      "business_yearly": {
+        "amount": 160,
+        "currency": "USD",
+        "label": "Business 年付折合月价"
       }
     }
   }

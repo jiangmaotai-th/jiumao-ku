@@ -88,6 +88,11 @@ const OFFICIAL_WEB_PRICES_BASE = {
     },
     max_monthly: usd(100, 'Max 5x 全球统一标价'),
     max_20x_monthly: usd(200, 'Max 20x 全球统一标价'),
+    team_monthly: usd(25, 'Team Standard 月付/席'),
+    team_yearly: usd(20, 'Team Standard 年付折合月价/席'),
+    team_premium_monthly: usd(125, 'Team Premium 月付/席'),
+    team_premium_yearly: usd(100, 'Team Premium 年付折合月价/席'),
+    pro_yearly: usd(17, 'Pro 年付折合月价（$200/年）'),
   }),
   'gemini-advanced': entry('https://one.google.com/ai', {
     advanced_monthly: usd(19.99, 'Google One AI Premium 公开标价'),
@@ -120,6 +125,8 @@ const OFFICIAL_WEB_PRICES_BASE = {
   }),
   'huggingface-pro': entry('https://huggingface.co/pricing', {
     pro_monthly: usd(9, 'Hugging Face Pro 公开标价'),
+    team_monthly: usd(20, 'Team 月付/席'),
+    enterprise_monthly: usd(50, 'Enterprise 月付/席'),
   }),
   'zhipu-glm': entry('https://chatglm.cn', {
     plus_monthly: cny(49),
@@ -161,6 +168,8 @@ const OFFICIAL_WEB_PRICES_BASE = {
     pro_monthly: usd(20, '全球统一标价（公开定价）'),
     pro_plus_monthly: usd(60, '全球统一标价（公开定价）'),
     ultra_monthly: usd(200, '全球统一标价（公开定价）'),
+    teams_standard_monthly: usd(40, 'Teams Standard 月付/席'),
+    teams_premium_monthly: usd(120, 'Teams Premium 月付/席'),
   }),
   'github-copilot': entry('https://github.com/features/copilot#pricing', {
     pro_monthly: usd(10, '全球统一标价（公开定价）'),
@@ -176,7 +185,8 @@ const OFFICIAL_WEB_PRICES_BASE = {
     pro_monthly: usd(10, 'JetBrains AI Pro 公开标价'),
   }),
   'tabnine-pro': entry('https://www.tabnine.com/pricing', {
-    pro_monthly: usd(12, 'Tabnine Dev / Pro 公开标价'),
+    code_assistant_yearly: usd(39, 'Code Assistant 年付折合月价/席'),
+    agentic_yearly: usd(59, 'Agentic Platform 年付折合月价/席'),
   }),
   'replit-core': entry('https://replit.com/pricing', {
     core_monthly: usd(25, 'Replit Core 公开标价'),
@@ -229,7 +239,14 @@ const OFFICIAL_WEB_PRICES_BASE = {
     pro_monthly: usd(14.99, 'Canva Pro 公开标价'),
   }),
   'krea-ai': entry('https://www.krea.ai/pricing', {
-    pro_monthly: usd(35, 'Krea Pro 公开标价'),
+    basic_monthly: usd(9, 'Basic 月付'),
+    pro_monthly: usd(35, 'Pro 月付'),
+    max_monthly: usd(70, 'Max 月付'),
+    business_monthly: usd(200, 'Business 月付'),
+    basic_yearly: usd(5.25, 'Basic 年付折合月价'),
+    pro_yearly: usd(21, 'Pro 年付折合月价'),
+    max_yearly: usd(63, 'Max 年付折合月价'),
+    business_yearly: usd(160, 'Business 年付折合月价'),
   }),
   'magnific-ai': entry('https://magnific.ai/pricing', {
     pro_monthly: usd(39, 'Magnific 公开标价'),
@@ -259,8 +276,12 @@ const OFFICIAL_WEB_PRICES_BASE = {
     pro_monthly: usd(35, 'Pro 公开标价'),
   }),
   pika: entry('https://pika.art/pricing', {
-    standard_monthly: usd(10, 'Standard 公开标价'),
-    pro_monthly: usd(28, 'Pro 公开标价'),
+    standard_monthly: usd(10, 'Standard 月付'),
+    standard_yearly: usd(8, 'Standard 年付折合月价'),
+    pro_monthly: usd(35, 'Pro 月付'),
+    pro_yearly: usd(28, 'Pro 年付折合月价'),
+    fancy_monthly: usd(95, 'Fancy 月付'),
+    fancy_yearly: usd(76, 'Fancy 年付折合月价'),
   }),
   'luma-dream-machine': entry('https://lumalabs.ai/dream-machine/pricing', {
     standard_monthly: usd(9.99, 'Standard 公开标价'),
@@ -297,7 +318,12 @@ const OFFICIAL_WEB_PRICES_BASE = {
     pro_monthly: usd(9.99, 'Pro 公开标价'),
   }),
   descript: entry('https://www.descript.com/pricing', {
-    hobbyist_monthly: usd(24, 'Hobbyist 公开标价'),
+    hobbyist_monthly: usd(24, 'Hobbyist 月付'),
+    hobbyist_yearly: usd(16, 'Hobbyist 年付折合月价'),
+    creator_monthly: usd(35, 'Creator 月付'),
+    creator_yearly: usd(24, 'Creator 年付折合月价'),
+    business_monthly: usd(65, 'Business 月付'),
+    business_yearly: usd(50, 'Business 年付折合月价'),
   }),
   'opus-clip': entry('https://www.opus.pro/pricing', {
     pro_monthly: usd(29, 'Pro 公开标价'),
@@ -373,7 +399,8 @@ const OFFICIAL_WEB_PRICES_BASE = {
     ai_monthly: usd(10, 'Notion AI add-on 公开标价'),
   }),
   'grammarly-premium': entry('https://www.grammarly.com/plans', {
-    premium_monthly: usd(12, 'Premium 公开标价'),
+    premium_monthly: usd(30, 'Pro 月付'),
+    premium_yearly: usd(12, 'Pro 年付折合月价（$144/年）'),
   }),
   jasper: entry('https://www.jasper.ai/pricing', {
     creator_monthly: usd(49, 'Creator 公开标价'),

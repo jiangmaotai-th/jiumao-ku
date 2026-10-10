@@ -156,7 +156,16 @@ export const AI_PRODUCTS = [
     },
     web: {
       pricingUrl: 'https://claude.com/pricing',
-      planKeys: ['pro_monthly', 'max_monthly', 'max_20x_monthly'],
+      planKeys: [
+        'pro_monthly',
+        'pro_yearly',
+        'max_monthly',
+        'max_20x_monthly',
+        'team_monthly',
+        'team_yearly',
+        'team_premium_monthly',
+        'team_premium_yearly',
+      ],
     },
     desktop: { store: 'mac', skuHints: ['pro', 'max', 'max 20x'] },
   }),
@@ -203,7 +212,10 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['pro_monthly'] },
   }),
   p('huggingface-pro', 'Hugging Face Pro', 'Hugging Face Pro', 'chat', 'Hugging Face', {
-    web: { planKeys: ['pro_monthly'] },
+    web: {
+      pricingUrl: 'https://huggingface.co/pricing',
+      planKeys: ['pro_monthly', 'team_monthly', 'enterprise_monthly'],
+    },
   }),
   p('zhipu-glm', 'Zhipu Qingyan', '智谱清言（GLM）', 'chat', '智谱', {
     web: { planKeys: ['plus_monthly'] },
@@ -265,9 +277,15 @@ export const AI_PRODUCTS = [
   p('cursor', 'Cursor', 'Cursor', 'coding', 'Anysphere', {
     web: {
       pricingUrl: 'https://www.cursor.com/pricing',
-      planKeys: ['pro_monthly', 'pro_plus_monthly', 'ultra_monthly'],
+      planKeys: [
+        'pro_monthly',
+        'pro_plus_monthly',
+        'ultra_monthly',
+        'teams_standard_monthly',
+        'teams_premium_monthly',
+      ],
     },
-    desktop: { store: 'none', skuHints: ['pro', 'pro+', 'ultra'] },
+    desktop: { store: 'none', skuHints: ['pro', 'pro+', 'ultra', 'teams'] },
   }),
   p('github-copilot', 'GitHub Copilot', 'GitHub Copilot', 'coding', 'GitHub', {
     web: {
@@ -286,7 +304,10 @@ export const AI_PRODUCTS = [
     web: { planKeys: ['pro_monthly'] },
   }),
   p('tabnine-pro', 'Tabnine Pro', 'Tabnine Pro', 'coding', 'Tabnine', {
-    web: { planKeys: ['pro_monthly'] },
+    web: {
+      pricingUrl: 'https://www.tabnine.com/pricing',
+      planKeys: ['code_assistant_yearly', 'agentic_yearly'],
+    },
   }),
   p('replit-core', 'Replit Core', 'Replit Core', 'coding', 'Replit', {
     web: { planKeys: ['core_monthly'] },
@@ -336,7 +357,21 @@ export const AI_PRODUCTS = [
     appstore: { trackId: 1477376905, planHints: ['pro', 'canva pro'] },
     web: { planKeys: ['pro_monthly'] },
   }),
-  p('krea-ai', 'Krea AI', 'Krea AI', 'image', 'Krea', { web: { planKeys: ['pro_monthly'] } }),
+  p('krea-ai', 'Krea AI', 'Krea AI', 'image', 'Krea', {
+    web: {
+      pricingUrl: 'https://www.krea.ai/pricing',
+      planKeys: [
+        'basic_monthly',
+        'pro_monthly',
+        'max_monthly',
+        'business_monthly',
+        'basic_yearly',
+        'pro_yearly',
+        'max_yearly',
+        'business_yearly',
+      ],
+    },
+  }),
   p('magnific-ai', 'Magnific AI', 'Magnific AI', 'image', 'Magnific', { web: { planKeys: ['pro_monthly'] } }),
   p('topaz-photo-ai', 'Topaz Photo AI', 'Topaz Photo AI', 'image', 'Topaz', { web: { planKeys: ['monthly'] }, desktop: { store: 'none' } }),
   p('luminar-neo', 'Luminar Neo', 'Luminar Neo', 'image', 'Skylum', { web: { planKeys: ['pro_monthly'] } }),
@@ -350,7 +385,19 @@ export const AI_PRODUCTS = [
 
   // —— 视频 ——
   p('runway', 'Runway', 'Runway', 'video', 'Runway', { web: { planKeys: ['standard_monthly'] } }),
-  p('pika', 'Pika', 'Pika', 'video', 'Pika', { web: { planKeys: ['standard_monthly'] } }),
+  p('pika', 'Pika', 'Pika', 'video', 'Pika', {
+    web: {
+      pricingUrl: 'https://pika.art/pricing',
+      planKeys: [
+        'standard_monthly',
+        'standard_yearly',
+        'pro_monthly',
+        'pro_yearly',
+        'fancy_monthly',
+        'fancy_yearly',
+      ],
+    },
+  }),
   p('luma-dream-machine', 'Luma Dream Machine', 'Luma Dream Machine', 'video', 'Luma', {
     web: { pricingUrl: 'https://lumalabs.ai/pricing', planKeys: ['plus_monthly', 'pro_monthly', 'ultra_monthly'] },
   }),
@@ -367,7 +414,19 @@ export const AI_PRODUCTS = [
     appstore: { trackId: 1541027222, planHints: ['pro', 'captions'] },
     web: { planKeys: ['pro_monthly'] },
   }),
-  p('descript', 'Descript', 'Descript', 'video', 'Descript', { web: { planKeys: ['hobbyist_monthly'] } }),
+  p('descript', 'Descript', 'Descript', 'video', 'Descript', {
+    web: {
+      pricingUrl: 'https://www.descript.com/pricing',
+      planKeys: [
+        'hobbyist_monthly',
+        'hobbyist_yearly',
+        'creator_monthly',
+        'creator_yearly',
+        'business_monthly',
+        'business_yearly',
+      ],
+    },
+  }),
   p('opus-clip', 'Opus Clip', 'Opus Clip', 'video', 'Opus', { web: { planKeys: ['pro_monthly'] } }),
   p('veed-io', 'Veed.io', 'Veed.io', 'video', 'VEED', { web: { planKeys: ['pro_monthly'] } }),
   p('capcut-pro', 'CapCut Pro', 'CapCut Pro（剪映）', 'video', 'ByteDance', {
@@ -407,8 +466,11 @@ export const AI_PRODUCTS = [
     },
   }),
   p('grammarly-premium', 'Grammarly Premium', 'Grammarly Premium', 'writing', 'Grammarly', {
-    appstore: { trackId: 1158872862, planHints: ['premium', 'grammarly'] },
-    web: { planKeys: ['premium_monthly'] },
+    appstore: { trackId: 1158872862, planHints: ['premium', 'grammarly', 'pro'] },
+    web: {
+      pricingUrl: 'https://www.grammarly.com/plans',
+      planKeys: ['premium_monthly', 'premium_yearly'],
+    },
   }),
   p('jasper', 'Jasper', 'Jasper', 'writing', 'Jasper', {
     web: { pricingUrl: 'https://www.jasper.ai/pricing', planKeys: ['pro_monthly', 'pro_yearly'] },

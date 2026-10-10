@@ -9,9 +9,11 @@
     "build:goose": "vite build --config vite.goose.config.ts",
     "generate:locale-html": "node scripts/generate-locale-html.mjs",
     "preview": "vite preview",
+    "test:lang-switch": "playwright test e2e/lang-switch.spec.ts",
     "postinstall": "mkdir -p public/ffmpeg && cp node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm public/ffmpeg/"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.0",
     "@types/jszip": "^3.4.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",

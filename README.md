@@ -64,6 +64,24 @@ npm run build
 npm run preview
 ```
 
+## 语言切换回归测试
+
+覆盖首页和竞技场页。通过 `.lang-switch` 切到 12 个语言（zh-cn、zh-tw、en、ja、ko、fr、de、es、hi、th、ru、pt），确认地址落到对应语言路径、`html lang` 正确，并且没有页面报错或卡死。
+
+先构建，安装 Playwright 自带的 Chromium，再跑。默认启动本地 `vite preview`：
+
+```bash
+npm run build
+npx playwright install chromium
+npm run test:lang-switch
+```
+
+对着线上站点：
+
+```bash
+BASE_URL=https://maotaiworks.com npm run test:lang-switch
+```
+
 ## 放置安装包
 
 把安装包放进 `public/downloads/` 对应目录：

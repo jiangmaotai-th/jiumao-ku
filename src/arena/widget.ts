@@ -322,11 +322,16 @@ function mountSoundToggle(btn: HTMLButtonElement, copy: { soundOn: string; sound
     UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, true))
     detach = () => UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true))
   }
-  btn.addEventListener('click', () => {
+  const onClick = () => {
     const on = btn.getAttribute('aria-pressed') !== 'true'
     setSound(on)
     paint(on)
     try { localStorage.setItem(SOUND_KEY, on ? 'on' : 'off') } catch { /* */ }
-  })
-  return () => detach()
+  }
+  btn.addEventListener('click', onClick)
+  // 销毁时连按钮自己的监听一起拆，残留节点被点也不会改偏好
+  return () => {
+    detach()
+    btn.removeEventListener('click', onClick)
+  }
 }

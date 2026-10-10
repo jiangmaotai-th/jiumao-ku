@@ -9,20 +9,21 @@ import type { Category, RoundInput, Unit } from './rules'
 export const SCORED_CATEGORIES = ['arena', 'code', 'math', 'knowledge', 'index'] as const
 export type ScoredCategory = (typeof SCORED_CATEGORIES)[number]
 const UNITS: readonly Unit[] = ['elo', 'percent', 'index']
-/** 6.1 用 `coding`，规则里是 `code`：两种写法都收 */
-const CATEGORY_ALIAS: Record<string, ScoredCategory> = { arena: 'arena', code: 'code', coding: 'code', math: 'math', knowledge: 'knowledge', index: 'index' }
+export type BoardCategory = ScoredCategory | 'pelican'
+/** 规范值沿用 rules.ts；文档 6.1 的 `coding` / `showcase` 只作别名收（规范名待天宏定） */
+const CATEGORY_ALIAS: Record<string, BoardCategory> = { arena: 'arena', code: 'code', coding: 'code', math: 'math', knowledge: 'knowledge', index: 'index', pelican: 'pelican', showcase: 'pelican' }
 
-export interface BoardMeta { unit: Unit; higherIsBetter: boolean; category: ScoredCategory }
+export interface BoardMeta { unit: Unit; higherIsBetter: boolean; category: BoardCategory }
 export type BoardCheck = { ok: true; meta: BoardMeta } | { ok: false; reason: string }
 
 export function checkBoardMeta(b: { unit?: unknown; higherIsBetter?: unknown; category?: unknown }): BoardCheck {
   const missing: string[] = []
   if (typeof b.unit !== 'string' || !UNITS.includes(b.unit as Unit)) missing.push(`unit=${JSON.stringify(b.unit)}`)
   if (typeof b.higherIsBetter !== 'boolean') missing.push(`higherIsBetter=${JSON.stringify(b.higherIsBetter)}`)
-  const cat = typeof b.category === 'string' ? CATEGORY_ALIAS[b.category] : undefined
+  const cat = typeof b.category === 'string' && Object.hasOwn(CATEGORY_ALIAS, b.category) ? CATEGORY_ALIAS[b.category] : undefined
   if (!cat) missing.push(`category=${JSON.stringify(b.category)}`)
   if (missing.length) return { ok: false, reason: `缺字段或类型不对：${missing.join(', ')}` }
-  return { ok: true, meta: { unit: b.unit as Unit, higherIsBetter: b.higherIsBetter as boolean, category: cat as ScoredCategory } }
+  return { ok: true, meta: { unit: b.unit as Unit, higherIsBetter: b.higherIsBetter as boolean, category: cat as BoardCategory } }
 }
 
 export interface BoardScore { score: number; ciUp?: number; ciDown?: number }
@@ -48,7 +49,7 @@ const num = (x: unknown): x is number => typeof x === 'number' && Number.isFinit
 export function buildMatchInputs(boards: readonly BoardLike[], idA: string, idB: string): MatchInputs {
   const inputs: RoundInput[] = []
   const skipped: SkippedBoard[] = []
-  const played = new Set<ScoredCategory>()
+  const played = new Set<BoardCategory>()
   for (const b of boards) {
     const a = b.models[idA]
     const c = b.models[idB]

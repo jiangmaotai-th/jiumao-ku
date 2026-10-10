@@ -4,9 +4,11 @@ import { resolveBattle } from '../../src/arena/rules.ts'
 
 // 元数据校验
 assert.equal(checkBoardMeta({ unit: 'elo', higherIsBetter: true, category: 'arena' }).ok, true)
-assert.equal(checkBoardMeta({ unit: 'percent', higherIsBetter: false, category: 'coding' }).ok, true) // 6.1 别名
+for (const [raw, want] of [['coding', 'code'], ['showcase', 'pelican'], ['pelican', 'pelican']]) {
+  const r = checkBoardMeta({ unit: 'percent', higherIsBetter: false, category: raw }); assert.ok(r.ok && r.meta.category === want)
+}
 for (const bad of [{}, { unit: 'elo', higherIsBetter: 'true', category: 'arena' }, { unit: 'Elo', higherIsBetter: true, category: 'arena' },
-  { unit: 'elo', higherIsBetter: true, category: 'pelican' }, { unit: 1, higherIsBetter: true, category: 'math' }]) {
+  { unit: 'elo', higherIsBetter: true, category: 'Coding' }, { unit: 'elo', higherIsBetter: true, category: 'toString' }, { unit: 1, higherIsBetter: true, category: 'math' }]) {
   const r = checkBoardMeta(bad); assert.equal(r.ok, false); if (!r.ok) assert.ok(r.reason.length > 0)
 }
 

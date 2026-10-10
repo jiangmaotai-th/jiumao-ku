@@ -16,7 +16,7 @@ type IndexJson = {
   date: string
   updatedAt: string
   source: string
-  boards: { k: string; url: string; upd: string | null; tv: number | null; at: string; span: number; n: number; unit?: string; hib?: boolean; cat?: string }[]
+  boards: { k: string; url: string; upd: string | null; tv: number | null; at: string; span: number; n: number; unit?: string; higherIsBetter?: boolean; category?: string }[]
   vendors: [string, string, string, string, number][]
   models: [string, string, number, number, number, number][]
   featured: { left: string; right: string; reason?: string }
@@ -37,7 +37,7 @@ function putRows(d: ArenaData, rows: Record<string, Record<string, Row5>>) {
 }
 
 function fromIndex(j: IndexJson): ArenaData {
-  const boards: ArenaBoard[] = j.boards.map((b) => ({ key: b.k, source: j.source, url: b.url, leaderboardUpdated: b.upd, totalVotes: b.tv, fetchedAt: b.at, poolSpan: b.span, unit: b.unit, higherIsBetter: b.hib, category: b.cat, models: {} }))
+  const boards: ArenaBoard[] = j.boards.map((b) => ({ key: b.k, source: j.source, url: b.url, leaderboardUpdated: b.upd, totalVotes: b.tv, fetchedAt: b.at, poolSpan: b.span, unit: b.unit, higherIsBetter: b.higherIsBetter, category: b.category, models: {} }))
   const vendors: Record<string, ArenaVendor> = {}
   for (const [id, name, avatar, color, count] of j.vendors) vendors[id] = { id, name, avatar: avatar as Avatar, color, count }
   const models: Record<string, ArenaModel> = {}

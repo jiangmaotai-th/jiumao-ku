@@ -177,14 +177,15 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
   try { savedOff = localStorage.getItem(SOUND_KEY) === 'off' } catch { /* */ }
   if (!embed && !savedOff) {
     paintSound(true)
+    // iOS Safari 只认 touchend / click 里的用户激活，pointerdown 不够，所以几种都监听，先到先用。
+    const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'click', 'keydown'] as const
     const unlock = (e: Event) => {
-      document.removeEventListener('pointerdown', unlock, true)
-      document.removeEventListener('keydown', unlock, true)
+      // pointerdown 在 iOS 上可能还不算激活，先试着开声，但不拆监听，等 touchend / click / keydown 再收尾。
+      if (e.type !== 'pointerdown') UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true))
       if (soundBtn.contains(e.target as Node)) return // 用户第一下点的就是声音按钮，交给按钮处理
       if (soundBtn.getAttribute('aria-pressed') === 'true') setSound(true)
     }
-    document.addEventListener('pointerdown', unlock, true)
-    document.addEventListener('keydown', unlock, true)
+    UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, true))
   }
   soundBtn.addEventListener('click', () => {
     const on = soundBtn.getAttribute('aria-pressed') !== 'true'

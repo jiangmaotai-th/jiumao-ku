@@ -9,7 +9,8 @@
  * - 赢家回合胜场少于输家时才显示「赢的回合少、但优势更大」；平局永不显示。K.O. 后的回合胜场算进去。
  * - 单回合时长 = min(9, max(6.5, 46 / 计分回合)) 向上取到 0.01s。
  *   总时长 = 6 + 8 + 计分回合 × 单回合时长 + 鹈鹕 × 6.5。计分回合 ≥ 6 时总时长 ≥ 60s；恰好 6 回合落在 60–60.5s。
- * - 首页预览取理论伤害最高的计分回合（按分差算出的伤害，不是实际扣血），并列取最早；全格挡取第一个计分回合。
+ * - applied 是这一下实际扣掉的血，补刀不超过对方剩余 HP；damage 仍是理论伤害。
+ * - 首页预览取理论伤害最高的计分回合（按 damage，不是 applied），并列取最早；全格挡取第一个计分回合。
  *
  * 固定类别顺序、以及「没有共同数据的类别不要造回合」，没有单独的排序函数：
  * resolveBattle 按传入顺序结算。缺数据在这里表示为不传入该回合。
@@ -396,6 +397,19 @@ function repeat(n, value) {
   return Array.from({ length: n }, () => value)
 }
 
+/** 一方实际扣血合计 = 100 − 该方最终 HP。A 命中扣 B，B 命中扣 A。 */
+function assertAppliedAccountsForHp(battle) {
+  let removedFromA = 0
+  let removedFromB = 0
+  for (const round of battle.rounds) {
+    if (round.winner === 'a') removedFromB += round.applied
+    else if (round.winner === 'b') removedFromA += round.applied
+    else assert.equal(round.applied, 0)
+  }
+  assert.equal(removedFromA, 100 - battle.hpA, 'A 的 applied 合计')
+  assert.equal(removedFromB, 100 - battle.hpB, 'B 的 applied 合计')
+}
+
 describe('整场：K.O.、平局、说明句、无护盾', () => {
   test('五次 20 点伤害刚好打到 0：这一下是 K.O.，HP 不为负', () => {
     const battle = resolveBattle([...repeat(5, A20), A20])
@@ -414,12 +428,14 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
     assert.equal(battle.roundWinsA, 6)
     assert.equal(battle.roundWinsB, 0)
     assert.equal(battle.showUnderdogNote, false)
+    assertAppliedAccountsForHp(battle)
   })
 
-  test('超杀：剩余 12 点承受 22 点，HP 归零且不为负，之后不再扣血', () => {
+  test('超杀：剩余 12 点承受 22 点，applied 记 12，damage 仍是 22', () => {
     const battle = resolveBattle([...repeat(5, A22), B22])
     assert.deepEqual(battle.rounds.slice(0, 5).map((r) => r.hpB), [78, 56, 34, 12, 0])
-    assert.equal(battle.rounds[4].applied, 22)
+    assert.deepEqual(battle.rounds.slice(0, 5).map((r) => r.applied), [22, 22, 22, 22, 12])
+    assert.equal(battle.rounds[4].applied, 12)
     assert.equal(battle.rounds[4].damage, 22)
     assert.ok(battle.rounds.every((r) => r.hpA >= 0 && r.hpB >= 0))
     assert.equal(battle.rounds[5].afterKo, true)
@@ -433,6 +449,7 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
     assert.equal(battle.roundWinsA, 5)
     assert.equal(battle.roundWinsB, 1)
     assert.equal(battle.showUnderdogNote, false)
+    assertAppliedAccountsForHp(battle)
   })
 
   test('无残血保护、无护盾：回合还没打完时 HP 可以降到 10 以下，命中不吸收伤害', () => {
@@ -447,6 +464,7 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
     assert.equal(battle.hpA, 100)
     assert.equal(battle.hpB, 4)
     assert.equal(battle.showUnderdogNote, false)
+    assertAppliedAccountsForHp(battle)
   })
 
   test('同时看起来都能倒下：先被打到 0 的一方输，后手那一击不改写 K.O.', () => {
@@ -482,6 +500,7 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
     assert.equal(battle.roundWinsA, 5)
     assert.equal(battle.roundWinsB, 7)
     assert.equal(battle.showUnderdogNote, true)
+    assertAppliedAccountsForHp(battle)
   })
 
   const outcomes = [
@@ -554,6 +573,7 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
       assert.equal(battle.roundWinsB, row.winsB, 'winsB')
       assert.equal(battle.showUnderdogNote, row.note, 'note')
       assert.equal(battle.rounds.length, row.inputs.length)
+      assertAppliedAccountsForHp(battle)
     })
   }
 
@@ -562,6 +582,9 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
     assert.ok(battle.rounds.slice(5).every((r) => r.afterKo && r.applied === 0 && r.damage === 14 && r.winner === 'b'))
     assert.equal(battle.hpA, 100)
     assert.equal(battle.hpB, 0)
+    assert.equal(battle.rounds[4].applied, 12)
+    assert.equal(battle.rounds[4].damage, 22)
+    assertAppliedAccountsForHp(battle)
   })
 
   test('空输入按相同 HP 平局，不显示说明句', () => {
@@ -572,6 +595,7 @@ describe('整场：K.O.、平局、说明句、无护盾', () => {
     assert.equal(battle.showUnderdogNote, false)
     assert.equal(battle.roundWinsA, 0)
     assert.equal(battle.roundWinsB, 0)
+    assertAppliedAccountsForHp(battle)
   })
 })
 
@@ -623,6 +647,7 @@ describe('设计稿示例对局按定稿重算', () => {
     assert.equal(battle.roundWinsB, 3)
     assert.equal(battle.showUnderdogNote, false)
     assert.equal(pickPreviewRound(battle.rounds), 5)
+    assertAppliedAccountsForHp(battle)
     assert.equal(cents(battleDuration(9)), specBattleCents(9))
     assert.equal(cents(battleDuration(9)), 7250)
   })
@@ -691,6 +716,15 @@ describe('时长', () => {
 })
 
 describe('首页预览', () => {
+  test('补刀回合 damage 仍是 22，预览按 damage 而不是 applied=12', () => {
+    const battle = resolveBattle([...repeat(4, A20), A8, A22])
+    assert.deepEqual(battle.rounds.map((r) => r.hpB), [80, 60, 40, 20, 12, 0])
+    assert.equal(battle.rounds[5].applied, 12)
+    assert.equal(battle.rounds[5].damage, 22)
+    assert.equal(pickPreviewRound(battle.rounds), 5)
+    assertAppliedAccountsForHp(battle)
+  })
+
   test('K.O. 之后理论伤害更高的回合入选，即使实际扣血是 0', () => {
     const battle = resolveBattle([...repeat(5, A20), A22])
     assert.equal(battle.rounds[5].afterKo, true)

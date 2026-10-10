@@ -162,11 +162,14 @@ function ProductIcon({
   size?: number
 }) {
   const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    setFailed(false)
+  }, [icon])
   const letter = (name || '?').slice(0, 1)
   const box = { width: size, height: size, fontSize: size >= 64 ? '1.5rem' : size >= 48 ? '1.2rem' : '1rem' }
   if (!icon || failed) {
     return (
-      <span className="deal-fallback" style={box}>
+      <span className="deal-fallback" style={box} aria-hidden="true">
         {letter}
       </span>
     )
@@ -179,6 +182,8 @@ function ProductIcon({
       width={size}
       height={size}
       style={box}
+      loading="lazy"
+      decoding="async"
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
     />
@@ -239,11 +244,11 @@ function buildWebParityRows(
 }
 
 function Header({ route }: { route: Route }) {
-  const { t } = useT()
+  const { t, lh } = useT()
   return (
     <header className="site-header">
       <div className="brand-block">
-        <a className="brand-mark" href="/">
+        <a className="brand-mark" href={lh('/')}>
           {t('common.brand')}
         </a>
         <p className="brand-sub">{t('catalog.store-price.name')}</p>
@@ -264,7 +269,7 @@ function Header({ route }: { route: Route }) {
           >
             {t('store.navAll')}
           </button>
-          <a className="nav-link" href="/">
+          <a className="nav-link" href={lh('/')}>
             {t('common.backHome')}
           </a>
         </nav>
@@ -859,10 +864,27 @@ function ProductDetail({ productId }: { productId: string }) {
         </button>
       </header>
       <div className="detail-updated" aria-live="polite">
-        <span className="detail-updated-label">{t('store.updatedAtLabel')}</span>
+        <span className="detail-updated-label">
+          {isUnified
+            ? t('store.webCheckedAtLabel')
+            : channel === 'appstore'
+              ? t('store.appstoreFetchedAtLabel')
+              : t('store.updatedAtLabel')}
+        </span>
         <strong className="detail-updated-value">
           {formatUpdatedAt(updatedAt, locale, t('store.none'))}
         </strong>
+        {isUnified && displayBase?.sourceUrl ? (
+          <a
+            className="muted"
+            style={{ marginLeft: '0.65rem', fontSize: '0.85rem' }}
+            href={displayBase.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('store.priceSource')} ↗
+          </a>
+        ) : null}
       </div>
       {localizeApiText(product.planStructure, locale) ? (
         <p className="sheet-structure">
@@ -1089,9 +1111,11 @@ function ProductDetail({ productId }: { productId: string }) {
               ) : null}
             </h2>
             <p className="muted" style={{ margin: '-0.35rem 0 0.85rem' }}>
-              {billingPeriod && billingPeriod !== 'month'
-                ? t('store.billingMonthHint', { period: periodLabel || t('store.bill') })
-                : t('store.appstoreRankHint', { currency })}
+              {billingPeriod === 'unlabeled'
+                ? t('store.unlabeledHint')
+                : billingPeriod && billingPeriod !== 'month'
+                  ? t('store.billingMonthHint', { period: periodLabel || t('store.bill') })
+                  : t('store.appstoreRankHint', { currency })}
             </p>
             {listLoading && rows.length === 0 ? (
               <p className="muted">{t('common.loading')}</p>
@@ -1105,7 +1129,7 @@ function ProductDetail({ productId }: { productId: string }) {
                     <th>{t('store.region')}</th>
                     <th>{t('store.listPrice')}</th>
                     <th>
-                      {billingPeriod && billingPeriod !== 'month'
+                      {billingPeriod && billingPeriod !== 'month' && billingPeriod !== 'unlabeled'
                         ? t('store.equivMonth', { currency })
                         : t('store.equiv', { currency })}
                     </th>
@@ -1129,12 +1153,20 @@ function ProductDetail({ productId }: { productId: string }) {
                             · {billingPeriodLabel(r.billingPeriod, t, r.billingLabel)}
                           </span>
                         ) : null}
+                        {r.alt?.length ? (
+                          <span className="muted" style={{ display: 'block', fontSize: '0.78rem' }}>
+                            {t('store.sameNameAlt', {
+                              prices: r.alt.map((a) => a.priceFormatted).join(' / '),
+                            })}
+                          </span>
+                        ) : null}
                       </td>
                       <td className={`cny${r.rank === 1 ? ' is-low' : ''}`}>
                         {money(r.cny)}
                         {r.billCny != null &&
                         r.billingPeriod &&
-                        r.billingPeriod !== 'month' ? (
+                        r.billingPeriod !== 'month' &&
+                        r.billingPeriod !== 'unlabeled' ? (
                           <span className="muted" style={{ display: 'block', fontSize: '0.78rem' }}>
                             {t('store.bill')} {money(r.billCny)}
                           </span>

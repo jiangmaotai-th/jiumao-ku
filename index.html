@@ -6,19 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="九猫库 — 个人开发者的软件和游戏小站。"
+      content="九猫库 — 本喵窝子里全是乱七八糟的东西。"
     />
-    <meta name="theme-color" content="#0E1210" />
+    <meta name="theme-color" content="#FFFFFF" />
     <title>九猫库 · maotaiworks.com</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&family=ZCOOL+XiaoWei&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div class="atmosphere" aria-hidden="true"></div>
+
+    <div class="site-notice" role="region" data-i18n-aria="home.noticeAria" aria-label="猫汰说">
+      <span class="site-notice__label" data-i18n="home.noticeLabel">猫汰说：</span>
+      <div class="site-notice__viewport">
+        <div class="site-notice__track" data-notice-track></div>
+      </div>
+    </div>
+
+    <aside class="app-rail" id="app-rail" data-i18n-aria="home.railAria" aria-label="应用导航">
+      <nav class="app-rail__nav" id="app-rail-nav"></nav>
+    </aside>
 
     <header class="site-header">
       <div class="brand-block">
@@ -40,9 +51,15 @@
       <section class="hero" aria-labelledby="hero-title">
         <h1 id="hero-title" class="hero-title reveal" data-i18n="common.brand">九猫库</h1>
         <p class="hero-lead reveal" data-i18n="home.heroLead">
-          个人开发者的软件和游戏小站
+          本喵窝子里全是乱七八糟的东西
         </p>
       </section>
+
+      <!-- AI 日报：「中国大陆能用的 AI」（其他语言为「今天就能用」）+「AI 大事」并排，数据来自 /ai-daily/latest.json，由 src/ai-daily/render.ts 渲染 -->
+      <div id="ai-boards" class="ai-boards ai-boards--home"></div>
+
+      <!-- AI 最新 Skill：数据来自 /ai-skills/latest.json，由 src/ai-skills/render.ts 渲染 -->
+      <div id="ai-skills-board" class="ai-boards ai-boards--home ai-skills-host"></div>
 
       <section id="catalog" class="catalog" data-i18n-aria="home.catalogAria" aria-label="作品列表">
         <div id="catalog-list" class="item-list" role="list"></div>
@@ -52,7 +69,6 @@
     <footer class="site-footer">
       <div class="footer-left">
         <p class="footer-brand" data-i18n="common.brand">九猫库</p>
-        <p class="visitor-count" id="visitor-count" hidden>累计访客 —</p>
       </div>
       <p class="footer-meta">
         <a href="/legal/#terms" data-i18n="common.terms">使用条款</a>
@@ -60,6 +76,8 @@
         <a href="/legal/#privacy" data-i18n="common.privacy">隐私说明</a>
         <span aria-hidden="true">·</span>
         <a href="/legal/#credits" data-i18n="common.credits">开源致谢</a>
+        <span aria-hidden="true">·</span>
+        <a href="/legal/#contact" data-i18n="common.contact">联系我们</a>
         <span aria-hidden="true">·</span>
         <span>© <span id="year"></span> <span data-i18n="common.copyright">九猫库</span></span>
       </p>

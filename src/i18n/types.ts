@@ -34,8 +34,11 @@ export type Messages = {
     terms: string
     privacy: string
     credits: string
+    contact: string
     openOnline: string
     unavailable: string
+    downloadDesktop: string
+    comingSoon: string
     localMark: string
     loading: string
     search: string
@@ -52,12 +55,15 @@ export type Messages = {
     filterGame: string
     filterOther: string
     catalogAria: string
+    railAria: string
     emptyAll: string
     emptySoftware: string
     emptyGame: string
     emptyOther: string
-    visitor: string
-    visitorToday: string
+    noticeAria: string
+    noticeLabel: string
+    noticeQuote: string
+    notices: string[]
   }
   catalog: Record<string, CatalogCopy>
   legal: {
@@ -67,6 +73,7 @@ export type Messages = {
     navTerms: string
     navPrivacy: string
     navCredits: string
+    navContact: string
     title: string
     lead: string
     updated: string
@@ -87,6 +94,72 @@ export type Messages = {
     privacyTip: string
     creditsTitle: string
     creditsIntro: string
+    contactTitle: string
+    contactEmailLabel: string
+    contactTelegramLabel: string
+  }
+  markdown: {
+    metaTitle: string
+    metaDescription: string
+    heroTitle: string
+    beta: string
+    heroLead: string
+    dropTitle: string
+    formatBlurb: string
+    dropHint: string
+    queueTitle: string
+    removeAria: string
+    clear: string
+    start: string
+    processing: string
+    copy: string
+    smartChunk: string
+    exportMd: string
+    exportBatch: string
+    editorPlaceholder: string
+    privacyNote: string
+    initialBanner: string
+    maxFiles: string
+    unsupportedFormat: string
+    mediaDesktopOnly: string
+    tooLarge: string
+    addedFiles: string
+    converting: string
+    ocrConverting: string
+    convertDone: string
+    copied: string
+    exported: string
+    chunksDone: string
+    chunkFailed: string
+    batchExported: string
+    cleared: string
+    rejectJoin: string
+    // Engine / conversion warnings shown in UI
+    warnNotWord: string
+    warnDocFailed: string
+    warnDocPartial: string
+    warnPdfFailed: string
+    warnPdfNoText: string
+    warnMediaDesktop: string
+    warnOcrEmpty: string
+    warnOcrPartial: string
+    warnOcrFailed: string
+    warnNeedsDesktop: string
+    warnUnsupported: string
+    warnIworkNotPackage: string
+    warnIworkFromPdf: string
+    warnIworkFromData: string
+    warnIworkLegacy: string
+    warnIworkFailed: string
+    warnOdtFailed: string
+    warnOdtInvalid: string
+    warnIpynbInvalid: string
+    warnZipSkip: string
+    slideLabel: string
+    sheetLabel: string
+    bodyHeading: string
+    chunkTooShort: string
+    heicDecodeFailed: string
   }
   store: {
     metaTitle: string
@@ -177,6 +250,13 @@ export type Messages = {
     billWeek: string
     billQuarter: string
     billOther: string
+    billHalfYear?: string
+    billUnlabeled?: string
+    unlabeledHint?: string
+    sameNameAlt?: string
+    webCheckedAtLabel?: string
+    appstoreFetchedAtLabel?: string
+    priceSource?: string
     advicePreferAppStore: string
     adviceSimilar: string
     adviceAppStoreOnly: string
@@ -215,6 +295,17 @@ export type Messages = {
     emptyFileError: string
     unsupportedFormatError: string
     addedFilesMessage: string
+    addedFilesLargeMessage: string
+    batchProgress: string
+    chunkDownloaded: string
+    largeBatchNoPreview: string
+    largeBatchPickFolder: string
+    packSealed: string
+    packsReadyToDownload: string
+    downloadingPack: string
+    packsDownloaded: string
+    downloadSaveCancelled: string
+    savedToFolder: string
     outputValidationFailed: string
     cancelRequested: string
     conversionComplete: string
@@ -249,6 +340,19 @@ export type Messages = {
     warnEstimateOverTarget: string
     errorNoOutput: string
     errorGeneric: string
+    mode: string
+    modeNormal: string
+    modeIdPhoto: string
+    idPhotoSize: string
+    idPhotoInch1: string
+    idPhotoInch2: string
+    idPhotoInch1Short: string
+    idPhotoInch2Short: string
+    idPhotoCustomSize: string
+    idPhotoWidth: string
+    idPhotoHeight: string
+    targetSizeKb: string
+    idPhotoHint: string
   }
   ebook: {
     metaTitle: string
@@ -289,6 +393,89 @@ export type Messages = {
     bannerCompleted: string
     bannerFailed: string
   }
+  platformCrop: {
+    metaTitle: string
+    metaDescription: string
+    heroTitle: string
+    heroLead: string
+    dropTitle: string
+    dropHint: string
+    noFile: string
+    reselect: string
+    settingsTitle: string
+    aspectRatio: string
+    standardGroup: string
+    exportSummary: string
+    showAdvanced: string
+    hideAdvanced: string
+    container: string
+    bitrate: string
+    maxEdge: string
+    width: string
+    height: string
+    start: string
+    processing: string
+    download: string
+    privacyNote: string
+    errorGeneric: string
+    preset: {
+      free: string
+      youtube: string
+      youtubeShorts: string
+      tiktok: string
+      douyin: string
+      kuaishou: string
+      xiaohongshu: string
+      wechatChannels: string
+      weibo: string
+      taobao: string
+      taobaoPortrait: string
+      instagramPost: string
+      instagramStory: string
+      instagramReel: string
+      linkedin: string
+      x: string
+      std169: string
+      std916: string
+      std11: string
+      std45: string
+      std34: string
+    }
+  }
+  videoMute: {
+    metaTitle: string
+    metaDescription: string
+    heroTitle: string
+    heroLead: string
+    dropTitle: string
+    dropHint: string
+    noFile: string
+    reselect: string
+    settingsTitle: string
+    settingsLead: string
+    start: string
+    loadingEngine: string
+    writingFile: string
+    muting: string
+    encoding: string
+    processing: string
+    done: string
+    download: string
+    privacyNote: string
+    errorGeneric: string
+  }
+  tank: {
+    metaTitle: string
+    metaDescription: string
+  }
+  goose: {
+    metaTitle: string
+    metaDescription: string
+  }
+  scratch: {
+    metaTitle: string
+    metaDescription: string
+  }
   moyee: {
     metaTitle: string
     metaDescription: string
@@ -301,8 +488,20 @@ export type Messages = {
     modeExtract: string
     modeManual: string
     modeGif: string
+    navVideo: string
+    navAudio: string
+    navOther: string
+    leadConvert: string
+    leadCompress: string
+    leadMusic: string
+    leadMerge: string
+    leadExtract: string
     dropHint: string
+    dropToPreview: string
+    reselectFile: string
+    queueLabel: string
     start: string
+    processing: string
     engineLoading: string
     engineReady: string
     privacyNote: string
@@ -323,6 +522,15 @@ export type Messages = {
     webGuideLead: string
     settingsTitle: string
     settingsNoSelection: string
+    convertSettings: string
+    advancedSettings: string
+    videoCodec: string
+    audioCodec: string
+    bitrate: string
+    videoBitrate: string
+    audioBitrateLosslessHint: string
+    codecHintH265: string
+    sourceTag: string
     footerBrand: string
     preview: string
     mergeHint: string
@@ -331,8 +539,31 @@ export type Messages = {
     compressStandard: string
     compressHighQuality: string
     compressMaxCompress: string
+    compressPresetUnavailable: string
+    compressPresetLowHint: string
+    compressPresetMaxHint: string
     qualityLabel: string
     crfHint: string
+    compressTabQuality: string
+    compressTabTarget: string
+    compressTargetSize: string
+    compressTargetPlaceholder: string
+    compressOriginalSize: string
+    compressTargetMustSmaller: string
+    compressTargetTooSmall: string
+    compressTargetTooSmallQuality: string
+    compressTargetEmpty: string
+    compressEstimate: string
+    compressResolution: string
+    compressResOriginal: string
+    compressRes2160: string
+    compressRes1080: string
+    compressRes720: string
+    compressRes480: string
+    compressRes360: string
+    compressRes240: string
+    compressCodec: string
+    compressSourceBitrate: string
     extractTitle: string
     extractAudio: string
     extractGif: string
@@ -340,10 +571,33 @@ export type Messages = {
     platformPresets: string
     platformSpec: string
     platformCustom: string
+    platformOneClick: string
+    platformOneClickPlaceholder: string
+    platformPreviewBadge: string
+    platformShellPhoneHint: string
+    platformShellFeedHint: string
+    platformShellShopTag: string
+    platformShellShopCta: string
+    platformShellFollow: string
+    platformShellShare: string
+    platformShellCaption: string
+    platformShellMusic: string
+    platformShellForYou: string
+    platformShellChannels: string
+    platformShellXhsSearch: string
+    platformShellXhsTitle: string
+    platformShellXhsComment: string
+    platformShellYtViews: string
+    platformShellYtLike: string
+    platformShellYtShare: string
+    platformShellYtSave: string
     platformSocial: string
     platformSeller: string
     formatTitle: string
     container: string
+    outputFormat: string
+    formatGroupCommon: string
+    formatGroupOther: string
     audioBitrate: string
     sampleRate: string
     original: string

@@ -1,3 +1,4 @@
+import { t } from '../../i18n'
 import { createWorker, type Worker } from 'tesseract.js'
 import { extensionOf } from '../formats'
 
@@ -20,7 +21,7 @@ async function heicToPngBlob(file: File): Promise<Blob> {
   const heic2any = (await import('heic2any')).default
   const converted = await heic2any({ blob: file, toType: 'image/png' })
   const blob = Array.isArray(converted) ? converted[0] : converted
-  if (!blob) throw new Error('HEIC 解码失败')
+  if (!blob) throw new Error(t('markdown.heicDecodeFailed'))
   return blob
 }
 

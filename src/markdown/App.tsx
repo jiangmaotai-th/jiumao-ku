@@ -1,11 +1,12 @@
-import { useMemo, useRef, useState, type DragEvent } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import JSZip from 'jszip'
 import { trackUse } from '../analytics'
+import { LangSwitchHost } from '../i18n/LangSwitchHost'
+import { useT } from '../i18n/react'
 import { chunkMarkdown, exportChunksAsFiles } from './engine/chunk'
 import { convertFile } from './engine/convert'
 import {
   acceptAttribute,
-  FORMAT_SUPPORT_BLURB,
   formatBytes,
   isMedia,
   isSupported,
@@ -39,21 +40,29 @@ function downloadText(name: string, content: string) {
 }
 
 export function App() {
+  const { t, lh } = useT()
   const [tasks, setTasks] = useState<Task[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [banner, setBanner] = useState(
-    '拖入最多 20 个文件（单文件 ≤ 200 MB）。转换在浏览器本地完成，原文件不上传。',
-  )
+  const [banner, setBanner] = useState(() => t('markdown.initialBanner'))
   const [draft, setDraft] = useState('')
+  const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const dropRef = useRef<HTMLDivElement>(null)
+  const tasksRef = useRef(tasks)
+  tasksRef.current = tasks
+
+  useEffect(() => {
+    if (!tasks.length && !busy) setBanner(t('markdown.initialBanner'))
+  }, [t, tasks.length, busy])
 
   const selected = useMemo(
-    () => tasks.find((t) => t.id === selectedId) ?? tasks.find((t) => t.markdown),
+    () => tasks.find((task) => task.id === selectedId) ?? tasks.find((task) => task.markdown),
     [tasks, selectedId],
   )
 
-  const visibleMarkdown = selected?.id === selectedId || selected ? draft || selected?.markdown || '' : draft
+  const visibleMarkdown =
+    selected?.id === selectedId || selected ? draft || selected?.markdown || '' : draft
 
   function syncDraftFrom(task: Task | undefined) {
     setDraft(task?.markdown ?? '')
@@ -61,36 +70,80 @@ export function App() {
 
   function addFiles(fileList: FileList | File[]) {
     const incoming = [...fileList]
-    const next: Task[] = [...tasks]
+    const next: Task[] = [...tasksRef.current]
     const rejected: string[] = []
     for (const file of incoming) {
       if (next.length >= MAX_FILES) {
-        rejected.push('最多 20 个文件')
+        rejected.push(t('markdown.maxFiles'))
         break
       }
       if (!isSupported(file.name)) {
-        rejected.push(`${file.name}：暂不支持此格式`)
+        rejected.push(t('markdown.unsupportedFormat', { name: file.name }))
         continue
       }
       if (isMedia(file.name)) {
-        rejected.push(`${file.name}：音视频转写仅桌面版支持`)
+        rejected.push(t('markdown.mediaDesktopOnly', { name: file.name }))
         continue
       }
       if (file.size > MAX_FILE_BYTES) {
-        rejected.push(`${file.name}：超过 200 MB`)
+        rejected.push(t('markdown.tooLarge', { name: file.name }))
         continue
       }
-      if (next.some((t) => t.file.name === file.name && t.file.size === file.size)) continue
+      if (next.some((task) => task.file.name === file.name && task.file.size === file.size)) continue
       next.push({ id: uid(), file, status: 'waiting' })
     }
     setTasks(next)
-    setBanner(rejected.length ? rejected.join('；') : `已加入 ${next.length} 个文件`)
+    setBanner(
+      rejected.length
+        ? rejected.join(t('markdown.rejectJoin'))
+        : t('markdown.addedFiles', { count: next.length }),
+    )
   }
 
-  function onDrop(e: DragEvent) {
-    e.preventDefault()
-    if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files)
-  }
+  const addFilesRef = useRef(addFiles)
+  addFilesRef.current = addFiles
+
+  // Whole page: accept drops anywhere (prevent browser download/open) and feed the queue.
+  useEffect(() => {
+    const hasFiles = (e: globalThis.DragEvent) =>
+      !!e.dataTransfer && Array.from(e.dataTransfer.types).includes('Files')
+
+    const onDragOver = (e: globalThis.DragEvent) => {
+      if (!hasFiles(e)) return
+      e.preventDefault()
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'
+    }
+    const onDragEnter = (e: globalThis.DragEvent) => {
+      if (!hasFiles(e)) return
+      e.preventDefault()
+      setDragOver(true)
+    }
+    const onDragLeave = (e: globalThis.DragEvent) => {
+      if (!hasFiles(e)) return
+      // Leaving the window / document
+      if (e.target === document.documentElement || e.relatedTarget === null) {
+        setDragOver(false)
+      }
+    }
+    const onDrop = (e: globalThis.DragEvent) => {
+      if (!hasFiles(e)) return
+      e.preventDefault()
+      e.stopPropagation()
+      setDragOver(false)
+      if (e.dataTransfer?.files?.length) addFilesRef.current(e.dataTransfer.files)
+    }
+
+    document.addEventListener('dragenter', onDragEnter, true)
+    document.addEventListener('dragover', onDragOver, true)
+    document.addEventListener('dragleave', onDragLeave, true)
+    document.addEventListener('drop', onDrop, true)
+    return () => {
+      document.removeEventListener('dragenter', onDragEnter, true)
+      document.removeEventListener('dragover', onDragOver, true)
+      document.removeEventListener('dragleave', onDragLeave, true)
+      document.removeEventListener('drop', onDrop, true)
+    }
+  }, [])
 
   async function convertAll() {
     if (busy || !tasks.length) return
@@ -99,32 +152,38 @@ export function App() {
     try {
       for (const task of tasks) {
         setTasks((cur) =>
-          cur.map((t) => (t.id === task.id ? { ...t, status: 'converting', error: undefined } : t)),
+          cur.map((item) =>
+            item.id === task.id ? { ...item, status: 'converting', error: undefined } : item,
+          ),
         )
         const isImg = /\.(png|jpe?g|bmp|gif|tiff?|webp|heic|heif)$/i.test(task.file.name)
-        setBanner(isImg ? `正在识别图片文字：${task.file.name}（首次需加载 OCR 模型）` : `正在转换：${task.file.name}`)
+        setBanner(
+          isImg
+            ? t('markdown.ocrConverting', { name: task.file.name })
+            : t('markdown.converting', { name: task.file.name }),
+        )
         try {
           const result = await convertFile(task.file)
           if (!result.markdown && result.warning) {
             setTasks((cur) =>
-              cur.map((t) =>
-                t.id === task.id
-                  ? { ...t, status: 'failed', error: result.warning, warning: result.warning }
-                  : t,
+              cur.map((item) =>
+                item.id === task.id
+                  ? { ...item, status: 'failed', error: result.warning, warning: result.warning }
+                  : item,
               ),
             )
             continue
           }
           setTasks((cur) =>
-            cur.map((t) =>
-              t.id === task.id
+            cur.map((item) =>
+              item.id === task.id
                 ? {
-                    ...t,
+                    ...item,
                     status: 'completed',
                     markdown: result.markdown,
                     warning: result.warning,
                   }
-                : t,
+                : item,
             ),
           )
           setSelectedId(task.id)
@@ -132,13 +191,13 @@ export function App() {
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)
           setTasks((cur) =>
-            cur.map((t) => (t.id === task.id ? { ...t, status: 'failed', error: message } : t)),
+            cur.map((item) =>
+              item.id === task.id ? { ...item, status: 'failed', error: message } : item,
+            ),
           )
         }
       }
-      const failures = tasks.filter(() => true)
-      setBanner('转换完成（浏览器本地，未上传原文件）')
-      void failures
+      setBanner(t('markdown.convertDone'))
     } finally {
       setBusy(false)
     }
@@ -148,7 +207,7 @@ export function App() {
     const text = draft || selected?.markdown
     if (!text) return
     void navigator.clipboard.writeText(text)
-    setBanner('Markdown 已复制')
+    setBanner(t('markdown.copied'))
   }
 
   function exportMarkdown() {
@@ -156,7 +215,7 @@ export function App() {
     if (!text || !selected) return
     const name = selected.file.name.replace(/\.[^.]+$/, '') + '.md'
     downloadText(name, text)
-    setBanner(`已导出 ${name}`)
+    setBanner(t('markdown.exported', { name }))
   }
 
   async function exportChunks() {
@@ -166,7 +225,7 @@ export function App() {
       const chunks = chunkMarkdown(text, selected.file.name)
       const { files, indexJson } = exportChunksAsFiles(chunks)
       const zip = new JSZip()
-      for (const f of files) zip.file(f.name, f.content)
+      for (const file of files) zip.file(file.name, file.content)
       zip.file('index.json', indexJson)
       const blob = await zip.generateAsync({ type: 'blob' })
       const url = URL.createObjectURL(blob)
@@ -175,22 +234,25 @@ export function App() {
       a.download = selected.file.name.replace(/\.[^.]+$/, '') + '-chunks.zip'
       a.click()
       URL.revokeObjectURL(url)
-      setBanner(`智能切片完成 · ${chunks.length} 片`)
+      setBanner(t('markdown.chunksDone', { count: chunks.length }))
     } catch (err) {
-      setBanner(err instanceof Error ? err.message : '切片失败')
+      setBanner(err instanceof Error ? err.message : t('markdown.chunkFailed'))
     }
   }
 
   async function exportAllMarkdown() {
-    const done = tasks.filter((t) => t.markdown)
+    const done = tasks.filter((task) => task.markdown)
     if (!done.length) return
     if (done.length === 1) {
       downloadText(done[0].file.name.replace(/\.[^.]+$/, '') + '.md', done[0].markdown!)
       return
     }
     const zip = new JSZip()
-    for (const t of done) {
-      zip.file(t.file.name.replace(/\.[^.]+$/, '') + '.md', t.id === selected?.id ? draft : t.markdown!)
+    for (const task of done) {
+      zip.file(
+        task.file.name.replace(/\.[^.]+$/, '') + '.md',
+        task.id === selected?.id ? draft : task.markdown!,
+      )
     }
     const blob = await zip.generateAsync({ type: 'blob' })
     const url = URL.createObjectURL(blob)
@@ -199,34 +261,36 @@ export function App() {
     a.download = 'markdown-batch.zip'
     a.click()
     URL.revokeObjectURL(url)
-    setBanner(`已批量导出 ${done.length} 个 Markdown`)
+    setBanner(t('markdown.batchExported', { count: done.length }))
   }
 
   return (
-    <div className="page">
+    <div className={`page${dragOver ? ' is-page-dragover' : ''}`}>
       <header className="top">
         <div className="brand">
           <div className="mark" aria-hidden>
             M↓
           </div>
           <div>
-                <h1>
-                  一键转 Markdown <span className="beta">测试版</span>
-                </h1>
-                <p>PDF / Word / Pages / Numbers / Keynote / 图片OCR · 智能切片 · 音视频需桌面版</p>
+            <h1>
+              {t('markdown.heroTitle')} <span className="beta">{t('markdown.beta')}</span>
+            </h1>
+            <p>{t('markdown.heroLead')}</p>
           </div>
         </div>
-        <a className="ghost" href="/">
-          返回九猫库
-        </a>
+        <div className="top-actions">
+          <LangSwitchHost />
+          <a className="ghost" href={lh('/')}>
+            {t('common.backHome')}
+          </a>
+        </div>
       </header>
 
       <main className="shell">
         <aside className="side">
           <div
-            className="drop"
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={onDrop}
+            ref={dropRef}
+            className={`drop${dragOver ? ' is-dragover' : ''}`}
             onClick={() => inputRef.current?.click()}
             role="button"
             tabIndex={0}
@@ -234,9 +298,9 @@ export function App() {
               if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click()
             }}
           >
-            <strong>拖入文件开始</strong>
-            <span>{FORMAT_SUPPORT_BLURB}</span>
-            <span className="hint">原文件不上传 · 单文件 ≤ 200 MB · 最多 20 个</span>
+            <strong>{t('markdown.dropTitle')}</strong>
+            <span>{t('markdown.formatBlurb')}</span>
+            <span className="hint">{t('markdown.dropHint')}</span>
           </div>
           <input
             ref={inputRef}
@@ -251,7 +315,7 @@ export function App() {
           />
 
           <div className="list-head">
-            <strong>待处理文件</strong>
+            <strong>{t('markdown.queueTitle')}</strong>
             <span>
               {tasks.length}/{MAX_FILES}
             </span>
@@ -279,9 +343,9 @@ export function App() {
                 <button
                   type="button"
                   className="x"
-                  aria-label="移除"
+                  aria-label={t('markdown.removeAria')}
                   onClick={() => {
-                    setTasks((cur) => cur.filter((t) => t.id !== task.id))
+                    setTasks((cur) => cur.filter((item) => item.id !== task.id))
                     if (selectedId === task.id) {
                       setSelectedId(null)
                       setDraft('')
@@ -295,11 +359,25 @@ export function App() {
           </ul>
 
           <div className="actions">
-            <button type="button" disabled={!tasks.length || busy} onClick={() => { setTasks([]); setDraft(''); setSelectedId(null); setBanner('已清空') }}>
-              清空
+            <button
+              type="button"
+              disabled={!tasks.length || busy}
+              onClick={() => {
+                setTasks([])
+                setDraft('')
+                setSelectedId(null)
+                setBanner(t('markdown.cleared'))
+              }}
+            >
+              {t('markdown.clear')}
             </button>
-            <button type="button" className="primary" disabled={!tasks.length || busy} onClick={() => void convertAll()}>
-              {busy ? '处理中…' : '开始转换'}
+            <button
+              type="button"
+              className="primary"
+              disabled={!tasks.length || busy}
+              onClick={() => void convertAll()}
+            >
+              {busy ? t('markdown.processing') : t('markdown.start')}
             </button>
           </div>
         </aside>
@@ -307,22 +385,26 @@ export function App() {
         <section className="editor">
           <div className="toolbar">
             <button type="button" disabled={!selected?.markdown} onClick={copyMarkdown}>
-              复制
+              {t('markdown.copy')}
             </button>
             <button type="button" disabled={!selected?.markdown} onClick={() => void exportChunks()}>
-              智能切片
+              {t('markdown.smartChunk')}
             </button>
             <button type="button" disabled={!selected?.markdown} onClick={exportMarkdown}>
-              导出 .md
+              {t('markdown.exportMd')}
             </button>
-            <button type="button" disabled={!tasks.some((t) => t.markdown)} onClick={() => void exportAllMarkdown()}>
-              批量导出
+            <button
+              type="button"
+              disabled={!tasks.some((task) => task.markdown)}
+              onClick={() => void exportAllMarkdown()}
+            >
+              {t('markdown.exportBatch')}
             </button>
           </div>
           <textarea
             value={visibleMarkdown}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder="转换结果会显示在这里。"
+            placeholder={t('markdown.editorPlaceholder')}
             spellCheck={false}
           />
         </section>
@@ -330,7 +412,7 @@ export function App() {
 
       <footer className="status">
         <span>{banner}</span>
-        <span className="privacy">本地处理 · DOC/OCR/音视频请用 macOS 版</span>
+        <span className="privacy">{t('markdown.privacyNote')}</span>
       </footer>
     </div>
   )

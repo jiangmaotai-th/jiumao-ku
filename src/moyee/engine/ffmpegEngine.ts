@@ -1,5 +1,5 @@
 import { FFmpeg } from '@ffmpeg/ffmpeg'
-import { fetchFile, toBlobURL } from '@ffmpeg/util'
+import { fetchFile } from '@ffmpeg/util'
 import type { AppMode, OutputProfile } from '../types'
 import { buildFfmpegArgs, buildMergeArgs, outputFileName } from '../domain/commandBuilder'
 
@@ -8,27 +8,139 @@ let loading: Promise<FFmpeg> | null = null
 
 export type ProgressCb = (ratio: number) => void
 
-export async function getFfmpeg(onLog?: (line: string) => void): Promise<FFmpeg> {
+const CORE_JS_MIME = 'text/javascript'
+const CORE_WASM_MIME = 'application/wasm'
+const FETCH_TIMEOUT_MS = 180_000
+const INIT_TIMEOUT_MS = 90_000
+
+async function fetchToBlobURL(
+  url: string,
+  mime: string,
+  onProgress?: (ratio: number) => void,
+): Promise<string> {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS)
+  try {
+    const res = await fetch(url, { signal: ctrl.signal })
+    if (!res.ok) throw new Error(`${res.status} ${url}`)
+    const total = Number(res.headers.get('content-length') || 0)
+    if (!res.body) {
+      const buf = await res.arrayBuffer()
+      onProgress?.(1)
+      return URL.createObjectURL(new Blob([buf], { type: mime }))
+    }
+    const reader = res.body.getReader()
+    const chunks: Uint8Array[] = []
+    let loaded = 0
+    for (;;) {
+      const { done, value } = await reader.read()
+      if (done) break
+      if (!value) continue
+      chunks.push(value)
+      loaded += value.byteLength
+      if (total > 0) onProgress?.(Math.min(0.99, loaded / total))
+    }
+    onProgress?.(1)
+    return URL.createObjectURL(new Blob(chunks as BlobPart[], { type: mime }))
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      throw new Error('处理引擎下载超时')
+    }
+    throw e
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+async function loadCore(
+  instance: FFmpeg,
+  coreURL: string,
+  wasmURL: string,
+): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    await Promise.race([
+      instance.load({ coreURL, wasmURL }),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          try {
+            instance.terminate()
+          } catch {
+            /* ignore */
+          }
+          reject(new Error('处理引擎初始化超时'))
+        }, INIT_TIMEOUT_MS)
+      }),
+    ])
+  } finally {
+    if (timer) clearTimeout(timer)
+  }
+}
+
+export async function getFfmpeg(
+  onLog?: (line: string) => void,
+  onLoadProgress?: ProgressCb,
+): Promise<FFmpeg> {
   if (ffmpeg?.loaded) return ffmpeg
   if (loading) return loading
 
   loading = (async () => {
-    const instance = new FFmpeg()
-    instance.on('log', ({ message }) => onLog?.(message))
-    // Single-thread core: no SharedArrayBuffer / COOP-COEP required.
-    const base = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm'
-    await instance.load({
-      coreURL: await toBlobURL(`${base}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${base}/ffmpeg-core.wasm`, 'application/wasm'),
-    })
-    ffmpeg = instance
-    return instance
+    // Blob URLs are required: a module worker importing http(s) ffmpeg-core.js
+    // often hangs forever (Safari / some Chromium) and never rejects, so the
+    // CDN fallback never ran and the UI stayed on “加载处理引擎”.
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    const cdnBase = 'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.10/dist/esm'
+    const sources = [
+      {
+        core: `${origin}/ffmpeg/ffmpeg-core.js`,
+        wasm: `${origin}/ffmpeg/ffmpeg-core.wasm`,
+      },
+      {
+        core: `${cdnBase}/ffmpeg-core.js`,
+        wasm: `${cdnBase}/ffmpeg-core.wasm`,
+      },
+    ]
+
+    let lastErr: unknown
+    for (const src of sources) {
+      const instance = new FFmpeg()
+      if (onLog) {
+        instance.on('log', ({ message }) => onLog(message))
+      }
+      let coreURL: string | undefined
+      let wasmURL: string | undefined
+      try {
+        onLoadProgress?.(0.02)
+        coreURL = await fetchToBlobURL(src.core, CORE_JS_MIME)
+        wasmURL = await fetchToBlobURL(src.wasm, CORE_WASM_MIME, (r) => {
+          onLoadProgress?.(0.05 + r * 0.85)
+        })
+        onLoadProgress?.(0.92)
+        await loadCore(instance, coreURL, wasmURL)
+        if (!instance.loaded) throw new Error('engine not loaded')
+        onLoadProgress?.(1)
+        ffmpeg = instance
+        return instance
+      } catch (e) {
+        lastErr = e
+        if (coreURL) URL.revokeObjectURL(coreURL)
+        if (wasmURL) URL.revokeObjectURL(wasmURL)
+        try {
+          instance.terminate()
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+    const tip = lastErr instanceof Error ? lastErr.message : 'engine load failed'
+    throw new Error(`处理引擎加载失败：${tip}`)
   })()
 
   try {
     return await loading
   } catch (e) {
     loading = null
+    ffmpeg = null
     throw e
   }
 }

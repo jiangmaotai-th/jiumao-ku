@@ -118,6 +118,3 @@ export function formatBytes(n: number): string {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`
 }
 
-/** Short capability note for UI drop zone. */
-export const FORMAT_SUPPORT_BLURB =
-  'PDF · Word(DOC/DOCX) · Pages · Numbers · Keynote · PPTX · Excel · ODT · RTF · HTML · EPUB · CSV/JSON · ZIP · 图片OCR（音视频请用桌面版）'

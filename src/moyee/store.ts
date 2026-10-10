@@ -10,6 +10,11 @@ import {
   type OutputProfile,
 } from './types'
 import { compressCrf } from './domain/commandBuilder'
+import {
+  effectiveDurationSecs,
+  targetVideoBitrateKbps,
+  type CompressStrategy,
+} from './domain/compress'
 import { downloadBlob, getFfmpeg, runJob, runMerge } from './engine/ffmpegEngine'
 import type { CompressMode } from './types'
 
@@ -135,10 +140,14 @@ interface Store {
   banner: string | null
   compressMode: CompressMode
   compressQuality: number
+  compressStrategy: CompressStrategy
+  compressTargetMb: number | null
   setMode: (mode: AppMode) => void
   setBanner: (msg: string | null) => void
   setCompressMode: (m: CompressMode) => void
   setCompressQuality: (q: number) => void
+  setCompressStrategy: (s: CompressStrategy) => void
+  setCompressTargetMb: (mb: number | null) => void
   selectJob: (id: string | null) => void
   ensureEngine: () => Promise<void>
   addFiles: (files: FileList | File[]) => Promise<void>
@@ -160,6 +169,8 @@ export const useMoyeeStore = create<Store>((set, get) => ({
   banner: null,
   compressMode: 'standard',
   compressQuality: 50,
+  compressStrategy: 'quality',
+  compressTargetMb: null,
 
   setMode: (mode) => {
     set({ mode, banner: null })
@@ -176,7 +187,7 @@ export const useMoyeeStore = create<Store>((set, get) => ({
 
   setBanner: (banner) => set({ banner }),
   setCompressMode: (compressMode) => {
-    set({ compressMode })
+    set({ compressMode, compressStrategy: 'quality' })
     const { selectedId, jobs, compressQuality } = get()
     if (!selectedId) return
     const job = jobs.find((j) => j.id === selectedId)
@@ -185,10 +196,11 @@ export const useMoyeeStore = create<Store>((set, get) => ({
       ...job.profile,
       bitrateMode: 'crf',
       crf: compressCrf(compressMode, compressQuality),
+      videoBitrateKbps: null,
     })
   },
   setCompressQuality: (compressQuality) => {
-    set({ compressQuality })
+    set({ compressQuality, compressStrategy: 'quality' })
     const { selectedId, jobs, compressMode } = get()
     if (!selectedId) return
     const job = jobs.find((j) => j.id === selectedId)
@@ -197,6 +209,63 @@ export const useMoyeeStore = create<Store>((set, get) => ({
       ...job.profile,
       bitrateMode: 'crf',
       crf: compressCrf(compressMode, compressQuality),
+      videoBitrateKbps: null,
+    })
+  },
+  setCompressStrategy: (compressStrategy) => {
+    set({ compressStrategy })
+    const { selectedId, jobs, compressMode, compressQuality, compressTargetMb } = get()
+    if (!selectedId) return
+    const job = jobs.find((j) => j.id === selectedId)
+    if (!job) return
+    if (compressStrategy === 'quality') {
+      get().updateProfile(selectedId, {
+        ...job.profile,
+        bitrateMode: 'crf',
+        crf: compressCrf(compressMode, compressQuality),
+        videoBitrateKbps: null,
+      })
+      return
+    }
+    const duration = effectiveDurationSecs(
+      job.meta.durationSecs,
+      job.profile.trimStartSecs,
+      job.profile.trimEndSecs,
+    )
+    if (compressTargetMb != null && duration) {
+      get().updateProfile(selectedId, {
+        ...job.profile,
+        bitrateMode: 'bitrate',
+        videoBitrateKbps: targetVideoBitrateKbps(
+          compressTargetMb,
+          duration,
+          job.profile.audioBitrateKbps ?? 128,
+        ),
+        crf: null,
+      })
+    }
+  },
+  setCompressTargetMb: (compressTargetMb) => {
+    set({ compressTargetMb, compressStrategy: 'targetSize' })
+    const { selectedId, jobs } = get()
+    if (!selectedId) return
+    const job = jobs.find((j) => j.id === selectedId)
+    if (!job || compressTargetMb == null) return
+    const duration = effectiveDurationSecs(
+      job.meta.durationSecs,
+      job.profile.trimStartSecs,
+      job.profile.trimEndSecs,
+    )
+    if (!duration) return
+    get().updateProfile(selectedId, {
+      ...job.profile,
+      bitrateMode: 'bitrate',
+      videoBitrateKbps: targetVideoBitrateKbps(
+        compressTargetMb,
+        duration,
+        job.profile.audioBitrateKbps ?? 128,
+      ),
+      crf: null,
     })
   },
 

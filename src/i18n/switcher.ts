@@ -8,8 +8,15 @@ import {
   type Locale,
 } from './index'
 
-export function mountLanguageSwitcher(host: HTMLElement | null): void {
+export function mountLanguageSwitcher(
+  host: HTMLElement | null,
+  options?: { locales?: readonly Locale[] },
+): void {
   if (!host) return
+
+  const allowed = new Set<string>(LOCALES)
+  const locales = (options?.locales?.filter((locale) => allowed.has(locale)) ?? [...LOCALES]) as Locale[]
+  if (!locales.length) return
 
   const current = getLocale()
   host.classList.add('lang-switch')
@@ -23,7 +30,7 @@ export function mountLanguageSwitcher(host: HTMLElement | null): void {
       <span class="lang-switch__caret" aria-hidden="true"></span>
     </button>
     <ul class="lang-switch__menu" role="listbox" hidden>
-      ${LOCALES.map(
+      ${locales.map(
         (locale) => `
         <li role="none">
           <button
@@ -62,7 +69,7 @@ export function mountLanguageSwitcher(host: HTMLElement | null): void {
       close()
       return
     }
-    setLocale(locale, { reload: true })
+    setLocale(locale)
   })
 
   document.addEventListener(

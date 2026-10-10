@@ -49,6 +49,13 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -132,6 +139,17 @@ body {
   background: rgba(212, 184, 122, 0.05);
   display: grid;
   gap: 6px;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.drop.is-dragover,
+.page.is-page-dragover .drop {
+  border-color: rgba(212, 184, 122, 0.85);
+  background: rgba(212, 184, 122, 0.14);
+  box-shadow: 0 0 0 1px rgba(212, 184, 122, 0.25) inset;
 }
 
 .drop strong {

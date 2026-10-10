@@ -1,0 +1,8 @@
+{
+  "name": "maotaiworks-scratch-account",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "nodemailer": "^9.0.5"
+  }
+}

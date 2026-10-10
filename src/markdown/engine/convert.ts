@@ -4,6 +4,7 @@ import { extractPreviewPdf } from 'iwork-preview'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs'
 import { extensionOf, isImage, isMedia, isSupported } from '../formats'
 import { extractIworkDocumentText } from './iworkText'
+import { t } from '../../i18n'
 import { ocrImageToText } from './ocr'
 
 /** Stable public worker (avoids Vite-bundled worker / wrong .mjs MIME issues). */
@@ -119,18 +120,18 @@ async function convertDoc(file: File): Promise<ConvertResult> {
     return { markdown: wrapAsMarkdown(title, md) }
   }
   if (!isOleContainer(bytes)) {
-    return { markdown: '', warning: '无法识别为 Word 文档。请另存为 .docx 后再试。' }
+    return { markdown: '', warning: t('markdown.warnNotWord') }
   }
   const text = extractOleDocText(buffer)
   if (!text) {
     return {
       markdown: '',
-      warning: '旧版 .doc 未能提取正文。请另存为 .docx，或使用 macOS 桌面版。',
+      warning: t('markdown.warnDocFailed'),
     }
   }
   return {
     markdown: wrapAsMarkdown(title, text),
-    warning: '旧版 .doc 为尽力提取，复杂排版可能不完整；建议另存为 .docx。',
+    warning: t('markdown.warnDocPartial'),
   }
 }
 
@@ -147,11 +148,11 @@ async function convertPdf(file: File): Promise<{ text: string; warning?: string 
         pdf = await getDocument({ data, useSystemFonts: true }).promise
       } catch {
         const message = err instanceof Error ? err.message : String(err)
-        throw new Error(`PDF 解析失败：${message}`)
+        throw new Error(t('markdown.warnPdfFailed', { message }))
       }
     } else {
       const message = err instanceof Error ? err.message : String(err)
-      throw new Error(`PDF 解析失败：${message}`)
+      throw new Error(t('markdown.warnPdfFailed', { message }))
     }
   }
   const parts: string[] = []
@@ -169,7 +170,7 @@ async function convertPdf(file: File): Promise<{ text: string; warning?: string 
   if (!text.trim()) {
     return {
       text: '',
-      warning: 'PDF 未提取到可选文字（可能是扫描件）。请使用 macOS 版的 Vision OCR。',
+      warning: t('markdown.warnPdfNoText'),
     }
   }
   return { text }
@@ -243,7 +244,7 @@ async function convertPptx(file: File): Promise<string> {
     const body = extractPptxSlideText(xml)
     if (body) {
       const num = name.replace(/^.*slide/i, '').replace(/\.xml$/i, '')
-      slides.push(`## 幻灯片 ${num}\n\n${body}`)
+      slides.push(`## ${t('markdown.slideLabel', { n: num })}\n\n${body}`)
     }
   }
   return slides.join('\n\n')
@@ -291,7 +292,7 @@ async function convertXlsx(file: File): Promise<string> {
         .fill('---')
         .join(' | ')} |`
       sections.push(
-        `## ${name.replace(/^.*sheet/i, '工作表 ').replace(/\.xml$/i, '')}\n\n${lines[0]}\n${headerSep}\n${lines.slice(1).join('\n')}`,
+        `## ${name.replace(/^.*sheet/i, t('markdown.sheetLabel')).replace(/\.xml$/i, '')}\n\n${lines[0]}\n${headerSep}\n${lines.slice(1).join('\n')}`,
       )
     }
   }
@@ -325,7 +326,7 @@ async function convertEpub(file: File): Promise<string> {
 async function convertOdt(file: File): Promise<string> {
   const zip = await JSZip.loadAsync(await file.arrayBuffer())
   const content = zip.file('content.xml')
-  if (!content) throw new Error('无效的 ODT（缺少 content.xml）')
+  if (!content) throw new Error(t('markdown.warnOdtInvalid'))
   const xml = await content.async('string')
   return xml
     .replace(/<text:p[^>]*>/g, '\n')
@@ -440,7 +441,7 @@ async function convertZip(file: File): Promise<ConvertResult> {
   for (const name of names) {
     const nested = new File([await zip.file(name)!.async('blob')], name)
     if (!isSupported(name) || isMedia(name)) {
-      warnings.push(`跳过：${name}`)
+      warnings.push(t('markdown.warnZipSkip', { name }))
       continue
     }
     const result = await convertFile(nested)
@@ -449,14 +450,14 @@ async function convertZip(file: File): Promise<ConvertResult> {
   }
   return {
     markdown: wrapAsMarkdown(file.name.replace(/\.[^.]+$/, ''), sections.join('\n\n---\n\n')),
-    warning: warnings.length ? warnings.slice(0, 5).join('；') : undefined,
+    warning: warnings.length ? warnings.slice(0, 5).join(t('markdown.rejectJoin')) : undefined,
   }
 }
 
 function needsDesktop(ext: string, label: string): ConvertResult {
   return {
     markdown: '',
-    warning: `${label}（.${ext}）请另存为通用格式，或使用 macOS 桌面版（MarkItDown / textutil）。`,
+    warning: t('markdown.warnNeedsDesktop', { label, ext }),
   }
 }
 
@@ -565,7 +566,7 @@ async function convertIwork(file: File, kind: 'pages' | 'numbers' | 'key'): Prom
   if (!isZipContainer(bytes)) {
     return {
       markdown: '',
-      warning: `无法识别为 ${kind.toUpperCase()} 包。请在 ${app} 中导出为 PDF 后再试。`,
+      warning: t('markdown.warnIworkNotPackage', { kind: kind.toUpperCase(), app }),
     }
   }
 
@@ -580,7 +581,7 @@ async function convertIwork(file: File, kind: 'pages' | 'numbers' | 'key'): Prom
         markdown: wrapAsMarkdown(title, text),
         warning:
           warning ||
-          `已从 ${kind.toUpperCase()} 内嵌预览 PDF 提取文字；复杂排版可能不完整。`,
+          t('markdown.warnIworkFromPdf', { kind: kind.toUpperCase() }),
       }
     }
     // Preview PDF unusable → fall through to IWA text
@@ -591,7 +592,7 @@ async function convertIwork(file: File, kind: 'pages' | 'numbers' | 'key'): Prom
     if (iwaText && isReadableExtractedText(iwaText)) {
       return {
         markdown: wrapAsMarkdown(title, iwaText),
-        warning: `已从 ${kind.toUpperCase()} 文档数据提取文字（无预览 PDF）；排版可能不完整。`,
+        warning: t('markdown.warnIworkFromData', { kind: kind.toUpperCase() }),
       }
     }
   } catch {
@@ -625,7 +626,7 @@ async function convertIwork(file: File, kind: 'pages' | 'numbers' | 'key'): Prom
     if (xmlParts.length) {
       return {
         markdown: wrapAsMarkdown(title, xmlParts.join('\n\n')),
-        warning: `已从旧版 ${kind.toUpperCase()} XML 提取；建议导出为 PDF 以获得更好效果。`,
+        warning: t('markdown.warnIworkLegacy', { kind: kind.toUpperCase() }),
       }
     }
   } catch {
@@ -634,7 +635,7 @@ async function convertIwork(file: File, kind: 'pages' | 'numbers' | 'key'): Prom
 
   return {
     markdown: '',
-    warning: `${kind.toUpperCase()} 未能提取正文。请在 ${app} 中导出为 PDF 后再试。`,
+    warning: t('markdown.warnIworkFailed', { kind: kind.toUpperCase(), app }),
   }
 }
 
@@ -647,7 +648,7 @@ export async function convertFile(file: File): Promise<ConvertResult> {
     return {
       markdown: '',
       warning:
-        '音视频转写需本机 ffmpeg + whisper（macOS 桌面版）。网页版暂不上传音视频到服务器。',
+        t('markdown.warnMediaDesktop'),
     }
   }
 
@@ -662,18 +663,18 @@ export async function convertFile(file: File): Promise<ConvertResult> {
       if (!text) {
         return {
           markdown: '',
-          warning: '图片未识别到文字（可能是纯图/模糊）。可换更清晰截图，或使用 macOS 桌面版 Vision OCR。',
+          warning: t('markdown.warnOcrEmpty'),
         }
       }
       return {
         markdown: wrapAsMarkdown(title, text),
-        warning: '图片文字由浏览器本地 OCR（中英）识别，复杂版式可能不完整。',
+        warning: t('markdown.warnOcrPartial'),
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       return {
         markdown: '',
-        warning: `图片 OCR 失败：${message}`,
+        warning: t('markdown.warnOcrFailed', { message }),
       }
     }
   }
@@ -698,21 +699,21 @@ export async function convertFile(file: File): Promise<ConvertResult> {
     return { markdown: wrapAsMarkdown(title, text), warning }
   }
   if (ext === 'pptx' || ext === 'odp') {
-    if (ext === 'odp') return needsDesktop(ext, 'OpenDocument 演示文稿')
+    if (ext === 'odp') return needsDesktop(ext, 'OpenDocument Presentation')
     return { markdown: wrapAsMarkdown(title, await convertPptx(file)) }
   }
   if (ext === 'xlsx') {
     return { markdown: wrapAsMarkdown(title, await convertXlsx(file)) }
   }
   if (ext === 'xls' || ext === 'ods') {
-    return needsDesktop(ext, ext === 'xls' ? '旧版 Excel' : 'OpenDocument 表格')
+    return needsDesktop(ext, ext === 'xls' ? 'Legacy Excel' : 'OpenDocument Spreadsheet')
   }
   if (ext === 'odt') {
     try {
       return { markdown: wrapAsMarkdown(title, await convertOdt(file)) }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      return { markdown: '', warning: `ODT 解析失败：${message}` }
+      return { markdown: '', warning: t('markdown.warnOdtFailed', { message }) }
     }
   }
   if (ext === 'epub') {
@@ -745,9 +746,9 @@ export async function convertFile(file: File): Promise<ConvertResult> {
       .filter(Boolean)
       .map((line, i) => {
         try {
-          return `### 行 ${i + 1}\n\n\`\`\`json\n${JSON.stringify(JSON.parse(line), null, 2)}\n\`\`\``
+          return `### ${i + 1}\n\n\`\`\`json\n${JSON.stringify(JSON.parse(line), null, 2)}\n\`\`\``
         } catch {
-          return `### 行 ${i + 1}\n\n${line}`
+          return `### ${i + 1}\n\n${line}`
         }
       })
     return { markdown: wrapAsMarkdown(title, lines.join('\n\n')) }
@@ -756,7 +757,7 @@ export async function convertFile(file: File): Promise<ConvertResult> {
     try {
       return { markdown: wrapAsMarkdown(title, convertIpynb(await readText(file))) }
     } catch {
-      return { markdown: '', warning: '无法解析 Jupyter Notebook（.ipynb）' }
+      return { markdown: '', warning: t('markdown.warnIpynbInvalid') }
     }
   }
   if (ext === 'eml') {
@@ -792,6 +793,6 @@ export async function convertFile(file: File): Promise<ConvertResult> {
 
   return {
     markdown: '',
-    warning: `网页版暂未覆盖 .${ext}，请使用 macOS 桌面版（格式更全）。`,
+    warning: t('markdown.warnUnsupported', { ext }),
   }
 }

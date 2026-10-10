@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "build": "tsc && vite build && node scripts/generate-locale-html.mjs",
+    "build:goose": "vite build --config vite.goose.config.ts",
+    "generate:locale-html": "node scripts/generate-locale-html.mjs",
+    "preview": "vite preview",
+    "postinstall": "mkdir -p public/ffmpeg && cp node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm public/ffmpeg/"
   },
   "devDependencies": {
     "@types/jszip": "^3.4.0",
@@ -18,20 +21,23 @@
     "vite": "^8.2.0"
   },
   "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.20.0",
+    "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
     "heic2any": "^0.0.4",
     "icodec": "^0.6.0",
+    "iwork-preview": "^1.0.0",
     "jszip": "^3.10.1",
     "mammoth": "^1.12.0",
+    "nodemailer": "^9.0.5",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.2.108",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "utif": "^3.1.0",
-    "zustand": "^5.0.14",
     "snappyjs": "^0.7.0",
     "tesseract.js": "^7.0.0",
-    "iwork-preview": "^1.0.0"
+    "utif": "^3.1.0",
+    "zustand": "^5.0.14"
   }
 }

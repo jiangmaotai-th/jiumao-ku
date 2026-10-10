@@ -59,6 +59,7 @@ import {
 } from './product-refresh.mjs'
 import { scrapeAndUpdateWebPrices } from './web-scrape/index.mjs'
 import { SEED_APPS } from './seeds.mjs'
+import { resolveDomainIcon, sendIcon } from './icon-proxy.mjs'
 
 const PORT = Number(process.env.PORT || 3192)
 /** Prevent GET /products/:id from re-kicking the same channel fill in a loop. */
@@ -132,6 +133,24 @@ async function handle(req, res) {
         products: AI_PRODUCTS.length,
         meta: loadMeta(),
       })
+      return
+    }
+
+    // Product icons proxied + cached (avoid google.com favicon blocks on iPad/CN).
+    if ((req.method === 'GET' || req.method === 'HEAD') && pathname === '/icon') {
+      const domain = url.searchParams.get('domain') || ''
+      const icon = await resolveDomainIcon(domain)
+      if (req.method === 'HEAD') {
+        res.writeHead(200, {
+          'Content-Type': icon.contentType,
+          'Content-Length': icon.buf.length,
+          'Cache-Control': 'public, max-age=604800',
+          'Access-Control-Allow-Origin': '*',
+        })
+        res.end()
+        return
+      }
+      sendIcon(res, icon)
       return
     }
 

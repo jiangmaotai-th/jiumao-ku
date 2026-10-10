@@ -20,6 +20,10 @@ export type PriceRow = {
   billingPeriod?: string
   billingLabel?: string
   billingMonths?: number | null
+  /** Same IAP name listed at other prices in this storefront (period not stated by Apple). */
+  alt?: { amount: number; currency: string; priceFormatted: string; cny?: number | null }[]
+  ambiguous?: boolean
+  fetchedAt?: string | null
   rank?: number | null
   isLowest?: boolean
   totalRegions?: number
@@ -39,6 +43,9 @@ export type PriceBase = {
   priceFormatted: string
   cny: number
   label?: string
+  sourceUrl?: string | null
+  checkedAt?: string | null
+  stale?: boolean
 }
 
 export type PriceAnomaly = {

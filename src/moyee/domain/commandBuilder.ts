@@ -133,16 +133,35 @@ export function buildFfmpegArgs(
     args.push('-c', 'copy')
   } else {
     args.push('-c:v', vc)
-    if (vc === 'libx264') {
+    const crfDefault = mode === 'compress' ? 28 : 23
+    if (vc === 'libx264' || vc === 'libx265') {
       args.push('-preset', mode === 'compress' ? 'fast' : 'medium')
       if (profile.bitrateMode === 'crf') {
-        args.push('-crf', String(profile.crf ?? (mode === 'compress' ? 28 : 23)))
+        args.push('-crf', String(profile.crf ?? crfDefault))
       } else if (profile.videoBitrateKbps) {
         args.push('-b:v', `${profile.videoBitrateKbps}k`)
       }
       args.push('-pix_fmt', 'yuv420p')
+      if (vc === 'libx265') args.push('-tag:v', 'hvc1')
     } else if (vc === 'libvpx-vp9') {
-      args.push('-b:v', `${profile.videoBitrateKbps ?? 2000}k`, '-row-mt', '1')
+      args.push('-row-mt', '1')
+      if (profile.bitrateMode === 'crf') {
+        args.push('-crf', String(profile.crf ?? 32), '-b:v', '0')
+      } else {
+        args.push('-b:v', `${profile.videoBitrateKbps ?? 2000}k`)
+      }
+    } else if (vc === 'libaom-av1' || vc === 'libsvtav1') {
+      if (profile.bitrateMode === 'crf') {
+        args.push('-crf', String(profile.crf ?? 32), '-b:v', '0', '-cpu-used', '6')
+      } else if (profile.videoBitrateKbps) {
+        args.push('-b:v', `${profile.videoBitrateKbps}k`, '-cpu-used', '6')
+      } else {
+        args.push('-crf', '32', '-b:v', '0', '-cpu-used', '6')
+      }
+    } else if (profile.bitrateMode === 'crf') {
+      args.push('-crf', String(profile.crf ?? crfDefault))
+    } else if (profile.videoBitrateKbps) {
+      args.push('-b:v', `${profile.videoBitrateKbps}k`)
     }
 
     if (!profile.keepOriginalFrameRate && profile.frameRate) {
@@ -155,7 +174,13 @@ export function buildFfmpegArgs(
     if (ac === 'copy') {
       args.push('-c:a', 'copy')
     } else {
-      args.push('-c:a', ac === 'libvorbis' || profile.container === 'webm' ? (profile.container === 'webm' ? 'libopus' : ac) : ac)
+      const audio =
+        profile.container === 'webm'
+          ? profile.audioCodec || 'libopus'
+          : ac === 'libvorbis'
+            ? ac
+            : ac
+      args.push('-c:a', audio)
       if (profile.audioBitrateKbps) args.push('-b:a', `${profile.audioBitrateKbps}k`)
       if (profile.sampleRate) args.push('-ar', String(profile.sampleRate))
       if (profile.channels) args.push('-ac', String(profile.channels))
@@ -194,63 +219,4 @@ export function compressCrf(mode: 'standard' | 'highQuality' | 'maxCompress', qu
     mode === 'highQuality' ? 20 : mode === 'maxCompress' ? 32 : 28
   const offset = ((50 - quality) / 50) * 4
   return Math.min(36, Math.max(18, Math.round(base + offset)))
-}
-
-/**
- * Compress size preview relative to the source file.
- * Quality 100 ≈ 接近原体积（不超过原文件）；调低画质 / 更强模式 → 更小。
- */
-export function estimateCompressBytes(opts: {
-  originalBytes: number
-  crf: number
-  quality: number
-  mode: 'standard' | 'highQuality' | 'maxCompress'
-  durationSecs?: number
-  width?: number
-  height?: number
-}): { bytes: number; low: number; high: number } {
-  const original = opts.originalBytes
-  if (original <= 0) return { bytes: 0, low: 0, high: 0 }
-
-  const q = Math.min(100, Math.max(0, opts.quality)) / 100
-  // Size ratio at slider midpoint (quality=50)
-  const midRatio =
-    opts.mode === 'highQuality' ? 0.78 : opts.mode === 'maxCompress' ? 0.3 : 0.5
-  const maxRatio = 0.98 // 画质拉满：最多接近原文件，不预估变大
-  const minRatio = Math.max(0.06, midRatio * 0.4)
-
-  let ratio: number
-  if (q >= 0.5) {
-    const t = (q - 0.5) / 0.5
-    ratio = midRatio + (maxRatio - midRatio) * t
-  } else {
-    const t = q / 0.5
-    ratio = minRatio + (midRatio - minRatio) * t
-  }
-
-  // Lightly bias with CRF so mode+slider stay consistent with encode settings
-  const crf = Math.min(36, Math.max(18, opts.crf))
-  const crfBias = Math.pow(2, (28 - crf) / 12) // mild
-  ratio = Math.min(maxRatio, Math.max(minRatio, ratio * (0.85 + 0.15 * Math.min(1.3, crfBias))))
-
-  let estimate = original * ratio
-
-  // If bitrate math exists, use the smaller of the two (still never above original)
-  const duration = opts.durationSecs
-  const w = opts.width
-  const h = opts.height
-  if (duration && duration > 0 && w && h && w * h > 0) {
-    const vsCrf23 = Math.pow(2, (23 - crf) / 6)
-    const videoMbps = Math.max(0.2, 5 * ((w * h) / (1920 * 1080)) * vsCrf23)
-    const bitrateBytes = ((videoMbps + 0.128) * 1_000_000) / 8 * duration
-    estimate = Math.min(estimate, bitrateBytes)
-  }
-
-  estimate = Math.min(original * maxRatio, Math.max(original * minRatio, estimate))
-  const bytes = Math.round(estimate)
-  return {
-    bytes,
-    low: Math.round(Math.max(original * minRatio, bytes * 0.88)),
-    high: Math.round(Math.min(original, bytes * 1.1)),
-  }
 }

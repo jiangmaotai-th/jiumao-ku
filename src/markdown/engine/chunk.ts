@@ -1,3 +1,4 @@
+import { t } from '../../i18n'
 export interface MarkdownChunk {
   number: number
   sourceName: string
@@ -154,12 +155,12 @@ export function chunkMarkdown(
   overlapCharacters = DEFAULT_OVERLAP,
 ): MarkdownChunk[] {
   if (!markdown.trim()) return []
-  if (maximumCharacters < 200) throw new Error('切片长度不能小于 200')
+  if (maximumCharacters < 200) throw new Error(t('markdown.chunkTooShort'))
   const overlap = Math.min(Math.max(0, overlapCharacters), Math.floor(maximumCharacters / 3))
   const blocks = parseBlocks(markdown)
   const chunks: MarkdownChunk[] = []
   let current: string[] = []
-  let currentHeading = '正文'
+  let currentHeading = t('markdown.bodyHeading')
 
   const appendChunk = () => {
     if (!current.length) return

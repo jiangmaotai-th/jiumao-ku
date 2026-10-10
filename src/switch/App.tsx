@@ -68,7 +68,7 @@ function categoryDisplayName(category: string | null | undefined, locale: Locale
 const ICON_FALLBACK =
   'data:image/svg+xml,' +
   encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect fill="#1a211c" width="128" height="128"/><text x="64" y="70" text-anchor="middle" fill="#8a7340" font-size="14" font-family="sans-serif">Switch</text></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect fill="#f3f0fa" width="128" height="128"/><text x="64" y="70" text-anchor="middle" fill="#7a63b8" font-size="14" font-family="sans-serif">Switch</text></svg>`,
   )
 
 function GameIcon({
@@ -95,11 +95,11 @@ function GameIcon({
 }
 
 function Header({ route }: { route: Route }) {
-  const { t } = useT()
+  const { t, lh } = useT()
   return (
     <header className="site-header">
       <div className="brand-block">
-        <a className="brand-mark" href="/">
+        <a className="brand-mark" href={lh('/')}>
           {t('common.brand')}
         </a>
         <p className="brand-sub">{t('catalog.switch-price.name')}</p>
@@ -120,7 +120,7 @@ function Header({ route }: { route: Route }) {
           >
             {t('switchApp.navSearch')}
           </button>
-          <a className="nav-link" href="/">
+          <a className="nav-link" href={lh('/')}>
             {t('common.backHome')}
           </a>
         </nav>

@@ -1,0 +1,42 @@
+{
+  "scratchRadius": {
+    "type": "number",
+    "value": 24,
+    "min": 14,
+    "max": 40,
+    "step": 1,
+    "name": "刮擦半径",
+    "group": "手感",
+    "index": 1
+  },
+  "settleThreshold": {
+    "type": "number",
+    "value": 0.6,
+    "min": 0.45,
+    "max": 0.85,
+    "step": 0.01,
+    "name": "自动结算阈值",
+    "group": "手感",
+    "index": 2
+  },
+  "musicVolume": {
+    "type": "number",
+    "value": 0.18,
+    "min": 0,
+    "max": 0.5,
+    "step": 0.01,
+    "name": "音乐音量",
+    "group": "声音",
+    "index": 1
+  },
+  "firstGift": {
+    "type": "number",
+    "value": 3000,
+    "min": 500,
+    "max": 10000,
+    "step": 100,
+    "name": "新手金币礼包",
+    "group": "经济",
+    "index": 1
+  }
+}

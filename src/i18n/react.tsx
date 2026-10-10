@@ -9,6 +9,7 @@ import {
 import {
   getLocale,
   initLocale,
+  localizedHref,
   onLocaleChange,
   t as translate,
   tList as translateList,
@@ -20,6 +21,7 @@ const I18nContext = createContext({
   locale: 'en' as Locale,
   t: translate,
   tList: translateList,
+  lh: (path: string) => localizedHref(path),
 })
 
 export function I18nProvider({ children }: { children: ReactNode }) {
@@ -30,8 +32,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       locale,
-      t: translate,
-      tList: translateList,
+      // Bind to locale so consumers re-render when language changes (even if translate fn identity is stable).
+      t: ((path: string, vars?: Record<string, string | number>) =>
+        translate(path, vars)) as typeof translate,
+      tList: ((path: string) => translateList(path)) as typeof translateList,
+      lh: (path: string) => localizedHref(path, locale),
     }),
     [locale],
   )

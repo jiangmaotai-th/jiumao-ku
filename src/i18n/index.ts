@@ -5,9 +5,32 @@ import {
   type Locale,
   type Messages,
 } from './types'
+import {
+  DEFAULT_LOCALE,
+  localizedHref,
+  parseLocaleFromPathname,
+  urlForLocale,
+} from './path'
 
 export { LOCALES, LOCALE_NATIVE_NAMES, type Locale, type Messages }
 export { messages }
+export {
+  DEFAULT_LOCALE,
+  DEFAULT_LOCALE_SLUG,
+  LOCALE_SLUGS,
+  LOCALE_TO_SLUG,
+  LOCALIZED_APP_PATHS,
+  SLUG_TO_LOCALE,
+  isLocaleSlug,
+  localeToSlug,
+  localizedHref,
+  parseLocaleFromPathname,
+  shouldLocalizePath,
+  slugToLocale,
+  stripLocalePrefix,
+  urlForLocale,
+  withLocale,
+} from './path'
 
 export const LANG_STORAGE_KEY = 'mw_lang'
 
@@ -19,18 +42,7 @@ function isLocale(value: string | null | undefined): value is Locale {
   return !!value && (LOCALES as readonly string[]).includes(value)
 }
 
-/**
- * Auto locale from the visitor’s browser language (navigator.languages), not IP.
- * Saved manual choice in localStorage wins. Unmatched languages fall back to English.
- */
-export function detectLocale(): Locale {
-  try {
-    const saved = localStorage.getItem(LANG_STORAGE_KEY)
-    if (isLocale(saved)) return saved
-  } catch {
-    /* ignore */
-  }
-
+function detectFromNavigator(): Locale {
   const candidates = [
     ...(typeof navigator !== 'undefined' ? navigator.languages || [] : []),
     typeof navigator !== 'undefined' ? navigator.language : '',
@@ -55,10 +67,29 @@ export function detectLocale(): Locale {
     if (tag.startsWith('pt')) return 'pt'
     if (tag.startsWith('en')) return 'en'
   }
-  return 'en'
+  return DEFAULT_LOCALE
 }
 
-let currentLocale: Locale = 'en'
+/**
+ * Locale detection: URL prefix > localStorage > navigator > zh-CN.
+ */
+export function detectLocale(): Locale {
+  if (typeof location !== 'undefined') {
+    const fromUrl = parseLocaleFromPathname(location.pathname)
+    if (fromUrl) return fromUrl
+  }
+
+  try {
+    const saved = localStorage.getItem(LANG_STORAGE_KEY)
+    if (isLocale(saved)) return saved
+  } catch {
+    /* ignore */
+  }
+
+  return detectFromNavigator()
+}
+
+let currentLocale: Locale = DEFAULT_LOCALE
 
 export function getLocale(): Locale {
   return currentLocale
@@ -66,13 +97,25 @@ export function getLocale(): Locale {
 
 export function initLocale(preferred?: Locale): Locale {
   currentLocale = preferred && isLocale(preferred) ? preferred : detectLocale()
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, currentLocale)
+  } catch {
+    /* ignore */
+  }
   if (typeof document !== 'undefined') {
     document.documentElement.lang = currentLocale
   }
   return currentLocale
 }
 
-export function setLocale(locale: Locale, options?: { reload?: boolean }): void {
+/**
+ * Persist locale and navigate to the equivalent path under the new language prefix.
+ * Pass `{ navigate: false }` to update in place without changing the URL (rare).
+ */
+export function setLocale(
+  locale: Locale,
+  options?: { reload?: boolean; navigate?: boolean },
+): void {
   if (!isLocale(locale)) return
   currentLocale = locale
   try {
@@ -84,7 +127,18 @@ export function setLocale(locale: Locale, options?: { reload?: boolean }): void 
     document.documentElement.lang = locale
   }
   listeners.forEach((fn) => fn(locale))
-  if (options?.reload !== false && typeof location !== 'undefined') {
+
+  const shouldNavigate = options?.navigate !== false
+  if (shouldNavigate && typeof location !== 'undefined') {
+    const next = urlForLocale(locale)
+    const current = `${location.pathname}${location.search}${location.hash}`
+    if (next !== current) {
+      location.assign(next)
+      return
+    }
+  }
+
+  if (options?.reload && typeof location !== 'undefined') {
     location.reload()
   }
 }
@@ -168,5 +222,13 @@ export function applyDomI18n(root: ParentNode = document): void {
     const key = el.dataset.i18nTitle
     if (!key) return
     el.title = t(key)
+  })
+
+  // Rewrite internal links that should carry the locale prefix.
+  root.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((el) => {
+    const href = el.getAttribute('href')
+    if (!href || el.dataset.i18nSkipLocale === 'true') return
+    const next = localizedHref(href)
+    if (next !== href) el.setAttribute('href', next)
   })
 }

@@ -10,8 +10,8 @@
   min-height: 2.2rem;
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--line, rgba(196, 163, 90, 0.22));
-  border-radius: 6px;
-  background: rgba(232, 228, 217, 0.04);
+  border-radius: var(--radius-btn, 6px);
+  background: var(--surface, rgba(232, 228, 217, 0.04));
   color: var(--ink-muted, #9a9588);
   font: inherit;
   font-size: 0.88rem;
@@ -31,7 +31,7 @@
 .lang-switch__btn[aria-expanded='true'] {
   color: var(--gold-soft, #d4b87a);
   border-color: var(--gold, #c4a35a);
-  background: rgba(196, 163, 90, 0.1);
+  background: color-mix(in srgb, var(--gold, #c4a35a) 12%, transparent);
 }
 
 .lang-switch__caret {
@@ -56,7 +56,7 @@
   list-style: none;
   border: 1px solid var(--line, rgba(196, 163, 90, 0.22));
   border-radius: 8px;
-  background: #151a17;
+  background: var(--bg-elevated, var(--bg-panel, #151a17));
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
@@ -79,7 +79,7 @@
 }
 
 .lang-switch__option:hover {
-  background: rgba(196, 163, 90, 0.12);
+  background: color-mix(in srgb, var(--gold, #c4a35a) 14%, transparent);
 }
 
 .lang-switch__option.is-active {

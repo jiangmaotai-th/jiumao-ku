@@ -1,5 +1,6 @@
 import JSZip from 'jszip'
 import SnappyJS from 'snappyjs'
+import { t } from '../../i18n'
 
 /** Decompress an .iwa Snappy chunk stream (type 0 + 24-bit LE length). */
 export function decompressIwa(raw: Uint8Array): Uint8Array {
@@ -366,7 +367,9 @@ export async function extractIworkDocumentText(buffer: ArrayBuffer): Promise<str
   if (sheetNames.length) parts.push(sheetNames.join(' · '))
   if (cells.length) parts.push(cells.join('\n'))
   if (slides.length) {
-    parts.push(slides.map((s, i) => `## 幻灯片 ${i + 1}\n\n${s}`).join('\n\n'))
+    parts.push(
+      slides.map((s, i) => `## ${t('markdown.slideLabel', { n: i + 1 })}\n\n${s}`).join('\n\n'),
+    )
   }
   if (body.length) {
     const kept = body.filter((s, idx) => {

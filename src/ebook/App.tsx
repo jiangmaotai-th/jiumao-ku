@@ -48,7 +48,7 @@ function uid() {
 }
 
 export function App() {
-  const { t } = useT()
+  const { t, lh } = useT()
   const [from, setFrom] = useState<EbookFormat | 'auto'>('auto')
   const [to, setTo] = useState<EbookFormat>('epub')
   const [presetId, setPresetId] = useState<string | null>(null)
@@ -205,13 +205,13 @@ export function App() {
       <div className="shell">
         <header className="topbar">
           <div className="brand-block">
-            <a className="brand" href="/">
+            <a className="brand" href={lh('/')}>
               {t('common.brand')}
             </a>
             <p className="brand-domain">maotaiworks.com</p>
           </div>
           <div className="site-header__right">
-            <a className="back" href="/">
+            <a className="back" href={lh('/')}>
               {t('common.backHome')}
             </a>
             <LangSwitchHost />
@@ -394,9 +394,9 @@ export function App() {
           <span>
             {t('ebook.heroTitle')} · {t('common.brand')}
           </span>
-          <a href="/moyee/">{t('ebook.moyeeLink')}</a>
-          <a href="/legal/#privacy">{t('common.privacy')}</a>
-          <a href="/legal/#terms">{t('common.terms')}</a>
+          <a href={lh('/moyee/')}>{t('ebook.moyeeLink')}</a>
+          <a href={lh('/legal/#privacy')}>{t('common.privacy')}</a>
+          <a href={lh('/legal/#terms')}>{t('common.terms')}</a>
         </footer>
       </div>
     </>

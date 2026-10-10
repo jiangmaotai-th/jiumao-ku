@@ -26,6 +26,8 @@ const BILLING_KEYS: Record<string, string> = {
   weekly: 'store.billWeek',
   quarter: 'store.billQuarter',
   quarterly: 'store.billQuarter',
+  halfyear: 'store.billHalfYear',
+  unlabeled: 'store.billUnlabeled',
 }
 
 /** True when text is predominantly CJK (API sheet/advice leftovers). */

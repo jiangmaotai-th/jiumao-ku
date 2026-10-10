@@ -688,6 +688,12 @@ const PRODUCT_DOMAINS = {
   'huggingface-pro': 'huggingface.co',
 }
 
+function isFragileExternalIcon(url) {
+  const u = String(url || '')
+  // Google favicon host is often blocked on CN iPad/Safari — never ship it to clients.
+  return /google\.[^/]+\/s2\/favicons/i.test(u) || /gstatic\.com\/favicon/i.test(u)
+}
+
 export function iconFromDomain(domain) {
   const d = String(domain || '')
     .replace(/^https?:\/\//, '')
@@ -695,18 +701,19 @@ export function iconFromDomain(domain) {
     .split('/')[0]
     .trim()
   if (!d) return ''
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=128`
+  // Same-origin proxy (see deploy/store-price/icon-proxy.mjs) — reliable on iPad.
+  return `/api/store/icon?domain=${encodeURIComponent(d)}`
 }
 
 /**
  * Resolve display icon:
- * 1) explicit product.icon
+ * 1) explicit product.icon (except fragile Google favicon URLs)
  * 2) App Store artwork (via getAppIcon(trackId))
- * 3) website favicon from pricingUrl / vendor domain
+ * 3) website favicon via same-origin proxy
  */
 export function resolveProductIcon(product, getAppIcon) {
   if (!product) return ''
-  if (product.icon) return product.icon
+  if (product.icon && !isFragileExternalIcon(product.icon)) return product.icon
   const trackId = product.channels?.appstore?.trackId
   if (trackId && typeof getAppIcon === 'function') {
     const fromStore = getAppIcon(trackId)
@@ -716,7 +723,9 @@ export function resolveProductIcon(product, getAppIcon) {
   if (trackId && typeof getAppIcon === 'function') {
     for (const other of AI_PRODUCTS) {
       if (other.productId === product.productId) continue
-      if (other.channels?.appstore?.trackId === trackId && other.icon) return other.icon
+      if (other.channels?.appstore?.trackId === trackId && other.icon && !isFragileExternalIcon(other.icon)) {
+        return other.icon
+      }
     }
   }
   // Same-vendor sibling that already has App Store artwork cached.

@@ -1,0 +1,113 @@
+/* Homepage banner + rail entry for the AI Arena */
+.app-rail__nav .app-rail__item--arena {
+  font-weight: 700;
+  color: #b0306a;
+}
+.app-rail__nav .app-rail__item--arena:not(.is-active)::before {
+  background: rgba(255, 90, 140, 0.12);
+  border-color: rgba(255, 90, 140, 0.32);
+}
+
+.arena-promo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: var(--max);
+  margin: 0 auto 1.2rem;
+  padding: 0.9rem 1.1rem;
+  border: 3px solid #14121c;
+  border-radius: 6px;
+  background:
+    linear-gradient(90deg, rgba(255, 216, 74, 0.25), transparent 40%),
+    linear-gradient(180deg, #2a1f55, #3b2a72);
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 #14121c;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.ai-boards--home + .arena-promo,
+main > .arena-promo { width: calc(100% - 2 * var(--pad)); }
+.arena-promo:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #14121c; }
+.arena-promo__px {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  image-rendering: pixelated;
+  background:
+    linear-gradient(#ffd84a 0 0) 8px 8px / 6px 6px no-repeat,
+    linear-gradient(#ff5a3c 0 0) 30px 8px / 6px 6px no-repeat,
+    linear-gradient(#7ef0ff 0 0) 14px 20px / 16px 4px no-repeat,
+    linear-gradient(#ffffff 0 0) 4px 30px / 36px 6px no-repeat,
+    #14121c;
+  border-radius: 4px;
+}
+.arena-promo__body { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; flex: 1; }
+.arena-promo__kicker { font-size: 0.68rem; letter-spacing: 0.08em; color: #ffd84a; font-weight: 700; }
+.arena-promo__title { font-size: clamp(1.15rem, 3vw, 1.5rem); line-height: 1.2; }
+.arena-promo__text { font-size: 0.9rem; opacity: 0.9; }
+.arena-promo__cta {
+  flex: none;
+  padding: 0.5rem 0.8rem;
+  background: #ffd84a;
+  color: #14121c;
+  font-weight: 800;
+  border: 2px solid #14121c;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .arena-promo { flex-wrap: wrap; }
+  .arena-promo__cta { width: 100%; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arena-promo { transition: none; }
+}
+
+/* v4: cinematic promo banner with the two featured mascots */
+.arena-promo {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background:
+    radial-gradient(90% 160% at 0% 50%, rgba(63, 111, 216, 0.55), transparent 60%),
+    radial-gradient(90% 160% at 100% 50%, rgba(255, 79, 139, 0.5), transparent 60%),
+    linear-gradient(180deg, #1a1236, #0d0a1c);
+  box-shadow: 0 0 0 2px #0a0716, 0 0 0 4px #ffd23f, 0 0 0 6px #0a0716, 0 16px 36px -16px rgba(40, 10, 90, 0.8);
+}
+.arena-promo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px);
+  pointer-events: none;
+}
+.arena-promo:hover { transform: translateY(-2px); box-shadow: 0 0 0 2px #0a0716, 0 0 0 4px #ffd23f, 0 0 0 6px #0a0716, 0 0 28px 4px rgba(255, 79, 139, 0.4); }
+.arena-promo__vs { display: flex; align-items: flex-end; gap: 0.1rem; flex: none; }
+.arena-promo__fighter {
+  width: 68px;
+  height: 68px;
+  background-repeat: no-repeat;
+  background-size: 816px 68px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(255, 210, 63, 0.35));
+}
+.arena-promo__fighter--r { transform: scaleX(-1); }
+.arena-promo__x { font-family: 'ArenaPixel', monospace; font-size: 1.1rem; color: #ffd23f; text-shadow: 2px 2px 0 #ff4f8b; padding-bottom: 1.4rem; }
+.arena-promo__cta { border: 0; border-radius: 6px; background: linear-gradient(180deg, #ffe27a, #f2b400); box-shadow: 0 0 0 2px #0a0716, 0 3px 0 2px #0a0716; }
+@media (max-width: 560px) {
+  .arena-promo__fighter { width: 52px; height: 52px; background-size: 624px 52px; }
+}
+@font-face { font-family: 'ArenaPixel'; src: url('/fonts/arena-pixel.woff2') format('woff2'); font-display: swap; }
+
+/* v5: homepage embed host + placeholder (engine chunk loads lazily) */
+.arena-embed { max-width: var(--max); width: calc(100% - 2 * var(--pad)); margin: 0 auto 1.4rem; }
+.arena-embed__ph {
+  aspect-ratio: 384 / 216; max-height: 470px; width: 100%;
+  display: grid; place-items: center; border-radius: 10px;
+  background: radial-gradient(90% 160% at 0% 50%, rgba(63, 111, 216, 0.45), transparent 60%), radial-gradient(90% 160% at 100% 50%, rgba(255, 79, 139, 0.4), transparent 60%), linear-gradient(180deg, #1a1236, #0d0a1c);
+  box-shadow: 0 0 0 2px #0a0716, 0 0 0 4px #ffd23f, 0 0 0 6px #0a0716;
+  color: #ffd23f; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.08em;
+}
+@media (min-width: 861px) { .arena-embed__ph { width: calc(100% - 282px); } }
+@media (max-width: 860px) { .arena-embed { width: calc(100% - 1.2rem); margin-bottom: 1rem; } }

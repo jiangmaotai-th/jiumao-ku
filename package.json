@@ -10,7 +10,8 @@
     "generate:locale-html": "node scripts/generate-locale-html.mjs",
     "preview": "vite preview",
     "test:lang-switch": "playwright test e2e/lang-switch.spec.ts",
-    "postinstall": "mkdir -p public/ffmpeg && cp node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm public/ffmpeg/"
+    "postinstall": "mkdir -p public/ffmpeg && cp node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.js node_modules/@ffmpeg/core/dist/esm/ffmpeg-core.wasm public/ffmpeg/",
+    "test:arena-rules": "node --experimental-strip-types tests/arena/rules.check.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",

@@ -20,6 +20,7 @@ export const CATEGORY_WEIGHT: Record<Category, number> = {
 
 export const HP_MAX = 100
 export const DAMAGE_CAP = 22
+/** 共同跑分不足 6 项不开战：由选人逻辑（scripts/daily）和自选对决入口判断，本文件不使用，只作为共享常量。 */
 export const MIN_SCORED_ROUNDS = 6
 
 export interface SideScore {
@@ -61,8 +62,11 @@ export function resolveRound(r: RoundInput): RoundResult {
   const delta = Math.abs(diff)
   const gap = Math.min(1, delta / r.normSpan)
   if (delta === 0) return { winner: null, blocked: true, crit: false, gap: 0, damage: 0, showcase: false }
-  const hi = diff > 0 ? r.a : r.b
-  const lo = diff > 0 ? r.b : r.a
+  // 置信区间按“原始分数”的高低取：原始分高的一方取下边距，原始分低的一方取上边距。
+  // 和榜单方向无关（越低越好的榜单里，占优的是原始分低的一方，用它的上边距）。
+  const rawAHigher = r.a.score > r.b.score
+  const hi = rawAHigher ? r.a : r.b
+  const lo = rawAHigher ? r.b : r.a
   const hasCi = hi.ciDown != null && lo.ciUp != null
   const threshold = hasCi ? (hi.ciDown as number) + (lo.ciUp as number) : null
   const blocked = threshold != null ? delta <= threshold : gap < 0.05

@@ -19,6 +19,11 @@ assert.equal(r.blocked, true)
 // 越低越好
 r = resolveRound({ category: 'knowledge', a: { score: 10 }, b: { score: 20 }, normSpan: 20, higherIsBetter: false })
 assert.equal(r.winner, 'a')
+// 越低越好且带置信区间：A=10(ciUp 3, ciDown 9) B=20(ciUp 9, ciDown 4)。区间靠近的是 A 上边距 3 + B 下边距 4 = 7
+r = resolveRound({ category: 'knowledge', a: { score: 10, ciUp: 3, ciDown: 9 }, b: { score: 20, ciUp: 9, ciDown: 4 }, normSpan: 40, higherIsBetter: false })
+assert.equal(r.blocked, false); assert.equal(r.winner, 'a')
+r = resolveRound({ category: 'knowledge', a: { score: 10, ciUp: 6, ciDown: 1 }, b: { score: 20, ciUp: 1, ciDown: 5 }, normSpan: 40, higherIsBetter: false })
+assert.equal(r.blocked, true)
 // 鹈鹕只演出
 r = resolveRound({ category: 'pelican', a: { score: 0 }, b: { score: 0 }, normSpan: 1 })
 assert.equal(r.showcase, true); assert.equal(r.damage, 0)

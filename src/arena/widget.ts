@@ -173,6 +173,7 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
     soundBtn.setAttribute('aria-pressed', String(on))
     soundBtn.textContent = on ? copy.soundOn : copy.soundOff
   }
+  let detachUnlock = () => {}
   let savedOff = false
   try { savedOff = localStorage.getItem(SOUND_KEY) === 'off' } catch { /* */ }
   if (!embed && !savedOff) {
@@ -181,11 +182,12 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
     const UNLOCK_EVENTS = ['pointerdown', 'touchend', 'click', 'keydown'] as const
     const unlock = (e: Event) => {
       // pointerdown 在 iOS 上可能还不算激活，先试着开声，但不拆监听，等 touchend / click / keydown 再收尾。
-      if (e.type !== 'pointerdown') UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true))
+      if (e.type !== 'pointerdown') detachUnlock()
       if (soundBtn.contains(e.target as Node)) return // 用户第一下点的就是声音按钮，交给按钮处理
       if (soundBtn.getAttribute('aria-pressed') === 'true') setSound(true)
     }
     UNLOCK_EVENTS.forEach((t) => document.addEventListener(t, unlock, true))
+    detachUnlock = () => UNLOCK_EVENTS.forEach((t) => document.removeEventListener(t, unlock, true))
   }
   soundBtn.addEventListener('click', () => {
     const on = soundBtn.getAttribute('aria-pressed') !== 'true'
@@ -316,6 +318,7 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
   // (Re-mounting here re-subscribed during notification and froze the page.)
   function destroy() {
     runId++
+    detachUnlock()
     io?.disconnect()
     document.removeEventListener('visibilitychange', sync)
     engine.destroy()

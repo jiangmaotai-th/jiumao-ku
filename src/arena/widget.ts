@@ -165,12 +165,32 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
     setMusic(!musicEnabled())
     ;(e.currentTarget as HTMLElement).setAttribute('aria-pressed', String(musicEnabled()))
   })
-  $('[data-sound]')!.addEventListener('click', (e) => {
-    const btn = e.currentTarget as HTMLButtonElement
-    const on = btn.getAttribute('aria-pressed') !== 'true'
+  // 声音：/arena/ 页面默认开启（浏览器要求首次点击或触摸后才能出声），首页嵌入预览保持静音。
+  // 用户手动关掉后记住，下次不再自动打开。
+  const SOUND_KEY = 'arena-sound'
+  const soundBtn = $('[data-sound]') as HTMLButtonElement
+  const paintSound = (on: boolean) => {
+    soundBtn.setAttribute('aria-pressed', String(on))
+    soundBtn.textContent = on ? copy.soundOn : copy.soundOff
+  }
+  let savedOff = false
+  try { savedOff = localStorage.getItem(SOUND_KEY) === 'off' } catch { /* */ }
+  if (!embed && !savedOff) {
+    paintSound(true)
+    const unlock = (e: Event) => {
+      document.removeEventListener('pointerdown', unlock, true)
+      document.removeEventListener('keydown', unlock, true)
+      if (soundBtn.contains(e.target as Node)) return // 用户第一下点的就是声音按钮，交给按钮处理
+      if (soundBtn.getAttribute('aria-pressed') === 'true') setSound(true)
+    }
+    document.addEventListener('pointerdown', unlock, true)
+    document.addEventListener('keydown', unlock, true)
+  }
+  soundBtn.addEventListener('click', () => {
+    const on = soundBtn.getAttribute('aria-pressed') !== 'true'
     setSound(on)
-    btn.setAttribute('aria-pressed', String(on))
-    btn.textContent = on ? copy.soundOn : copy.soundOff
+    paintSound(on)
+    try { localStorage.setItem(SOUND_KEY, on ? 'on' : 'off') } catch { /* */ }
   })
 
   // ---- battle ----

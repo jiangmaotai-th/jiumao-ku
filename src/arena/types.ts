@@ -7,6 +7,10 @@ export type ArenaBoard = {
   totalVotes: number | null
   fetchedAt: string
   poolSpan: number
+  /** 以下三项由 AI 日报编辑的数据补上前可能缺；缺了这个榜不出招（boards.ts 校验） */
+  unit?: string
+  higherIsBetter?: boolean
+  category?: string
   models: Record<string, BoardRow>
 }
 export type Avatar = 'knight' | 'dragon' | 'mage' | 'mech' | 'whale' | 'scholar' | 'rabbit' | 'fox'

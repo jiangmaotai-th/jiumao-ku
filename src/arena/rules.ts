@@ -1,6 +1,6 @@
 /**
  * 竞技场「真实数据对决」裁判规则（纯函数，不碰画面和动画）。
- * 规则来源：/workspace/design/arena-battle-v2.md 第 3、4 节，以及 2026-10-10 群内定稿：
+ * 规则来源：docs/design/arena-battle.md 第 3、4、10 节，以及 2026-10-10 群内定稿：
  * - 完全按真实数据：无残血保护、无护盾、格挡伤害为 0（无震伤）。
  * - K.O. 后剩余回合照打，只记回合胜负，不再扣血。
  * - 胜负按 HP：先 K.O. 者输；否则 HP 高者胜；HP 相同为平局（不再比回合胜场）。
@@ -17,6 +17,9 @@ export const CATEGORY_WEIGHT: Record<Category, number> = {
   index: 1.0,
   pelican: 0,
 }
+
+/** 分数单位（arena-battle.md 6.1）。 */
+export type Unit = 'elo' | 'percent' | 'index'
 
 export const HP_MAX = 100
 export const DAMAGE_CAP = 22
@@ -38,6 +41,10 @@ export interface RoundInput {
   normSpan: number
   /** 越低越好的榜单设为 false，默认 true */
   higherIsBetter?: boolean
+  /** 测试项目 id（6.1 的 benchmark_id）；回合记录用来取显示名 */
+  benchmarkId?: string
+  /** 分数单位；回合记录显示用，不参与计算 */
+  unit?: Unit
 }
 
 export interface RoundResult {
@@ -84,6 +91,17 @@ export interface BattleRound extends RoundResult {
   hpB: number
   /** 本回合开始时是否已有一方 K.O. */
   afterKo: boolean
+  /** 回合号，从 1 起，等于出场顺序（第 10.5 节第 1 条） */
+  round: number
+  /** 以下透传自 RoundInput，回合记录只读这里，不另算（10.5 第 2、3 条） */
+  category: Category
+  benchmarkId: string | null
+  scoreA: number
+  scoreB: number
+  higherIsBetter: boolean
+  unit: Unit | null
+  /** 本回合打出 K.O.（终结技），10.5 第 5 条 */
+  koHere: boolean
 }
 
 export interface BattleResult {
@@ -91,6 +109,8 @@ export interface BattleResult {
   hpA: number
   hpB: number
   ko: 'a' | 'b' | null
+  /** K.O. 发生的回合号（BattleRound.round），没有 K.O. 为 null */
+  koRound: number | null
   outcome: 'a' | 'b' | 'draw'
   decidedBy: 'ko' | 'hp' | 'draw'
   roundWinsA: number
@@ -105,7 +125,8 @@ export function resolveBattle(inputs: RoundInput[]): BattleResult {
   let ko: 'a' | 'b' | null = null
   let roundWinsA = 0
   let roundWinsB = 0
-  const rounds: BattleRound[] = inputs.map((inp) => {
+  let koRound: number | null = null
+  const rounds: BattleRound[] = inputs.map((inp, i) => {
     const res = resolveRound(inp)
     const afterKo = ko !== null
     let applied = 0
@@ -116,7 +137,14 @@ export function resolveBattle(inputs: RoundInput[]): BattleResult {
       if (res.winner === 'a') { applied = Math.min(res.damage, hpB); hpB -= applied; if (hpB === 0) ko = 'b' }
       else { applied = Math.min(res.damage, hpA); hpA -= applied; if (hpA === 0) ko = 'a' }
     }
-    return { ...res, applied, hpA, hpB, afterKo }
+    const koHere = !afterKo && ko !== null
+    if (koHere) koRound = i + 1
+    return {
+      ...res, applied, hpA, hpB, afterKo, round: i + 1, koHere,
+      category: inp.category, benchmarkId: inp.benchmarkId ?? null,
+      scoreA: inp.a.score, scoreB: inp.b.score,
+      higherIsBetter: inp.higherIsBetter !== false, unit: inp.unit ?? null,
+    }
   })
   let outcome: 'a' | 'b' | 'draw'
   let decidedBy: 'ko' | 'hp' | 'draw'
@@ -124,7 +152,7 @@ export function resolveBattle(inputs: RoundInput[]): BattleResult {
   else if (hpA !== hpB) { outcome = hpA > hpB ? 'a' : 'b'; decidedBy = 'hp' }
   else { outcome = 'draw'; decidedBy = 'draw' }
   const showUnderdogNote = outcome === 'a' ? roundWinsA < roundWinsB : outcome === 'b' ? roundWinsB < roundWinsA : false
-  return { rounds, hpA, hpB, ko, outcome, decidedBy, roundWinsA, roundWinsB, showUnderdogNote }
+  return { rounds, hpA, hpB, ko, koRound, outcome, decidedBy, roundWinsA, roundWinsB, showUnderdogNote }
 }
 
 /** 时长（秒）。只许多不许少：每回合时长向上取到 0.01s。 */

@@ -1,3 +1,4 @@
+import { buildMatchInputs, type MatchInputs } from './boards'
 import type { ArenaBoard, ArenaData, ArenaModel, ArenaVendor, Avatar } from './types'
 import { arenaMessages, type ArenaMessages } from '../i18n/arena'
 import { getLocale } from '../i18n'
@@ -15,7 +16,7 @@ type IndexJson = {
   date: string
   updatedAt: string
   source: string
-  boards: { k: string; url: string; upd: string | null; tv: number | null; at: string; span: number; n: number }[]
+  boards: { k: string; url: string; upd: string | null; tv: number | null; at: string; span: number; n: number; unit?: string; higherIsBetter?: boolean; category?: string }[]
   vendors: [string, string, string, string, number][]
   models: [string, string, number, number, number, number][]
   featured: { left: string; right: string; reason?: string }
@@ -36,7 +37,7 @@ function putRows(d: ArenaData, rows: Record<string, Record<string, Row5>>) {
 }
 
 function fromIndex(j: IndexJson): ArenaData {
-  const boards: ArenaBoard[] = j.boards.map((b) => ({ key: b.k, source: j.source, url: b.url, leaderboardUpdated: b.upd, totalVotes: b.tv, fetchedAt: b.at, poolSpan: b.span, models: {} }))
+  const boards: ArenaBoard[] = j.boards.map((b) => ({ key: b.k, source: j.source, url: b.url, leaderboardUpdated: b.upd, totalVotes: b.tv, fetchedAt: b.at, poolSpan: b.span, unit: b.unit, higherIsBetter: b.higherIsBetter, category: b.category, models: {} }))
   const vendors: Record<string, ArenaVendor> = {}
   for (const [id, name, avatar, color, count] of j.vendors) vendors[id] = { id, name, avatar: avatar as Avatar, color, count }
   const models: Record<string, ArenaModel> = {}
@@ -130,3 +131,10 @@ export function mountArenaPromo(before: HTMLElement | null) {
 }
 
 export { localized as arenaHref }
+
+/** 两位模型的回合输入；元数据不合格的榜跳过，原因只在开发环境控制台打印（10.6 第 8 条）。 */
+export function matchInputs(d: ArenaData, leftId: string, rightId: string): MatchInputs {
+  const m = buildMatchInputs(d.boards, leftId, rightId)
+  if (import.meta.env.DEV) for (const s of m.skipped) console.warn(`[arena] 跳过榜单 ${s.key}：${s.reason}`)
+  return m
+}

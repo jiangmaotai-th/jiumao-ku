@@ -126,7 +126,8 @@ export function setLocale(
   if (typeof document !== 'undefined') {
     document.documentElement.lang = locale
   }
-  listeners.forEach((fn) => fn(locale))
+  // snapshot: listeners may (un)subscribe while being notified
+  ;[...listeners].forEach((fn) => fn(locale))
 
   const shouldNavigate = options?.navigate !== false
   if (shouldNavigate && typeof location !== 'undefined') {

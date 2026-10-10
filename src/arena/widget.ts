@@ -3,7 +3,7 @@
  * homepage embed (lazy chunk) and the /arena/ page.
  */
 import './arena.css'
-import { getLocale, onLocaleChange } from '../i18n'
+import { getLocale } from '../i18n'
 import { arenaExtra } from '../i18n/arena-extra'
 import { audioLog, musicEnabled, renderOffline, setMusic, setSound, sfx, toWav } from './audio'
 import { computeBattle, predictLeft } from './battle'
@@ -291,14 +291,10 @@ export function mountArena(host: HTMLElement, opts: WidgetOpts = {}): { destroy:
     void start(L, R)
   })
 
-  const off = onLocaleChange(() => {
-    // language switched without a reload: rebuild with the new copy
-    destroy()
-    mountArena(host, opts)
-  })
+  // setLocale navigates to the new locale URL, so no in-place rebuild is needed.
+  // (Re-mounting here re-subscribed during notification and froze the page.)
   function destroy() {
     runId++
-    off()
     io?.disconnect()
     document.removeEventListener('visibilitychange', sync)
     engine.destroy()

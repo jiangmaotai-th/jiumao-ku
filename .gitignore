@@ -44,3 +44,9 @@ public/ai-skills/
 public/arena-data/
 data/serials.json
 data/goose-board.json
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

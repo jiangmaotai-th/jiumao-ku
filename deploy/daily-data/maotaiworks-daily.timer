@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily 07:30 Asia/Shanghai update of arena, AI news, and skills
+
+[Timer]
+OnCalendar=*-*-* 07:30:00
+Timezone=Asia/Shanghai
+Persistent=true
+Unit=maotaiworks-daily.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=maotaiworks.com daily arena, AI news, and skills update
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/maotaiworks-daily
+EnvironmentFile=-/etc/maotaiworks/daily.env
+# install.sh replaces NODE_BIN with the absolute node path
+ExecStart=NODE_BIN /opt/maotaiworks-daily/bin/run.mjs --all
+Nice=10

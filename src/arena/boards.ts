@@ -6,12 +6,27 @@
  */
 import type { Category, RoundInput, Unit } from './rules'
 
-export const SCORED_CATEGORIES = ['arena', 'code', 'math', 'knowledge', 'index'] as const
+/** 计分类别的出场顺序（arena-battle.md 2.1）。鹈鹕权重 0，不占灰槽。 */
+export const SCORED_CATEGORIES = ['arena', 'creative', 'vision', 'knowledge', 'math', 'code', 'index'] as const
 export type ScoredCategory = (typeof SCORED_CATEGORIES)[number]
 const UNITS: readonly Unit[] = ['elo', 'percent', 'index']
 export type BoardCategory = ScoredCategory | 'pelican'
-/** 规范值沿用 rules.ts；文档 6.1 的 `coding` / `showcase` 只作别名收（规范名待天宏定） */
-const CATEGORY_ALIAS: Record<string, BoardCategory> = { arena: 'arena', code: 'code', coding: 'code', math: 'math', knowledge: 'knowledge', index: 'index', pelican: 'pelican', showcase: 'pelican' }
+/**
+ * 规范 id 是 rules.ts 的 Category。
+ * `coding`→code、`showcase`→pelican 是文档 6.1 的临时别名，两套名字定稿后删除未选用的一套。
+ */
+const CATEGORY_ALIAS: Record<string, BoardCategory> = {
+  arena: 'arena',
+  creative: 'creative',
+  vision: 'vision',
+  code: 'code',
+  coding: 'code',
+  math: 'math',
+  knowledge: 'knowledge',
+  index: 'index',
+  pelican: 'pelican',
+  showcase: 'pelican',
+}
 
 export interface BoardMeta { unit: Unit; higherIsBetter: boolean; category: BoardCategory }
 export type BoardCheck = { ok: true; meta: BoardMeta } | { ok: false; reason: string }
@@ -38,7 +53,7 @@ export interface BoardLike {
 export interface SkippedBoard { key: string; reason: string }
 export interface MatchInputs {
   inputs: RoundInput[]
-  /** 五个计分类别里一条可同台榜单都没有的 → 灰槽「无共同数据」 */
+  /** 计分类别里一条可同台榜单都没有的 → 灰槽「无共同数据」 */
   noShared: ScoredCategory[]
   skipped: SkippedBoard[]
 }

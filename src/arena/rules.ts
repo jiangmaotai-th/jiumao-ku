@@ -7,13 +7,26 @@
  * - 时长：开场 6s + 结算 8s + 计分回合平分 46s（每回合 6.5–9s）；鹈鹕展示回合另加 6.5s。总时长只许多不许少。
  */
 
-export type Category = 'arena' | 'code' | 'math' | 'knowledge' | 'index' | 'pelican'
+/** 出场顺序见 boards.ts 的 SCORED_CATEGORIES（arena-battle.md 2.1）。 */
+export type Category =
+  | 'arena'
+  | 'creative'
+  | 'vision'
+  | 'knowledge'
+  | 'math'
+  | 'code'
+  | 'index'
+  | 'pelican'
 
 export const CATEGORY_WEIGHT: Record<Category, number> = {
   arena: 1.0,
-  code: 1.2,
-  math: 0.8,
+  /** Arena.ai 创意写作。设计稿未另定权重，与其余计分类同为 1.0。 */
+  creative: 1.0,
+  /** Arena.ai 视觉。设计稿未另定权重，与其余计分类同为 1.0。 */
+  vision: 1.0,
   knowledge: 1.0,
+  math: 0.8,
+  code: 1.2,
   index: 1.0,
   pelican: 0,
 }

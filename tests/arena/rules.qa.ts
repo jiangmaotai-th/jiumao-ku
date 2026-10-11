@@ -35,7 +35,7 @@ import {
   roundDuration,
 } from '../../src/arena/rules.ts'
 
-/** @typedef {'arena'|'code'|'math'|'knowledge'|'index'|'pelican'} Cat */
+/** @typedef {'arena'|'creative'|'vision'|'knowledge'|'math'|'code'|'index'|'pelican'} Cat */
 /** @typedef {'a'|'b'|null} Side */
 
 /**
@@ -90,8 +90,10 @@ function assertClose(actual, expected, label) {
 }
 
 describe('常量与类别权重', () => {
-  test('权重：代码 1.2、数学 0.8、盲测/知识/综合 1.0、鹈鹕 0', () => {
+  test('权重：代码 1.2、数学 0.8、盲测/创意写作/视觉/知识/综合 1.0、鹈鹕 0', () => {
     assert.equal(CATEGORY_WEIGHT.arena, 1)
+    assert.equal(CATEGORY_WEIGHT.creative, 1)
+    assert.equal(CATEGORY_WEIGHT.vision, 1)
     assert.equal(CATEGORY_WEIGHT.knowledge, 1)
     assert.equal(CATEGORY_WEIGHT.index, 1)
     assert.equal(CATEGORY_WEIGHT.code, 1.2)
@@ -155,6 +157,16 @@ describe('单回合：伤害、格挡、暴击、权重', () => {
     {
       name: 'g=0.20 盲测权重 1.0：14',
       input: board('arena', side(80), side(60), 100),
+      winner: 'a', blocked: false, crit: false, damage: 14, gap: 0.2,
+    },
+    {
+      name: 'g=0.20 创意写作权重 1.0：14，不是展示',
+      input: board('creative', side(80), side(60), 100),
+      winner: 'a', blocked: false, crit: false, damage: 14, gap: 0.2,
+    },
+    {
+      name: 'g=0.20 视觉权重 1.0：14，不是展示',
+      input: board('vision', side(80), side(60), 100),
       winner: 'a', blocked: false, crit: false, damage: 14, gap: 0.2,
     },
     {

@@ -10,12 +10,12 @@
  * `elo` | `percent` | `index`, and tests/arena/boards.check.ts rejects `Elo`.
  * All current Arena.ai boards are Bradley-Terry scores, so the value is `elo`.
  *
- * Category values follow the owner's list. `creative` and `vision` are not in
- * the frontend BoardCategory yet (`arena` | `code` | `math` | `knowledge` |
- * `index` | `pelican`); they are still emitted as specified.
+ * Category values follow the owner's list. `creative` and `vision` are in the
+ * frontend BoardCategory (`feat/arena-v2-data` boards.ts).
  *
  * A key missing from ARENA_BOARD_META_BY_KEY has no known mapping. Callers
- * must fail the release instead of guessing a category.
+ * omit that board and log it. They do not guess a category. A mapped board
+ * whose unit, higherIsBetter, or category is invalid fails the release.
  */
 
 export const ARENA_BOARD_CATEGORIES = Object.freeze([
@@ -47,28 +47,25 @@ for (const [key, meta] of Object.entries(ARENA_BOARD_META_BY_KEY)) {
   }
 }
 
+export function hasArenaBoardMapping(key) {
+  return typeof key === 'string' && Object.hasOwn(ARENA_BOARD_META_BY_KEY, key)
+}
+
 export function arenaBoardMeta(key) {
-  if (typeof key !== 'string' || !Object.hasOwn(ARENA_BOARD_META_BY_KEY, key)) {
+  if (!hasArenaBoardMapping(key)) {
     throw new Error(`arena board ${JSON.stringify(key)} has no category mapping`)
   }
   const meta = ARENA_BOARD_META_BY_KEY[key]
+  if (typeof meta.unit !== 'string' || !meta.unit) {
+    throw new Error(`arena board ${JSON.stringify(key)} unit is invalid`)
+  }
+  if (typeof meta.higherIsBetter !== 'boolean') {
+    throw new Error(`arena board ${JSON.stringify(key)} higherIsBetter is invalid`)
+  }
   if (!CATEGORY_SET.has(meta.category)) {
     throw new Error(`arena board ${JSON.stringify(key)} category ${JSON.stringify(meta.category)} is not allowed`)
   }
   return { unit: meta.unit, higherIsBetter: meta.higherIsBetter, category: meta.category }
-}
-
-/** Every key that cannot be labeled. Order follows `keys`. */
-export function unmappedArenaBoardKeys(keys) {
-  const missing = []
-  for (const key of keys) {
-    try {
-      arenaBoardMeta(key)
-    } catch {
-      missing.push(key)
-    }
-  }
-  return missing
 }
 
 export function assertArenaBoardFields(board, key) {

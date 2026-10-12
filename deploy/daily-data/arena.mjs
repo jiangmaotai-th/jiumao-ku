@@ -4,7 +4,7 @@ import { parquetReadObjects } from 'hyparquet'
 import { compressors } from 'hyparquet-compressors'
 import { fetchBuffer, fetchText } from './lib/rss.mjs'
 import { writeJsonAtomic } from './lib/atomic.mjs'
-import { assertArenaBoardFields, arenaBoardMeta, unmappedArenaBoardKeys } from './lib/board-meta.mjs'
+import { assertArenaBoardFields, arenaBoardMeta, hasArenaBoardMapping } from './lib/board-meta.mjs'
 import { daysBetween, formatLeaderboardDate, shanghaiParts } from './lib/time.mjs'
 
 const DATASET = 'https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset'
@@ -306,16 +306,26 @@ function scoreOf(row) {
  * Pure builder. `tables` is the per-board row map from fetchLeaderboards.
  * `seen` is the previous seen.json or null.
  * `boardList` defaults to every Arena.ai board. A key with no entry in
- * lib/board-meta.mjs throws before a release exists, so publish keeps
- * yesterday's files. Do not drop those boards and continue.
+ * lib/board-meta.mjs is omitted from the release and logged once as
+ * `arena skip board=<key> reason=no-category`. The rest are published.
+ * Zero mapped boards, or invalid metadata on a mapped board, throws before
+ * a release exists so publish keeps yesterday's files.
  */
-export function buildArenaRelease({ tables, seen, now = new Date(), boardList = BOARDS }) {
-  const missing = unmappedArenaBoardKeys(boardList.map((board) => board.key))
-  if (missing.length) {
-    throw new Error(`arena boards have no category mapping: ${missing.join(', ')}`)
+export function buildArenaRelease({ tables, seen, now = new Date(), boardList = BOARDS, log }) {
+  const skipped = []
+  const mappedBoards = []
+  for (const board of boardList) {
+    if (!hasArenaBoardMapping(board.key)) skipped.push(board.key)
+    else mappedBoards.push(board)
+  }
+  for (const key of skipped) log?.info(`arena skip board=${key} reason=no-category`)
+  for (const board of mappedBoards) arenaBoardMeta(board.key)
+  if (!mappedBoards.length) {
+    const detail = skipped.length ? `: ${skipped.join(', ')}` : ''
+    throw new Error(`arena boards have no category mapping${detail}`)
   }
   const clock = shanghaiParts(now)
-  const boardKeys = boardList.map((board) => board.key)
+  const boardKeys = mappedBoards.map((board) => board.key)
   for (const key of boardKeys) {
     if (!tables[key]?.rows?.length) throw new Error(`missing board ${key}`)
   }
@@ -476,7 +486,7 @@ export function buildArenaRelease({ tables, seen, now = new Date(), boardList = 
     vendorFiles[vendor] = file
   }
 
-  const boards = boardList.map((board) => {
+  const boards = mappedBoards.map((board) => {
     const voteSum = [...cells[board.key].values()].reduce((sum, row) => sum + row.votes, 0)
     return {
       k: board.key,
@@ -524,7 +534,7 @@ export function buildArenaRelease({ tables, seen, now = new Date(), boardList = 
       boards: boardsForModel,
     }
   }
-  const latestBoards = boardList.map((board) => ({
+  const latestBoards = mappedBoards.map((board) => ({
     key: board.key,
     source: SOURCE,
     url: board.url,
@@ -663,7 +673,7 @@ export async function runArena({ dir, log }) {
   const tables = await fetchLeaderboards(log)
   if (tables.text.rows.length < 30) throw new Error(`text board too small: ${tables.text.rows.length}`)
   const seen = await loadSeen(dir)
-  const release = buildArenaRelease({ tables, seen })
+  const release = buildArenaRelease({ tables, seen, log })
   assertArenaRelease(release)
   await publishArena(dir, release)
   log.info(`arena published date=${release.date} models=${release.index.models.length} featured=${release.index.featured.left} vs ${release.index.featured.right} updatedAt=${release.index.updatedAt}`)

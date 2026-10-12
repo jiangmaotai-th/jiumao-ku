@@ -15,7 +15,7 @@
 
 来源一条都没有，或竞技场榜单缺榜、分数不像公开分，则保留昨天的文件，进程以退出码 1 结束。不会写空期，也不会删除 `dist` 里的其他文件。
 
-每个写进 `arena-data` 的榜（`index.json`、`latest.json`，以及当天的 `index-YYYY-MM-DD.json`、`YYYY-MM-DD.json`）都带 `unit`、`higherIsBetter`、`category`。映射只在 `lib/board-meta.mjs`：现在的 Arena.ai 榜是 Bradley-Terry 分，`unit` 为 `elo`（前端枚举是小写），`higherIsBetter` 为 `true`。类别按主人定的对应关系：文本总榜 `arena`，coding 和 webdev `code`，math `math`，creative writing `creative`，vision `vision`。没有映射的榜（目前是 search、document、i2webdev、t2i、t2v、i2v、vedit）会让本次竞技场发布失败并留下昨天的文件，不会猜一个类别。
+每个写进 `arena-data` 的榜（`index.json`、`latest.json`，以及当天的 `index-YYYY-MM-DD.json`、`YYYY-MM-DD.json`）都带 `unit`、`higherIsBetter`、`category`。映射只在 `lib/board-meta.mjs`：现在的 Arena.ai 榜是 Bradley-Terry 分，`unit` 为 `elo`，`higherIsBetter` 为 `true`。类别按主人定的对应关系：文本总榜 `arena`，coding 和 webdev `code`，math `math`，creative writing `creative`，vision `vision`。没有映射的榜（目前是 search、document、i2webdev、t2i、t2v、i2v、vedit）不写入这四个文件，每条打一行日志 `arena skip board=<key> reason=no-category`，其余榜照常发布。一个映射上的榜都没有，或某个已映射榜的元数据不合法，才保留昨天的文件并以退出码 1 结束。
 
 ## 服务器上要做的事
 

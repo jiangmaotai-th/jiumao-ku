@@ -5,6 +5,7 @@ import path from 'node:path'
 import test from 'node:test'
 import { BOARDS, buildArenaRelease, publishArena } from '../arena.mjs'
 import { ARENA_BOARD_CATEGORIES, ARENA_BOARD_META_BY_KEY, arenaBoardMeta } from '../lib/board-meta.mjs'
+import { createLogger } from '../lib/log.mjs'
 
 const EXPECTED = {
   text: 'arena',
@@ -42,6 +43,10 @@ function tablesFrom(models, boards) {
   return tables
 }
 
+function skipLine(key) {
+  return `arena skip board=${key} reason=no-category`
+}
+
 function fixtureModels() {
   return [
     ['claude-opus-5.5-high', 'anthropic'],
@@ -68,29 +73,31 @@ test('board metadata map is the owner mapping and nothing else', () => {
   }
 })
 
-test('the full Arena.ai catalog fails loudly and does not guess a category', () => {
+test('unmapped boards are omitted and logged; mapped boards are published', async () => {
   assert.deepEqual(BOARDS.map((board) => board.key), [
     'text', 'coding', 'math', 'creative', 'webdev', 'vision', ...UNMAPPED,
   ])
-  assert.throws(
-    () => buildArenaRelease({
-      tables: {},
-      seen: null,
-      now: new Date('2026-10-11T00:30:00Z'),
-    }),
-    new RegExp(`arena boards have no category mapping: ${UNMAPPED.join(', ')}`),
-  )
-})
-
-test('fixture publish writes unit, higherIsBetter, and category on every board', async () => {
-  const boardList = mappedBoardList()
+  const dir = await mkdtemp(path.join(tmpdir(), 'maotai-board-meta-'))
+  const log = createLogger(path.join(dir, 'daily.log'))
+  const lines = []
+  const spy = {
+    info(msg) {
+      lines.push(msg)
+      log.info(msg)
+    },
+  }
+  const mapped = mappedBoardList()
   const release = buildArenaRelease({
-    tables: tablesFrom(fixtureModels(), boardList),
+    tables: tablesFrom(fixtureModels(), BOARDS),
     seen: { seededAt: '2026-10-01', models: {} },
     now: new Date('2026-10-11T00:30:00Z'),
-    boardList,
+    log: spy,
   })
-  const dir = await mkdtemp(path.join(tmpdir(), 'maotai-board-meta-'))
+  assert.deepEqual(lines, UNMAPPED.map(skipLine))
+  assert.deepEqual(release.index.boards.map((board) => board.k), mapped.map((board) => board.key))
+  assert.deepEqual(release.latest.boards.map((board) => board.key), mapped.map((board) => board.key))
+  const logged = await readFile(path.join(dir, 'daily.log'), 'utf8')
+  for (const key of UNMAPPED) assert.match(logged, new RegExp(`INFO ${skipLine(key)}`))
   await publishArena(dir, release)
   const files = [
     'arena-data/index.json',
@@ -100,7 +107,9 @@ test('fixture publish writes unit, higherIsBetter, and category on every board',
   ]
   for (const rel of files) {
     const body = JSON.parse(await readFile(path.join(dir, rel), 'utf8'))
-    assert.equal(body.boards.length, boardList.length)
+    const keys = body.boards.map((board) => board.k || board.key)
+    assert.deepEqual(keys, mapped.map((board) => board.key))
+    for (const key of UNMAPPED) assert.equal(keys.includes(key), false)
     for (const board of body.boards) {
       const key = board.k || board.key
       assert.deepEqual(
@@ -111,13 +120,34 @@ test('fixture publish writes unit, higherIsBetter, and category on every board',
   }
 })
 
+test('a catalog with no mapped boards fails and still logs each skip', async () => {
+  const dir = await mkdtemp(path.join(tmpdir(), 'maotai-board-none-'))
+  const indexPath = path.join(dir, 'arena-data', 'index.json')
+  await mkdir(path.dirname(indexPath), { recursive: true })
+  const yesterday = '{"keep":true}\n'
+  await writeFile(indexPath, yesterday)
+  const lines = []
+  const unmapped = BOARDS.filter((board) => UNMAPPED.includes(board.key))
+  assert.throws(
+    () => buildArenaRelease({
+      tables: {},
+      seen: null,
+      now: new Date('2026-10-11T00:30:00Z'),
+      boardList: unmapped,
+      log: { info(msg) { lines.push(msg) } },
+    }),
+    new RegExp(`arena boards have no category mapping: ${UNMAPPED.join(', ')}`),
+  )
+  assert.deepEqual(lines, UNMAPPED.map(skipLine))
+  assert.equal(await readFile(indexPath, 'utf8'), yesterday)
+})
+
 test('a bad category or unit does not replace yesterday’s arena files', async () => {
-  const boardList = mappedBoardList()
   const release = buildArenaRelease({
-    tables: tablesFrom(fixtureModels(), boardList),
+    tables: tablesFrom(fixtureModels(), BOARDS),
     seen: null,
     now: new Date('2026-10-11T00:30:00Z'),
-    boardList,
+    log: { info() {} },
   })
   const dir = await mkdtemp(path.join(tmpdir(), 'maotai-board-keep-'))
   const indexPath = path.join(dir, 'arena-data', 'index.json')

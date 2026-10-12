@@ -53,17 +53,17 @@ test('arena release matches the index.json contract and can fight', () => {
     ['qwen3.8-max', 'alibaba'],
     ['qwen3.7-max-preview', 'alibaba'],
   ].map(([id, org], index) => ({ id, org, base: 1520 - index }))
-  const boardList = mappedBoardList()
+  const mappedKeys = mappedBoardList().map((board) => board.key)
   const release = buildArenaRelease({
     tables: tablesFrom(models),
     seen: { seededAt: '2026-10-01', models: Object.fromEntries(models.map((model) => [model.id, '2026-10-01'])) },
     now: new Date('2026-10-11T00:30:00Z'),
-    boardList,
   })
   assert.equal(release.index.v, 2)
   assert.equal(release.index.date, '2026-10-11')
   assert.match(release.index.updatedAt, /\+08:00$/)
-  assert.equal(release.index.boards.length, boardList.length)
+  assert.deepEqual(release.index.boards.map((board) => board.k), mappedKeys)
+  assert.deepEqual(release.latest.boards.map((board) => board.key), mappedKeys)
   assert.ok(release.index.boards.every((board) => board.span >= 30))
   for (const board of release.index.boards) {
     assert.deepEqual(arenaBoardMeta(board.k), { unit: board.unit, higherIsBetter: board.higherIsBetter, category: board.category })
@@ -88,7 +88,6 @@ test('arena release matches the index.json contract and can fight', () => {
     tables: tablesFrom([...models, { id: newcomer, org: 'deepseek', base: 1400 }]),
     seen: release.seen,
     now: new Date('2026-10-11T00:30:00Z'),
-    boardList,
   })
   const added = again.index.models.find((row) => row[0] === newcomer)
   assert.equal(added[5] & 1, 1)
@@ -390,7 +389,6 @@ test('arena seen.json keeps departed models and is not replaced when unreadable'
     tables: tablesFrom(models),
     seen: prior,
     now: new Date('2026-10-11T00:30:00Z'),
-    boardList: mappedBoardList(),
   })
   assert.equal(release.seen.models['gone-model'], '2026-09-01')
   const dir = await mkdtemp(path.join(tmpdir(), 'maotai-seen-'))

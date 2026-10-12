@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 import { BOARDS, buildArenaRelease, publishArena } from '../arena.mjs'
+import { ARENA_BOARD_META_BY_KEY, arenaBoardMeta } from '../lib/board-meta.mjs'
 import { buildDigest, publishDigest } from '../digest.mjs'
 import { capPerRepo, mentionsAi, releaseTitle } from '../lib/collect.mjs'
 import { parseFeed } from '../lib/rss.mjs'
@@ -18,6 +19,10 @@ const log = createLogger('')
 
 function row(model, org, rating, rank, votes = 5000) {
   return { model, org, rating, ratingLower: rating - 8, ratingUpper: rating + 8, votes, rank }
+}
+
+function mappedBoardList() {
+  return BOARDS.filter((board) => Object.hasOwn(ARENA_BOARD_META_BY_KEY, board.key))
 }
 
 function tablesFrom(models) {
@@ -48,6 +53,7 @@ test('arena release matches the index.json contract and can fight', () => {
     ['qwen3.8-max', 'alibaba'],
     ['qwen3.7-max-preview', 'alibaba'],
   ].map(([id, org], index) => ({ id, org, base: 1520 - index }))
+  const mappedKeys = mappedBoardList().map((board) => board.key)
   const release = buildArenaRelease({
     tables: tablesFrom(models),
     seen: { seededAt: '2026-10-01', models: Object.fromEntries(models.map((model) => [model.id, '2026-10-01'])) },
@@ -56,8 +62,15 @@ test('arena release matches the index.json contract and can fight', () => {
   assert.equal(release.index.v, 2)
   assert.equal(release.index.date, '2026-10-11')
   assert.match(release.index.updatedAt, /\+08:00$/)
-  assert.equal(release.index.boards.length, 13)
+  assert.deepEqual(release.index.boards.map((board) => board.k), mappedKeys)
+  assert.deepEqual(release.latest.boards.map((board) => board.key), mappedKeys)
   assert.ok(release.index.boards.every((board) => board.span >= 30))
+  for (const board of release.index.boards) {
+    assert.deepEqual(arenaBoardMeta(board.k), { unit: board.unit, higherIsBetter: board.higherIsBetter, category: board.category })
+  }
+  for (const board of release.latest.boards) {
+    assert.deepEqual(arenaBoardMeta(board.key), { unit: board.unit, higherIsBetter: board.higherIsBetter, category: board.category })
+  }
   assert.equal(release.latest.version, 1)
   assert.equal(release.latest.updatedAt, release.index.updatedAt)
   const data = fromIndex(release.index)

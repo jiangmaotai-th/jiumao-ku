@@ -4,6 +4,7 @@ import { parquetReadObjects } from 'hyparquet'
 import { compressors } from 'hyparquet-compressors'
 import { fetchBuffer, fetchText } from './lib/rss.mjs'
 import { writeJsonAtomic } from './lib/atomic.mjs'
+import { assertArenaBoardFields, arenaBoardMeta, hasArenaBoardMapping } from './lib/board-meta.mjs'
 import { daysBetween, formatLeaderboardDate, shanghaiParts } from './lib/time.mjs'
 
 const DATASET = 'https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset'
@@ -304,10 +305,27 @@ function scoreOf(row) {
 /**
  * Pure builder. `tables` is the per-board row map from fetchLeaderboards.
  * `seen` is the previous seen.json or null.
+ * `boardList` defaults to every Arena.ai board. A key with no entry in
+ * lib/board-meta.mjs is omitted from the release and logged once as
+ * `arena skip board=<key> reason=no-category`. The rest are published.
+ * Zero mapped boards, or invalid metadata on a mapped board, throws before
+ * a release exists so publish keeps yesterday's files.
  */
-export function buildArenaRelease({ tables, seen, now = new Date() }) {
+export function buildArenaRelease({ tables, seen, now = new Date(), boardList = BOARDS, log }) {
+  const skipped = []
+  const mappedBoards = []
+  for (const board of boardList) {
+    if (!hasArenaBoardMapping(board.key)) skipped.push(board.key)
+    else mappedBoards.push(board)
+  }
+  for (const key of skipped) log?.info(`arena skip board=${key} reason=no-category`)
+  for (const board of mappedBoards) arenaBoardMeta(board.key)
+  if (!mappedBoards.length) {
+    const detail = skipped.length ? `: ${skipped.join(', ')}` : ''
+    throw new Error(`arena boards have no category mapping${detail}`)
+  }
   const clock = shanghaiParts(now)
-  const boardKeys = BOARDS.map((board) => board.key)
+  const boardKeys = mappedBoards.map((board) => board.key)
   for (const key of boardKeys) {
     if (!tables[key]?.rows?.length) throw new Error(`missing board ${key}`)
   }
@@ -468,7 +486,7 @@ export function buildArenaRelease({ tables, seen, now = new Date() }) {
     vendorFiles[vendor] = file
   }
 
-  const boards = BOARDS.map((board) => {
+  const boards = mappedBoards.map((board) => {
     const voteSum = [...cells[board.key].values()].reduce((sum, row) => sum + row.votes, 0)
     return {
       k: board.key,
@@ -478,6 +496,7 @@ export function buildArenaRelease({ tables, seen, now = new Date() }) {
       at: clock.iso,
       span: spanOf[board.key],
       n: counts[board.key],
+      ...arenaBoardMeta(board.key),
     }
   })
 
@@ -515,7 +534,7 @@ export function buildArenaRelease({ tables, seen, now = new Date() }) {
       boards: boardsForModel,
     }
   }
-  const latestBoards = BOARDS.map((board) => ({
+  const latestBoards = mappedBoards.map((board) => ({
     key: board.key,
     source: SOURCE,
     url: board.url,
@@ -523,6 +542,7 @@ export function buildArenaRelease({ tables, seen, now = new Date() }) {
     totalVotes: boards.find((item) => item.k === board.key).tv,
     fetchedAt: clock.iso,
     poolSpan: spanOf[board.key],
+    ...arenaBoardMeta(board.key),
     models: Object.fromEntries(hot.filter((id) => cells[board.key].has(id)).map((id) => {
       const scored = scoreOf(cells[board.key].get(id))
       return [id, { score: scored.score, ciUp: scored.ciUp, ciDown: scored.ciDown, votes: scored.votes, preliminary: false }]
@@ -552,15 +572,21 @@ export function assertArenaRelease(release) {
   if (index.v !== 2) throw new Error('arena index v')
   if (!/^\d{4}-\d{2}-\d{2}$/.test(index.date)) throw new Error('arena date')
   if (!index.updatedAt) throw new Error('arena updatedAt')
-  if (!Array.isArray(index.boards) || index.boards.length !== BOARDS.length) throw new Error('arena boards')
+  if (!Array.isArray(index.boards) || !index.boards.length) throw new Error('arena boards')
   if (!Array.isArray(index.vendors) || !index.vendors.length) throw new Error('arena vendors')
   if (!Array.isArray(index.models) || index.models.length < 4) throw new Error('arena models')
   if (!index.models.some((row) => row[0] === index.featured.left)) throw new Error('featured left missing')
   if (!index.models.some((row) => row[0] === index.featured.right)) throw new Error('featured right missing')
   if (index.featured.left === index.featured.right) throw new Error('featured pair')
+  const catalog = BOARDS.map((board) => board.key)
+  let lastCatalogIndex = -1
   for (const board of index.boards) {
+    const at = catalog.indexOf(board.k)
+    if (at <= lastCatalogIndex) throw new Error(`arena board order ${board.k}`)
+    lastCatalogIndex = at
     if (!(board.span >= 30)) throw new Error(`poolSpan ${board.k}`)
     if (!(board.n >= 3)) throw new Error(`count ${board.k}`)
+    assertArenaBoardFields(board, board.k)
   }
   for (const id of [index.featured.left, index.featured.right]) {
     const rows = index.inline[id]
@@ -579,7 +605,15 @@ export function assertArenaRelease(release) {
   if (!latest.models[latest.featured.left] || !latest.models[latest.featured.right]) {
     throw new Error('latest featured missing')
   }
-  if (!Array.isArray(latest.boards) || !latest.models) throw new Error('latest shape')
+  if (!Array.isArray(latest.boards) || latest.boards.length !== index.boards.length || !latest.models) {
+    throw new Error('latest shape')
+  }
+  for (let i = 0; i < index.boards.length; i++) {
+    const indexBoard = index.boards[i]
+    const latestBoard = latest.boards[i]
+    if (latestBoard?.key !== indexBoard.k) throw new Error(`latest board order ${latestBoard?.key}`)
+    assertArenaBoardFields(latestBoard, indexBoard.k)
+  }
   const text = latest.boards.find((board) => board.key === 'text')
   const pair = text?.models?.[latest.featured.left] && text?.models?.[latest.featured.right]
   if (!pair) throw new Error('featured pair has no text scores')
@@ -639,7 +673,7 @@ export async function runArena({ dir, log }) {
   const tables = await fetchLeaderboards(log)
   if (tables.text.rows.length < 30) throw new Error(`text board too small: ${tables.text.rows.length}`)
   const seen = await loadSeen(dir)
-  const release = buildArenaRelease({ tables, seen })
+  const release = buildArenaRelease({ tables, seen, log })
   assertArenaRelease(release)
   await publishArena(dir, release)
   log.info(`arena published date=${release.date} models=${release.index.models.length} featured=${release.index.featured.left} vs ${release.index.featured.right} updatedAt=${release.index.updatedAt}`)

@@ -339,8 +339,8 @@ export function createGame({ mount, sdk, ready, tweaks, assets }) {
       const boot = async () => {
         const saved = cleanSave(await sdk.gameState.load().catch(() => null));
         if (!alive) return;
-        const accounts = createAccountClient();
-        let session = accounts.restore();
+        const accounts = createAccountClient("scratch");
+        let session = null;
         let started = false;
         const state = {
           ...saved,
@@ -384,29 +384,10 @@ export function createGame({ mount, sdk, ready, tweaks, assets }) {
               return { ok: false, message: g("restoreBad") };
             }
           },
-          onLogin: async (username, password) => {
-            const data = await accounts.login(username, password);
-            session = { username: data.username, token: data.token };
-            const cloud = gameSaveOf(data.save, "scratch");
-            if (cloud) applySaveData(cloud);
-            ui.closeOverlay();
-            ui.showToast(g("welcomeBack", { name: data.username }));
-            afterAuth();
-          },
-          onRegister: async (username, password, extra) => {
-            const payload = snapshotFrom(state, currentMode().id);
-            const data = await accounts.register(username, password, { scratch: payload }, extra);
-            session = { username: data.username, token: data.token };
-            ui.closeOverlay();
-            ui.showToast(g("accountCreated", { name: data.username }));
-            persist();
-            afterAuth();
-          },
-          onSendCode: (username, email, password) => accounts.sendCode(username, email, password),
-          onGuest: () => afterAuth(),
+          onLogin: () => accounts.redirectLogin(),
           onLogout: async () => {
             persist();
-            if (session?.token) await accounts.logout(session.token);
+            await accounts.logout().catch(() => {});
             session = null;
             ui.closeOverlay();
             ui.setAccount(null);
@@ -510,7 +491,7 @@ export function createGame({ mount, sdk, ready, tweaks, assets }) {
         function persist() {
           const payload = snapshotFrom(state, currentMode().id);
           void sdk.gameState.save(payload).catch(() => {});
-          if (session?.token) void accounts.save(session.token, { scratch: payload }).catch(() => {});
+          if (session) void accounts.save({ scratch: payload }).catch(() => {});
         }
 
         function applySaveData(raw) {
@@ -766,13 +747,18 @@ export function createGame({ mount, sdk, ready, tweaks, assets }) {
         }
 
         refresh();
+        try {
+          session = await accounts.current();
+        } catch {
+          session = null;
+        }
         ui.setAccount(session?.username || null);
-        if (session?.token) {
+        if (session) {
           try {
-            const data = await accounts.load(session.token);
-            session = { username: data.username, token: data.token || session.token };
+            const data = await accounts.load();
             const cloud = gameSaveOf(data.save, "scratch");
             if (cloud) applySaveData(cloud);
+            else await accounts.save({ scratch: snapshotFrom(state, currentMode().id) });
           } catch {
             session = null;
             ui.setAccount(null);

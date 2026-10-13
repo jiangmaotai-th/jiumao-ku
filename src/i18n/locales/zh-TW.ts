@@ -189,8 +189,7 @@ const zhTW: Messages = {
     creditsTitle: '開源致謝',
     creditsIntro: '本站部分功能仰賴優秀的開源專案，在此致謝。',
     contactTitle: '聯繫我們',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: '請用頁面上的小紙條留言，這是唯一的聯絡方式。',
   },
   markdown: {
     metaTitle: '一鍵轉 Markdown（測試版）· 九猫庫',

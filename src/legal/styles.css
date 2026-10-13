@@ -102,31 +102,6 @@
   font-weight: 600;
 }
 
-.contact-line {
-  margin: 0 0 0.65rem;
-}
-
-.contact-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  color: var(--gold-soft);
-  text-decoration: none;
-  transition: color 0.15s ease;
-}
-
-.contact-link:hover,
-.contact-link:focus-visible {
-  color: var(--ink);
-}
-
-.contact-icon {
-  width: 1.15rem;
-  height: 1.15rem;
-  flex-shrink: 0;
-  opacity: 0.92;
-}
-
 @media (max-width: 640px) {
   .site-header {
     flex-direction: column;

@@ -192,8 +192,7 @@ const ru: Messages = {
     creditsTitle: 'Благодарности open source',
     creditsIntro: 'Некоторые возможности основаны на отличных open-source проектах — спасибо.',
     contactTitle: 'Contact us',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: 'Оставьте записку на этой странице. Это единственный способ связи.',
   },
   markdown: {
     metaTitle: 'Markdown в один клик (Бета) · Jiumao Library',

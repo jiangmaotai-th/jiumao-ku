@@ -30,12 +30,14 @@ import {
 } from './ai-daily/render'
 import { mountAiSkills, renderSkillsRailItem } from './ai-skills/render'
 import { pingSiteVisit } from './visitor'
+import hotAppsData from './data/hot-apps.json' with { type: 'json' }
 
 initLocale()
 applyDocumentMeta()
 applyDomI18n()
 mountLanguageSwitcher(document.getElementById('lang-switch'))
 mountSiteNotice()
+mountHotApps()
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (ch) => ({
@@ -61,6 +63,35 @@ function mountSiteNotice() {
     return `<span>${escapeHtml(t('home.noticeQuote', { text }))}</span>`
   }).join('')
   track.innerHTML = `<p class="site-notice__copy">${line}</p>`
+}
+
+type HotApp = {
+  id: string
+  name: string
+  summary: string
+  href: string
+}
+
+function mountHotApps() {
+  const section = document.querySelector<HTMLElement>('#hot-apps')
+  const list = document.querySelector<HTMLElement>('#hot-apps-list')
+  if (!section || !list) return
+  const items = (hotAppsData as HotApp[]).filter((item) => item?.href && item?.name)
+  if (!items.length) {
+    section.hidden = true
+    return
+  }
+  list.innerHTML = items
+    .map(
+      (item) => `
+    <li>
+      <a class="hot-apps__link" href="${escapeHtml(item.href)}" target="_blank" rel="noopener noreferrer">
+        <span class="hot-apps__name">${escapeHtml(item.name)}</span>
+        <p class="hot-apps__summary">${escapeHtml(item.summary || '')}</p>
+      </a>
+    </li>`,
+    )
+    .join('')
 }
 
 function emptyHint(tab: FilterTab): string {

@@ -34,7 +34,6 @@ export type Messages = {
     terms: string
     privacy: string
     credits: string
-    contact: string
     openOnline: string
     unavailable: string
     downloadDesktop: string
@@ -56,6 +55,7 @@ export type Messages = {
     filterOther: string
     catalogAria: string
     railAria: string
+    hotAppsTitle: string
     emptyAll: string
     emptySoftware: string
     emptyGame: string
@@ -73,7 +73,6 @@ export type Messages = {
     navTerms: string
     navPrivacy: string
     navCredits: string
-    navContact: string
     title: string
     lead: string
     updated: string
@@ -94,9 +93,6 @@ export type Messages = {
     privacyTip: string
     creditsTitle: string
     creditsIntro: string
-    contactTitle: string
-    contactEmailLabel: string
-    contactTelegramLabel: string
   }
   markdown: {
     metaTitle: string

@@ -25,7 +25,6 @@ root.innerHTML = `
         <a href="#terms">${t('legal.navTerms')}</a>
         <a href="#privacy">${t('legal.navPrivacy')}</a>
         <a href="#credits">${t('legal.navCredits')}</a>
-        <a href="#contact">${t('legal.navContact')}</a>
       </nav>
       <div id="lang-switch"></div>
     </div>
@@ -79,26 +78,6 @@ root.innerHTML = `
         <li><strong>JSZip</strong>、<strong>Mammoth</strong></li>
         <li><strong>React</strong>、<strong>Vite</strong></li>
       </ul>
-    </section>
-
-    <section id="contact" class="legal-section">
-      <h2>${t('legal.contactTitle')}</h2>
-      <p class="contact-line">
-        <a class="contact-link" href="mailto:jiangyiqiu21@gmail.com">
-          <svg class="contact-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/>
-          </svg>
-          <span>${t('legal.contactEmailLabel')}: jiangyiqiu21@gmail.com</span>
-        </a>
-      </p>
-      <p class="contact-line">
-        <a class="contact-link" href="https://t.me/Maotaijiang" target="_blank" rel="noopener noreferrer">
-          <svg class="contact-icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="currentColor" d="M11.94 15.5 9.4 17.84l-.34-3.9L17.76 7.1c.3-.2-.07-.33-.46-.14L7.1 12.7 3.4 11.56c-.8-.25-.81-.78.17-1.16L19.55 4.8c.66-.28 1.3.16 1.07 1.18l-2.75 12.96c-.19.9-.74 1.12-1.5.7l-4.15-3.06-.16.16Z"/>
-          </svg>
-          <span>${t('legal.contactTelegramLabel')}: @Maotaijiang</span>
-        </a>
-      </p>
     </section>
   </main>
 

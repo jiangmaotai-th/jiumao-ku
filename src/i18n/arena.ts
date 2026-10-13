@@ -2,6 +2,7 @@
  * UI copy for the「AI 竞技场」page (/arena/) and its homepage / rail entries.
  * Own module (like ./aiDaily) so the shared locales chunk stays untouched.
  */
+import type { Category } from '../arena/rules'
 import type { Locale } from './types'
 
 export type ArenaMessages = {
@@ -58,6 +59,8 @@ export type ArenaMessages = {
   loadFailed: string
   sourceNote: string
   boards: Record<string, string>
+  /** 战斗类别名，键与 rules.ts 的 Category 一致 */
+  categories: Record<Category, string>
 }
 
 const zhCN: ArenaMessages = {
@@ -112,6 +115,7 @@ const zhCN: ArenaMessages = {
   loadFailed: '竞技场数据暂时没有加载出来，稍后刷新试试。',
   sourceNote: '分数来自 Arena.ai（原 LMArena）公开排行榜，基于大量匿名盲测投票的 Bradley–Terry 评分。',
   boards: { text: '综合文本', coding: '编程', math: '数学', creative: '创意写作', webdev: '网页开发', vision: '视觉理解' },
+  categories: { arena: '人类盲测', creative: '创意写作', vision: '视觉', knowledge: '知识推理', math: '数学', code: '代码', index: '综合指数', pelican: '鹈鹕展示' },
 }
 
 const zhTW: ArenaMessages = {
@@ -167,6 +171,7 @@ const zhTW: ArenaMessages = {
   loadFailed: '競技場數據暫時沒有載入，稍後重新整理試試。',
   sourceNote: '分數來自 Arena.ai（原 LMArena）公開排行榜，基於大量匿名盲測投票的 Bradley–Terry 評分。',
   boards: { text: '綜合文字', coding: '程式設計', math: '數學', creative: '創意寫作', webdev: '網頁開發', vision: '視覺理解' },
+  categories: { arena: '人類盲測', creative: '創意寫作', vision: '視覺', knowledge: '知識推理', math: '數學', code: '程式', index: '綜合指數', pelican: '鵜鶘展示' },
 }
 
 const en: ArenaMessages = {
@@ -221,6 +226,7 @@ const en: ArenaMessages = {
   loadFailed: 'Arena data did not load. Please refresh in a moment.',
   sourceNote: 'Scores come from the public Arena.ai (formerly LMArena) leaderboards: Bradley–Terry ratings from large numbers of anonymous blind votes.',
   boards: { text: 'Text', coding: 'Coding', math: 'Math', creative: 'Creative writing', webdev: 'WebDev', vision: 'Vision' },
+  categories: { arena: 'Human preference', creative: 'Creative writing', vision: 'Vision', knowledge: 'Knowledge', math: 'Math', code: 'Code', index: 'Index', pelican: 'Pelican' },
 }
 
 const ja: ArenaMessages = {
@@ -276,6 +282,7 @@ const ja: ArenaMessages = {
   loadFailed: 'アリーナのデータを読み込めませんでした。しばらくして再読み込みしてください。',
   sourceNote: 'スコアは Arena.ai（旧 LMArena）の公開リーダーボードより。多数の匿名ブラインド投票に基づく Bradley–Terry 評価です。',
   boards: { text: 'テキスト', coding: 'コーディング', math: '数学', creative: '創作', webdev: 'Web 開発', vision: '画像理解' },
+  categories: { arena: '人間評価', creative: '創作', vision: '画像理解', knowledge: '知識・推論', math: '数学', code: 'コード', index: '総合指数', pelican: 'ペリカン' },
 }
 
 const ko: ArenaMessages = {
@@ -331,6 +338,7 @@ const ko: ArenaMessages = {
   loadFailed: '아레나 데이터를 불러오지 못했습니다. 잠시 후 새로고침해 주세요.',
   sourceNote: '점수는 Arena.ai(구 LMArena) 공개 리더보드에서 가져왔으며, 대량의 익명 블라인드 투표에 기반한 Bradley–Terry 점수입니다.',
   boards: { text: '텍스트', coding: '코딩', math: '수학', creative: '창작', webdev: '웹 개발', vision: '비전' },
+  categories: { arena: '인간 평가', creative: '창작', vision: '비전', knowledge: '지식·추론', math: '수학', code: '코드', index: '종합 지수', pelican: '펠리컨' },
 }
 
 const fr: ArenaMessages = {
@@ -386,6 +394,7 @@ const fr: ArenaMessages = {
   loadFailed: "Les données de l'arène ne se sont pas chargées. Réessayez dans un instant.",
   sourceNote: "Scores issus des classements publics d'Arena.ai (ex-LMArena) : notes Bradley–Terry tirées d'un grand nombre de votes anonymes à l'aveugle.",
   boards: { text: 'Texte', coding: 'Code', math: 'Maths', creative: 'Écriture créative', webdev: 'Dév. web', vision: 'Vision' },
+  categories: { arena: 'Préférence humaine', creative: 'Écriture créative', vision: 'Vision', knowledge: 'Connaissances', math: 'Maths', code: 'Code', index: 'Indice', pelican: 'Pélican' },
 }
 
 const de: ArenaMessages = {
@@ -441,6 +450,7 @@ const de: ArenaMessages = {
   loadFailed: 'Die Arena-Daten konnten nicht geladen werden. Bitte gleich neu laden.',
   sourceNote: 'Scores aus den öffentlichen Arena.ai-Ranglisten (früher LMArena): Bradley–Terry-Wertungen aus sehr vielen anonymen Blindabstimmungen.',
   boards: { text: 'Text', coding: 'Programmieren', math: 'Mathe', creative: 'Kreatives Schreiben', webdev: 'Webentwicklung', vision: 'Bildverständnis' },
+  categories: { arena: 'Menschenurteil', creative: 'Kreatives Schreiben', vision: 'Bildverständnis', knowledge: 'Wissen', math: 'Mathe', code: 'Code', index: 'Gesamtindex', pelican: 'Pelikan' },
 }
 
 const es: ArenaMessages = {
@@ -496,6 +506,7 @@ const es: ArenaMessages = {
   loadFailed: 'No se pudieron cargar los datos de la arena. Recarga en un momento.',
   sourceNote: 'Puntuaciones de las clasificaciones públicas de Arena.ai (antes LMArena): valoraciones Bradley–Terry a partir de muchísimos votos anónimos a ciegas.',
   boards: { text: 'Texto', coding: 'Programación', math: 'Matemáticas', creative: 'Escritura creativa', webdev: 'Desarrollo web', vision: 'Visión' },
+  categories: { arena: 'Preferencia humana', creative: 'Escritura creativa', vision: 'Visión', knowledge: 'Conocimiento', math: 'Matemáticas', code: 'Código', index: 'Índice', pelican: 'Pelícano' },
 }
 
 const hi: ArenaMessages = {
@@ -551,6 +562,7 @@ const hi: ArenaMessages = {
   loadFailed: 'एरीना डेटा लोड नहीं हुआ। थोड़ी देर में रीफ़्रेश करें।',
   sourceNote: 'स्कोर Arena.ai (पहले LMArena) के सार्वजनिक लीडरबोर्ड से हैं: बहुत सारे गुमनाम ब्लाइंड वोटों पर आधारित Bradley–Terry रेटिंग।',
   boards: { text: 'टेक्स्ट', coding: 'कोडिंग', math: 'गणित', creative: 'रचनात्मक लेखन', webdev: 'वेब डेवलपमेंट', vision: 'विज़न' },
+  categories: { arena: 'मानव पसंद', creative: 'रचनात्मक लेखन', vision: 'विज़न', knowledge: 'ज्ञान', math: 'गणित', code: 'कोड', index: 'सूचकांक', pelican: 'पेलिकन' },
 }
 
 const th: ArenaMessages = {
@@ -606,6 +618,7 @@ const th: ArenaMessages = {
   loadFailed: 'โหลดข้อมูลอารีนาไม่สำเร็จ ลองรีเฟรชอีกครั้ง',
   sourceNote: 'คะแนนจากลีดเดอร์บอร์ดสาธารณะของ Arena.ai (เดิมคือ LMArena) เป็นคะแนน Bradley–Terry จากการโหวตแบบปิดชื่อจำนวนมาก',
   boards: { text: 'ข้อความ', coding: 'เขียนโค้ด', math: 'คณิตศาสตร์', creative: 'งานเขียนสร้างสรรค์', webdev: 'พัฒนาเว็บ', vision: 'การมองภาพ' },
+  categories: { arena: 'ความชอบของมนุษย์', creative: 'งานเขียนสร้างสรรค์', vision: 'การมองภาพ', knowledge: 'ความรู้', math: 'คณิตศาสตร์', code: 'โค้ด', index: 'ดัชนีรวม', pelican: 'นกเพลิกัน' },
 }
 
 const ru: ArenaMessages = {
@@ -661,6 +674,7 @@ const ru: ArenaMessages = {
   loadFailed: 'Не удалось загрузить данные арены. Обновите страницу чуть позже.',
   sourceNote: 'Баллы из публичных рейтингов Arena.ai (ранее LMArena): рейтинги Брэдли — Терри по огромному числу анонимных слепых голосов.',
   boards: { text: 'Текст', coding: 'Код', math: 'Математика', creative: 'Творческое письмо', webdev: 'Веб-разработка', vision: 'Зрение' },
+  categories: { arena: 'Человеческая оценка', creative: 'Творческое письмо', vision: 'Зрение', knowledge: 'Знания', math: 'Математика', code: 'Код', index: 'Сводный индекс', pelican: 'Пеликан' },
 }
 
 const pt: ArenaMessages = {
@@ -716,6 +730,7 @@ const pt: ArenaMessages = {
   loadFailed: 'Os dados da arena não carregaram. Atualize em instantes.',
   sourceNote: 'Pontuações dos rankings públicos do Arena.ai (antigo LMArena): notas Bradley–Terry a partir de muitos votos anônimos às cegas.',
   boards: { text: 'Texto', coding: 'Programação', math: 'Matemática', creative: 'Escrita criativa', webdev: 'Desenvolvimento web', vision: 'Visão' },
+  categories: { arena: 'Preferência humana', creative: 'Escrita criativa', vision: 'Visão', knowledge: 'Conhecimento', math: 'Matemática', code: 'Código', index: 'Índice', pelican: 'Pelicano' },
 }
 
 export const arenaMessages: Record<Locale, ArenaMessages> = {

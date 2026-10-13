@@ -192,8 +192,7 @@ const fr: Messages = {
     creditsTitle: 'Open-source credits',
     creditsIntro: 'Certaines fonctionnalités reposent sur d’excellents projets open source — merci.',
     contactTitle: 'Contact',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: 'Laissez un petit mot sur cette page. C’est le seul moyen de nous contacter.',
   },
   markdown: {
     metaTitle: 'Markdown en un clic (Bêta) · Jiumao Library',

@@ -189,8 +189,7 @@ const ko: Messages = {
     creditsTitle: '오픈소스 크레딧',
     creditsIntro: '일부 기능은 훌륭한 오픈소스 프로젝트에 의존합니다. 감사합니다.',
     contactTitle: '문의하기',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: '이 페이지의 쪽지로 남겨 주세요. 연락 방법은 이것뿐입니다.',
   },
   markdown: {
     metaTitle: '원클릭 Markdown (베타) · 구묘 라이브러리',

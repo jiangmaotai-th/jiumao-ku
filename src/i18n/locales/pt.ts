@@ -192,8 +192,7 @@ const pt: Messages = {
     creditsTitle: 'Open-source credits',
     creditsIntro: 'Alguns recursos dependem de excelentes projetos de código aberto — obrigado.',
     contactTitle: 'Contato',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: 'Deixe um bilhete privado nesta página. É a única forma de contacto.',
   },
   markdown: {
     metaTitle: 'Markdown em um clique (Beta) · Jiumao Library',

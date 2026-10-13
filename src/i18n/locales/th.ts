@@ -192,8 +192,7 @@ const th: Messages = {
     creditsTitle: 'เครดิตโอเพนซอร์ส',
     creditsIntro: 'ความสามารถบางส่วนอาศัยโปรเจกต์โอเพนซอร์สที่ยอดเยี่ยม ขอบคุณมาก',
     contactTitle: 'Contact us',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: 'ฝากโน้ตส่วนตัวบนหน้านี้ นี่คือช่องทางติดต่อเดียว',
   },
   markdown: {
     metaTitle: 'Markdown คลิกเดียว (เบตา) · Jiumao Library',

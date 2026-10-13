@@ -192,8 +192,7 @@ const ja: Messages = {
     creditsTitle: 'オープンソースクレジット',
     creditsIntro: '一部の機能は優れたオープンソースプロジェクトに支えられています。ありがとうございます。',
     contactTitle: 'お問い合わせ',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: 'ご連絡はこのページの小さなメモからお願いします。連絡方法はそれだけです。',
   },
   markdown: {
     metaTitle: 'ワンクリック Markdown（ベータ）· 九猫庫',

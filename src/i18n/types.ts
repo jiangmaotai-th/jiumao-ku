@@ -95,8 +95,7 @@ export type Messages = {
     creditsTitle: string
     creditsIntro: string
     contactTitle: string
-    contactEmailLabel: string
-    contactTelegramLabel: string
+    contactBody: string
   }
   markdown: {
     metaTitle: string

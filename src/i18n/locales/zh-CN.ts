@@ -189,8 +189,7 @@ const zhCN: Messages = {
     creditsTitle: '开源致谢',
     creditsIntro: '本站部分能力基于优秀的开源项目，在此致谢。',
     contactTitle: '联系我们',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: '请用页面上的小纸条留言，这是唯一的联系方式。',
   },
   markdown: {
     metaTitle: '一键转 Markdown（测试版）· 九猫库',

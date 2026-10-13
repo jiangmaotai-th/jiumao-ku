@@ -192,8 +192,7 @@ const hi: Messages = {
     creditsTitle: 'ओपन-सोर्स श्रेय',
     creditsIntro: 'कुछ क्षमताएं बेहतरीन ओपन-सोर्स प्रोजेक्ट्स पर निर्भर हैं — धन्यवाद।',
     contactTitle: 'संपर्क करें',
-    contactEmailLabel: 'E-mail',
-    contactTelegramLabel: 'Telegram',
+    contactBody: 'इस पेज पर निजी पर्ची छोड़ें। संपर्क का यही एकमात्र तरीका है।',
   },
   markdown: {
     metaTitle: 'वन-क्लिक Markdown (बीटा) · Jiumao Library',

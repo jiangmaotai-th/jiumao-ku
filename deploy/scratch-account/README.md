@@ -1,16 +1,13 @@
-# 每日刮刮乐账号服务
+# 刮刮乐 / 水族缸存档服务
 
-监听 `127.0.0.1:3194`，数据目录默认 `/var/lib/maotaiworks/scratch`。
+监听 `127.0.0.1:3194`。存档目录默认 `/var/lib/maotaiworks/scratch/data`（`saves.json` 按站点账号 id 分档，`serials.json` 为奖票序号）。
 
-游客可在浏览器本机游玩；注册/登录/跨设备存档走本服务。未配置 SMTP 时，发验证码会失败，游客模式不受影响。
+登录走站点账号 `http://127.0.0.1:3196/api/auth/me`（cookie `maotai_sid`）。`/load` 与 `/save` 把进来的 `Cookie` 原样转给该接口。游客仍在浏览器本机游玩。
 
 ```bash
-sudo mkdir -p /opt/maotaiworks/scratch-account /var/lib/maotaiworks/scratch
-sudo rsync -a ./ /opt/maotaiworks/scratch-account/
-sudo chown -R www-data:www-data /var/lib/maotaiworks/scratch /opt/maotaiworks/scratch-account
-cd /opt/maotaiworks/scratch-account && sudo npm install --omit=dev
-sudo cp maotaiworks-scratch.service /etc/systemd/system/
-sudo systemctl enable --now maotaiworks-scratch.service
+sudo bash install.sh
 ```
 
-Nginx 需包含 `location /scratch/` 与 `location /api/account/`（见 `deploy/nginx.conf.example`）。
+`install.sh` 会先把 `/opt/maotaiworks/scratch-account` 和 `/var/lib/maotaiworks/scratch/data` 拷到 `/root/scratch-bak-<时间>`，再覆盖代码并重启 `maotaiworks-scratch`。
+
+Nginx 需包含 `location /scratch/`、`location /tank/` 与 `location /api/account/`（见 `deploy/nginx.conf.example`）。站点登录是 `/api/auth/`，由 maotai-auth 提供。

@@ -1,55 +1,13 @@
-const SESSION_KEY = "scratch-gallery-session";
-const VAULT_KEY = "scratch-gallery-accounts";
+const LINK_PREFIX = "maotai-auth-linked";
 
-function nameKey(name) {
-  return String(name || "").trim().toLocaleLowerCase();
-}
-
-function loadVault() {
-  try {
-    return JSON.parse(localStorage.getItem(VAULT_KEY) || "null") || { users: {} };
-  } catch {
-    return { users: {} };
-  }
-}
-
-function saveVault(vault) {
-  localStorage.setItem(VAULT_KEY, JSON.stringify(vault));
-}
-
-function bytesToHex(bytes) {
-  return [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
-function hexToBytes(hex) {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
-  return bytes;
-}
-
-async function hashPassword(password, saltBytes) {
-  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveBits"]);
-  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: saltBytes, iterations: 120000, hash: "SHA-256" }, key, 256);
-  return new Uint8Array(bits);
-}
-
-function randomToken() {
-  const bytes = new Uint8Array(24);
-  crypto.getRandomValues(bytes);
-  return bytesToHex(bytes);
-}
-
-function writeSession(session) {
-  if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-  else localStorage.removeItem(SESSION_KEY);
-}
-
-function readSession() {
-  try {
-    return JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-  } catch {
-    return null;
-  }
+function authUserOf(data) {
+  if (!data || typeof data !== "object") return null;
+  const row = data.user && typeof data.user === "object" ? data.user : data;
+  const id = String(row.id || row.user_id || row.userId || row.sub || "").trim();
+  if (!id) return null;
+  const email = typeof row.email === "string" ? row.email.trim() : "";
+  const name = typeof row.name === "string" ? row.name.trim() : "";
+  return { id, email, name, username: email || name || id };
 }
 
 export function asSaveBundle(save) {
@@ -71,118 +29,67 @@ export function gameSaveOf(save, game) {
   return game === "scratch" ? save : null;
 }
 
-export function createAccountClient() {
-  let remote = null;
+export function createAccountClient(app = "scratch") {
+  const game = app === "tank" ? "tank" : "scratch";
 
-  async function probe() {
-    if (remote !== null) return remote;
-    try {
-      const response = await fetch("/api/account/ping", { method: "GET" });
-      remote = response.ok;
-    } catch {
-      remote = false;
-    }
-    return remote;
+  function loginHref() {
+    return `/api/auth/login?return=${encodeURIComponent(location.href)}`;
   }
 
   async function request(path, body) {
     const response = await fetch(`/api/account${path}`, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify(body || {})
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || "请求失败");
     return data;
   }
 
-  function findLocalUser(vault, login) {
-    const raw = String(login || "").trim();
-    if (!raw) return null;
-    if (raw.includes("@")) {
-      const key = nameKey(raw);
-      return Object.values(vault.users).find((entry) => nameKey(entry.email) === key) || null;
-    }
-    return vault.users[nameKey(raw)] || null;
-  }
-
-  async function localLogin(username, password) {
-    const vault = loadVault();
-    const user = findLocalUser(vault, username);
-    if (!user) throw new Error("账号或密码不对");
-    const hash = await hashPassword(password, hexToBytes(user.salt));
-    if (bytesToHex(hash) !== user.hash) throw new Error("账号或密码不对");
-    user.token = randomToken();
-    saveVault(vault);
-    return { username: user.username, email: user.email || "", token: user.token, save: user.save || null };
-  }
-
-  async function localLoad(token) {
-    const vault = loadVault();
-    const user = Object.values(vault.users).find((entry) => entry.token === token);
-    if (!user) throw new Error("请重新登录");
-    return { username: user.username, token: user.token, save: user.save || null };
-  }
-
-  async function localSave(token, save) {
-    const vault = loadVault();
-    const user = Object.values(vault.users).find((entry) => entry.token === token);
-    if (!user) throw new Error("请重新登录");
-    user.save = mergeAccountSave(user.save, save);
-    saveVault(vault);
-  }
-
-  async function localLogout(token) {
-    const vault = loadVault();
-    const user = Object.values(vault.users).find((entry) => entry.token === token);
-    if (user) {
-      user.token = randomToken();
-      saveVault(vault);
-    }
+  async function linkOnce(user) {
+    const mark = `${LINK_PREFIX}:${game}:${user.id}`;
+    try {
+      if (localStorage.getItem(mark) === "1") return;
+    } catch { /* still try */ }
+    const response = await fetch("/api/auth/link", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ app: game, external_user_id: user.id })
+    });
+    if (!response.ok) return;
+    try { localStorage.setItem(mark, "1"); } catch { /* ignore */ }
   }
 
   return {
-    restore() {
-      return readSession();
+    loginHref,
+    redirectLogin() {
+      location.assign(loginHref());
     },
-    async sendCode(username, email, password) {
-      if (!(await probe())) throw new Error("需要游戏服务器才能发送邮箱验证码");
-      return request("/send-code", { username: String(username || "").trim(), email, password });
+    async current() {
+      const response = await fetch("/api/auth/me", { credentials: "include" });
+      const type = response.headers.get("content-type") || "";
+      if (response.status !== 200 || !type.includes("json")) return null;
+      const user = authUserOf(await response.json().catch(() => null));
+      if (!user) return null;
+      await linkOnce(user);
+      return user;
     },
-    async register(username, password, save, extra = {}) {
-      if (!(await probe())) throw new Error("需要游戏服务器才能完成邮箱注册");
-      const data = await request("/register", {
-        username: String(username || "").trim(),
-        password,
-        save,
-        email: extra.email,
-        code: extra.code
-      });
-      writeSession({ username: data.username, token: data.token });
-      return data;
+    async logout() {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
     },
-    async login(username, password) {
-      const name = String(username || "").trim();
-      const data = await probe()
-        ? await request("/login", { username: name, password })
-        : await localLogin(name, password);
-      writeSession({ username: data.username, token: data.token });
-      return data;
+    async load() {
+      return request("/load", {});
     },
-    async load(token) {
-      return await probe() ? await request("/load", { token }) : await localLoad(token);
-    },
-    async save(token, save) {
-      if (await probe()) {
-        let prev = null;
-        try {
-          const current = await request("/load", { token });
-          prev = current.save;
-        } catch { /* still write */ }
-        await request("/save", { token, save: mergeAccountSave(prev, save) });
-      } else {
-        await localSave(token, save);
-      }
+    async save(save) {
+      let prev = null;
+      try {
+        const current = await request("/load", {});
+        prev = current.save;
+      } catch { /* still write the incoming slice */ }
+      await request("/save", { save: mergeAccountSave(prev, save) });
     },
     async ticketStatus(ticketId) {
       const key = String(ticketId || "").trim();
@@ -191,7 +98,6 @@ export function createAccountClient() {
         const data = await request("/ticket-status", { ticket: key });
         const issued = Math.max(0, Number(data.issued) || 0);
         if (Number.isFinite(issued)) {
-          remote = true;
           return { issued, remaining: Math.max(0, 10000 - issued), edition: 10000 };
         }
       } catch {
@@ -208,13 +114,17 @@ export function createAccountClient() {
       try {
         const data = await request("/ticket", { ticket: key });
         if (data.serial) {
-          remote = true;
           return String(data.serial).replace(/\D/g, "").padStart(5, "0");
         }
       } catch (err) {
         const message = String(err?.message || "");
         if (message.includes("售罄") || message.includes("奖票不对")) throw err;
-        if (/maotaiworks\.com$/i.test(location.hostname) || await probe()) {
+        let remote = false;
+        try {
+          const ping = await fetch("/api/account/ping", { method: "GET" });
+          remote = ping.ok;
+        } catch { remote = false; }
+        if (/maotaiworks\.com$/i.test(location.hostname) || remote) {
           throw err instanceof Error ? err : new Error("彩票号领取失败，请再试一次");
         }
       }
@@ -225,13 +135,6 @@ export function createAccountClient() {
       db[key] = next;
       localStorage.setItem("scratch-gallery-editions", JSON.stringify(db));
       return String(next).padStart(5, "0");
-    },
-    async logout(token) {
-      try {
-        if (await probe()) await request("/logout", { token });
-        else await localLogout(token);
-      } catch { /* still drop local session */ }
-      writeSession(null);
     }
   };
 }

@@ -10,7 +10,6 @@ WorkingDirectory=/opt/maotaiworks/scratch-account
 Environment=PORT=3194
 Environment=SCRATCH_ROOT=/var/lib/maotaiworks/scratch
 Environment=CORS_ORIGIN=https://maotaiworks.com
-EnvironmentFile=-/etc/maotaiworks/scratch-mail.env
 ExecStart=/usr/bin/node /opt/maotaiworks/scratch-account/server.mjs
 Restart=always
 RestartSec=2

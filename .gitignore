@@ -43,6 +43,7 @@ public/ai-daily/
 public/ai-skills/
 public/arena-data/
 data/serials.json
+data/saves.json
 data/goose-board.json
 
 # Playwright

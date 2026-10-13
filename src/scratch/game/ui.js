@@ -1,7 +1,7 @@
 import { countryCatalog, ICONS, MODES, modesForCountry, rtp, ticketSeries } from "./data.js";
-import { countryLabel, displayMode, formatCoins, g, gameError, mechanicText, modeHelpText, rarityLabel, tierLabel } from "./i18n.js";
+import { countryLabel, displayMode, formatCoins, g, mechanicText, modeHelpText, rarityLabel, tierLabel } from "./i18n.js";
 
-export function createUI({ shell, renderer, assets, onMode, onCountry, onNext, onSound, onRelief, onCoinArrive, onExportSave, onImportSave, onLogin, onRegister, onSendCode, onLogout, onGuest }) {
+export function createUI({ shell, renderer, assets, onMode, onCountry, onNext, onSound, onRelief, onCoinArrive, onExportSave, onImportSave, onLogin, onLogout }) {
   const coinValue = shell.querySelector("[data-coins]");
   const coinBadge = shell.querySelector(".coin-badge");
   const coinMark = shell.querySelector(".coin-mark");
@@ -20,8 +20,6 @@ export function createUI({ shell, renderer, assets, onMode, onCountry, onNext, o
   const soundBtn = shell.querySelector("[data-sound]");
   let toastTimer;
   let heldCoins = null;
-  let codeCooldownUntil = 0;
-  let codeTimer;
 
   function paintCoins(value) {
     const shown = formatCoins(value);
@@ -309,157 +307,22 @@ export function createUI({ shell, renderer, assets, onMode, onCountry, onNext, o
     return String(value).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
   }
 
-  function authForm(kind) {
-    if (kind === "login") {
-      return `<form class="auth-form" data-auth="login">
-        <label>${g("userOrEmail")}<input name="username" maxlength="64" autocomplete="username" required></label>
-        <label>${g("password")}<input name="password" type="password" maxlength="32" autocomplete="current-password" required></label>
-        <p class="auth-error" data-error hidden></p>
-        <button class="control-btn primary" type="submit"><span class="control-label">${g("login")}</span></button>
-      </form>`;
-    }
-    const codeRow = `<label>${g("code")}
-        <span class="auth-code-row">
-          <input name="code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required>
-          <button class="control-btn" type="button" data-send-code><span class="control-label">${g("sendCode")}</span></button>
-        </span>
-      </label>`;
-    if (kind === "quick") {
-      return `<form class="auth-form" data-auth="quick">
-        <p class="auth-quick-hint">${g("quickHint")}</p>
-        <label>${g("email")}<input name="email" type="email" maxlength="64" autocomplete="email" required></label>
-        <label>${g("password")}<input name="password" type="password" maxlength="32" autocomplete="new-password" required></label>
-        ${codeRow}
-        <p class="auth-error" data-error hidden></p>
-        <button class="control-btn primary" type="submit"><span class="control-label">${g("finishRegister")}</span></button>
-        <button class="auth-link" type="button" data-auth-tab="register">${g("customRegister")}</button>
-      </form>`;
-    }
-    return `<form class="auth-form" data-auth="register">
-      <label>${g("email")}<input name="email" type="email" maxlength="64" autocomplete="email" required></label>
-      <label>${g("usernameOptional")}<input name="username" maxlength="16" autocomplete="username" placeholder="${g("usernamePlaceholder")}"></label>
-      <label>${g("password")}<input name="password" type="password" maxlength="32" autocomplete="new-password" required></label>
-      <label>${g("confirm")}<input name="confirm" type="password" maxlength="32" autocomplete="new-password" required></label>
-      ${codeRow}
-      <p class="auth-error" data-error hidden></p>
-      <button class="control-btn primary" type="submit"><span class="control-label">${g("finishRegister")}</span></button>
-      <button class="auth-link" type="button" data-auth-tab="quick">${g("backToQuick")}</button>
-    </form>`;
-  }
-
-  function fieldsFrom(form) {
-    const data = new FormData(form);
-    return {
-      username: String(data.get("username") || "").trim(),
-      email: String(data.get("email") || "").trim(),
-      password: String(data.get("password") || ""),
-      confirm: String(data.get("confirm") || ""),
-      code: String(data.get("code") || "").trim()
-    };
-  }
-
-  function paintCooldown(button) {
-    clearInterval(codeTimer);
-    const label = button?.querySelector(".control-label");
-    const tick = () => {
-      const remain = Math.ceil((codeCooldownUntil - Date.now()) / 1000);
-      if (!button) return;
-      if (remain <= 0) {
-        button.disabled = false;
-        if (label) label.textContent = g("sendCode");
-        clearInterval(codeTimer);
-        return;
-      }
-      button.disabled = true;
-      if (label) label.textContent = g("retryIn", { n: remain });
-    };
-    tick();
-    codeTimer = window.setInterval(tick, 250);
-  }
-
-  function bindAuthForm(host, kind) {
-    const form = host.querySelector("form");
-    const error = form.querySelector("[data-error]");
-    const showError = (message) => {
-      error.hidden = false;
-      error.textContent = message;
-    };
-    form.querySelector("[data-send-code]")?.addEventListener("click", async (event) => {
-      const button = event.currentTarget;
-      const fields = fieldsFrom(form);
-      error.hidden = true;
-      if (kind === "register" && fields.password !== fields.confirm) {
-        showError(g("passwordMismatch"));
-        return;
-      }
-      button.disabled = true;
-      try {
-        const data = await onSendCode?.(fields.username, fields.email, fields.password);
-        codeCooldownUntil = Date.now() + 60000;
-        paintCooldown(button);
-        showToast(data?.username ? g("codeSentAs", { name: data.username }) : g("codeSent"));
-      } catch (err) {
-        showError(gameError(err.message) || g("codeFail"));
-        button.disabled = false;
-      }
-    });
-    const sendButton = form.querySelector("[data-send-code]");
-    if (sendButton && codeCooldownUntil > Date.now()) paintCooldown(sendButton);
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      const fields = fieldsFrom(form);
-      const button = form.querySelector("button[type=submit]");
-      error.hidden = true;
-      if (kind === "register" && fields.password !== fields.confirm) {
-        showError(g("passwordMismatch"));
-        return;
-      }
-      button.disabled = true;
-      try {
-        if (kind === "login") await onLogin?.(fields.username, fields.password);
-        else await onRegister?.(fields.username, fields.password, { email: fields.email, code: fields.code });
-      } catch (err) {
-        showError(gameError(err.message) || g("failRetry"));
-        button.disabled = false;
-      }
-    });
-  }
-
-  function openAuthGate(options = {}) {
-    const locked = Boolean(options.locked);
-    const showGuest = Boolean(options.guest);
-    const hint = showGuest ? g("authHintGuest") : g("authHintUpgrade");
-    const body = `<p class="mode-hint">${hint}</p>
+  function openAuthGate() {
+    const body = `<p class="mode-hint">${g("authHintUpgrade")}</p>
       <div class="auth-tabs">
-        <button type="button" class="control-btn primary" data-auth-tab="login"><span class="control-label">${g("login")}</span></button>
-        <button type="button" class="control-btn" data-auth-tab="quick"><span class="control-label">${g("quickRegister")}</span></button>
-      </div>
-      <div data-auth-panel></div>
-      ${showGuest ? `<button type="button" class="control-btn guest-btn" data-guest><span class="control-label">${g("guestPlay")}</span></button>` : ""}`;
+        <button type="button" class="control-btn primary" data-auth="login"><span class="control-label">${g("login")}</span></button>
+        <button type="button" class="control-btn" data-auth="register"><span class="control-label">${g("register")}</span></button>
+      </div>`;
     openPanel(g("accountTitle"), body, (host) => {
-      const panel = host.querySelector("[data-auth-panel]");
-      const show = (kind) => {
-        panel.innerHTML = authForm(kind);
-        host.querySelectorAll(".auth-tabs [data-auth-tab]").forEach((tab) => {
-          tab.classList.toggle("primary", kind === "login" ? tab.dataset.authTab === "login" : tab.dataset.authTab === "quick");
-        });
-        bindAuthForm(host, kind);
-        panel.querySelector("[data-auth-tab]")?.addEventListener("click", (event) => {
-          show(event.currentTarget.dataset.authTab);
-        });
-      };
-      show(options.tab === "login" ? "login" : options.tab === "register" ? "register" : "quick");
-      host.querySelectorAll(".auth-tabs [data-auth-tab]").forEach((tab) => tab.addEventListener("click", () => show(tab.dataset.authTab)));
-      host.querySelector("[data-guest]")?.addEventListener("click", () => {
-        closeOverlay();
-        onGuest?.();
+      host.querySelectorAll("[data-auth]").forEach((button) => {
+        button.addEventListener("click", () => onLogin?.());
       });
-    }, { locked });
+    });
   }
 
   function openAccount(username) {
     if (!username) {
-      openAuthGate({ locked: false, guest: false, tab: "quick" });
+      openAuthGate();
       return;
     }
     const body = `<div class="gift-box">

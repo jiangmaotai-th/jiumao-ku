@@ -61,6 +61,11 @@
       <!-- AI 最新 Skill：数据来自 /ai-skills/latest.json，由 src/ai-skills/render.ts 渲染 -->
       <div id="ai-skills-board" class="ai-boards ai-boards--home ai-skills-host"></div>
 
+      <section id="hot-apps" class="hot-apps" aria-labelledby="hot-apps-title">
+        <h2 id="hot-apps-title" class="hot-apps__title" data-i18n="home.hotAppsTitle">当下最热应用</h2>
+        <ul id="hot-apps-list" class="hot-apps__list"></ul>
+      </section>
+
       <section id="catalog" class="catalog" data-i18n-aria="home.catalogAria" aria-label="作品列表">
         <div id="catalog-list" class="item-list" role="list"></div>
       </section>
@@ -76,8 +81,6 @@
         <a href="/legal/#privacy" data-i18n="common.privacy">隐私说明</a>
         <span aria-hidden="true">·</span>
         <a href="/legal/#credits" data-i18n="common.credits">开源致谢</a>
-        <span aria-hidden="true">·</span>
-        <a href="/legal/#contact" data-i18n="common.contact">联系我们</a>
         <span aria-hidden="true">·</span>
         <span>© <span id="year"></span> <span data-i18n="common.copyright">九猫库</span></span>
       </p>

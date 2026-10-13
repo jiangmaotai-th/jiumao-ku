@@ -91,7 +91,9 @@ img {
   position: relative;
   isolation: isolate;
   display: block;
+  flex: 0 0 auto;
   width: 100%;
+  min-width: 0;
   margin: 0;
   padding: 0.62rem 0.7rem;
   border: 1px solid transparent;
@@ -196,13 +198,54 @@ img {
   transform: translateY(-3px);
 }
 
-@media (min-width: 1100px) {
+@media (min-width: 1181px) {
   body {
     padding-left: 13rem;
   }
 }
 
-@media (max-width: 1099px) {
+/* iPad widths: the vertical rail collapses its buttons. Use one scrolling row instead. */
+@media (min-width: 768px) and (max-width: 1180px) {
+  .app-rail {
+    top: 1.75rem;
+    right: 0;
+    bottom: auto;
+    left: 0;
+    transform: none;
+    width: auto;
+    padding: 0.35rem var(--pad) 0;
+    z-index: 35;
+  }
+
+  .app-rail__nav {
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    max-width: 100%;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 0.35rem;
+  }
+
+  .app-rail__item {
+    width: auto;
+    max-width: 11rem;
+  }
+
+  .app-rail__nav > .app-rail__divider {
+    flex: 0 0 auto;
+    width: 1px;
+    height: 1.1rem;
+    margin: 0 0.15rem;
+  }
+
+  body:has(.app-rail) .site-header {
+    margin-top: 3.35rem;
+  }
+}
+
+@media (max-width: 767px) {
   .app-rail {
     display: none;
   }
@@ -375,6 +418,50 @@ img {
   max-width: 28rem;
   font-size: 1.08rem;
   color: var(--ink-muted);
+}
+
+.hot-apps {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0.25rem var(--pad) 1.35rem;
+}
+
+.hot-apps__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.hot-apps__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hot-apps__link {
+  display: block;
+  height: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(144, 118, 211, 0.14);
+  border-radius: 16px;
+  background: #fff;
+}
+
+.hot-apps__link:hover {
+  border-color: rgba(144, 118, 211, 0.35);
+}
+
+.hot-apps__name {
+  font-weight: 700;
+}
+
+.hot-apps__summary {
+  margin: 0.25rem 0 0;
+  color: var(--ink-muted);
+  font-size: 0.9rem;
 }
 
 .catalog {
@@ -884,7 +971,8 @@ img {
 }
 
 @media (max-width: 640px) {
-  .item-list {
+  .item-list,
+  .hot-apps__list {
     grid-template-columns: 1fr;
     gap: 0.9rem;
   }

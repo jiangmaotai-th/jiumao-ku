@@ -10,6 +10,8 @@ const th: Messages = {
     brand: 'Jiumao Library',
     language: 'ภาษา',
     languageLabel: 'เลือกภาษา',
+    loginSignup: 'เข้าสู่ระบบ / สมัคร',
+    logout: 'ออกจากระบบ',
     backHome: 'กลับไปที่ Jiumao Library',
     terms: 'ข้อกำหนด',
     privacy: 'ความเป็นส่วนตัว',

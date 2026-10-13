@@ -1,4 +1,5 @@
 import './switcher.css'
+import { mountHeaderAuth } from '../auth/header'
 import {
   LOCALES,
   LOCALE_NATIVE_NAMES,
@@ -83,4 +84,6 @@ export function mountLanguageSwitcher(
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') close()
   })
+
+  mountHeaderAuth(host)
 }

@@ -10,6 +10,8 @@ const en: Messages = {
     brand: 'Jiumao Library',
     language: 'Language',
     languageLabel: 'Choose language',
+    loginSignup: 'Log in / Sign up',
+    logout: 'Log out',
     backHome: 'Back to Jiumao Library',
     terms: 'Terms',
     privacy: 'Privacy',

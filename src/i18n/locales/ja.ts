@@ -10,6 +10,8 @@ const ja: Messages = {
     brand: '九猫庫',
     language: '言語',
     languageLabel: '言語を選択',
+    loginSignup: 'ログイン / 登録',
+    logout: 'ログアウト',
     backHome: '九猫庫へ戻る',
     terms: '利用規約',
     privacy: 'プライバシー',

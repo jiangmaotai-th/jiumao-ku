@@ -30,6 +30,8 @@ export type Messages = {
     brand: string
     language: string
     languageLabel: string
+    loginSignup: string
+    logout: string
     backHome: string
     terms: string
     privacy: string

@@ -1,6 +1,7 @@
 import { createAccountClient, gameSaveOf } from "./account.js";
 import { createAudio } from "./audio.js";
 import { assignedTicketSerial, createTicket, discoveryBonus, formatTicketSerial, MODES, modesForCountry, ticketSeries, winningSymbols } from "./data.js";
+import { mountHeaderAuth } from "../../auth/header";
 import { localizedHref, t } from "../../i18n";
 import { displayMode, formatCoins, g, gameError, tierLabel } from "./i18n.js";
 import { createRenderer } from "./renderer.js";
@@ -288,6 +289,7 @@ export function createGame({ mount, sdk, ready, tweaks, assets }) {
                 <path fill="currentColor" d="M12 12V4.6A7.4 7.4 0 0 1 18.7 16.2Z"/>
               </svg>
             </button>
+            <span id="site-auth-anchor" hidden></span>
             <button class="icon-btn" data-sound aria-label="${g("soundOn")}">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="currentColor" d="M4.8 9.4h3.1L12.2 6v12l-4.3-3.4H4.8Z"/>
@@ -327,6 +329,7 @@ export function createGame({ mount, sdk, ready, tweaks, assets }) {
       `;
 
       mount.replaceChildren(shell);
+      mountHeaderAuth(shell.querySelector("#site-auth-anchor"));
       let alive = true;
       let renderer;
       let scratch;

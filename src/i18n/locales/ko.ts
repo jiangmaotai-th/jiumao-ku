@@ -10,6 +10,8 @@ const ko: Messages = {
     brand: '구묘 라이브러리',
     language: '언어',
     languageLabel: '언어 선택',
+    loginSignup: '로그인 / 가입',
+    logout: '로그아웃',
     backHome: '구묘 라이브러리로 돌아가기',
     terms: '이용약관',
     privacy: '개인정보',

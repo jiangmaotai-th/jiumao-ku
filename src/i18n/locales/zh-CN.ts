@@ -10,6 +10,8 @@ const zhCN: Messages = {
     brand: '九猫库',
     language: '语言',
     languageLabel: '选择语言',
+    loginSignup: '登录 / 注册',
+    logout: '退出',
     backHome: '返回九猫库',
     terms: '使用条款',
     privacy: '隐私说明',

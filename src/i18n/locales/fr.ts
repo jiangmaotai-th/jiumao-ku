@@ -10,6 +10,8 @@ const fr: Messages = {
     brand: 'Jiumao Library',
     language: 'Langue',
     languageLabel: 'Choisir la langue',
+    loginSignup: 'Connexion / Inscription',
+    logout: 'Déconnexion',
     backHome: 'Retour à Jiumao Library',
     terms: 'Conditions',
     privacy: 'Confidentialité',

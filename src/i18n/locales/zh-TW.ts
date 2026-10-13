@@ -10,6 +10,8 @@ const zhTW: Messages = {
     brand: '九猫庫',
     language: '語言',
     languageLabel: '選擇語言',
+    loginSignup: '登入 / 註冊',
+    logout: '退出',
     backHome: '返回九猫庫',
     terms: '使用條款',
     privacy: '隱私說明',

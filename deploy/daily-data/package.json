@@ -1,0 +1,20 @@
+{
+  "name": "maotaiworks-daily-data",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "daily": "node bin/run.mjs --all",
+    "arena": "node bin/run.mjs --arena",
+    "news": "node bin/run.mjs --news",
+    "dry-run": "node bin/run.mjs --dry-run",
+    "test": "node --experimental-strip-types --import ./test/register-ts.mjs --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "hyparquet": "^1.17.0",
+    "hyparquet-compressors": "^1.1.0"
+  }
+}

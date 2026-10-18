@@ -58,6 +58,10 @@ export type Messages = {
     catalogAria: string
     railAria: string
     hotAppsTitle: string
+    hotApps: {
+      yanglaofei: { name: string; summary: string }
+      quzheng: { name: string; summary: string }
+    }
     emptyAll: string
     emptySoftware: string
     emptyGame: string

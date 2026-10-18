@@ -38,6 +38,18 @@ const fr: Messages = {
     catalogAria: 'Catalogue',
     railAria: 'App navigation',
     hotAppsTitle: 'Applications tendance',
+    hotApps: {
+      yanglaofei: {
+        name: 'Contrôle des tarifs de maison de retraite',
+        summary:
+          'Vérifiez si le dépôt, les frais prépayés et les frais d’adhésion dépassent les nouvelles règles de 2026, et estimez le remboursement en cas de départ.',
+      },
+      quzheng: {
+        name: 'Autocontrôle des preuves de divorce',
+        summary:
+          'Voyez si vos enregistrements audio, vidéos et conversations seront admis par le tribunal, et comment recueillir des preuves légalement.',
+      },
+    },
     emptyAll: 'D’autres projets arrivent bientôt.',
     emptySoftware: 'Aucun logiciel pour le moment.',
     emptyGame: 'Aucun jeu pour le moment.',

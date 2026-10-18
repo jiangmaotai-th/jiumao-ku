@@ -38,6 +38,18 @@ const de: Messages = {
     catalogAria: 'Katalog',
     railAria: 'App navigation',
     hotAppsTitle: 'Trend-Apps',
+    hotApps: {
+      yanglaofei: {
+        name: 'Pflegeheim-Gebühren-Check',
+        summary:
+          'Prüft nach den neuen Pflegegebührenregeln 2026, ob Kaution, Vorauszahlung und Mitgliedsbeitrag über dem Limit liegen, und berechnet die Erstattung beim Auszug.',
+      },
+      quzheng: {
+        name: 'Selbstcheck für Scheidungsbeweise',
+        summary:
+          'Prüfen Sie, ob Aufnahmen, Videos und Chatverläufe vor Gericht anerkannt werden, und wie Sie Beweise rechtmäßig sichern.',
+      },
+    },
     emptyAll: 'Weitere Projekte kommen bald.',
     emptySoftware: 'Noch keine Software.',
     emptyGame: 'Noch keine Spiele.',

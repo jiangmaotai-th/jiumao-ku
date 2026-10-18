@@ -38,6 +38,18 @@ const en: Messages = {
     catalogAria: 'Catalog',
     railAria: 'App navigation',
     hotAppsTitle: 'Trending Apps',
+    hotApps: {
+      yanglaofei: {
+        name: 'Nursing Home Fee Compliance Check',
+        summary:
+          'Check deposits, prepaid charges, and membership fees against the 2026 eldercare fee rules, and estimate how much is refunded if you move out.',
+      },
+      quzheng: {
+        name: 'Divorce Evidence Self-Check',
+        summary:
+          'See whether the audio, video, and chat records you have would be accepted in court, and how to gather evidence lawfully.',
+      },
+    },
     emptyAll: 'More projects coming soon.',
     emptySoftware: 'No software yet.',
     emptyGame: 'No games yet.',

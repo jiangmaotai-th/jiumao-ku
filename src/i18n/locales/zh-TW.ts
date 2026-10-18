@@ -38,6 +38,16 @@ const zhTW: Messages = {
     catalogAria: '作品列表',
     railAria: '應用導航',
     hotAppsTitle: '當下最熱應用',
+    hotApps: {
+      yanglaofei: {
+        name: '養老院報價合規體檢',
+        summary: '按 2026 養老收費新規檢查押金、預收、會員費是否超標，並計算退住能退多少。',
+      },
+      quzheng: {
+        name: '離婚取證自查',
+        summary: '查一查你手裡的錄音、錄影、聊天紀錄法院會不會採納，以及怎樣合法取證。',
+      },
+    },
     emptyAll: '更多作品即將推出。',
     emptySoftware: '目前沒有軟體。',
     emptyGame: '目前沒有遊戲。',

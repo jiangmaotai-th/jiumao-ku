@@ -38,6 +38,18 @@ const ko: Messages = {
     catalogAria: '카탈로그',
     railAria: '앱 탐색',
     hotAppsTitle: '지금 인기 앱',
+    hotApps: {
+      yanglaofei: {
+        name: '요양원 요금 규정 점검',
+        summary:
+          '2026년 요양 요금 신규 규정에 따라 보증금, 선납금, 회원비가 한도를 넘는지 확인하고, 퇴소 시 환불액을 계산합니다.',
+      },
+      quzheng: {
+        name: '이혼 증거 자가 점검',
+        summary:
+          '가지고 있는 녹음, 영상, 채팅 기록이 법원에서 받아들여질지, 그리고 합법적으로 증거를 확보하는 방법을 확인하세요.',
+      },
+    },
     emptyAll: '더 많은 프로젝트가 곧 공개됩니다.',
     emptySoftware: '아직 소프트웨어가 없습니다.',
     emptyGame: '아직 게임이 없습니다.',

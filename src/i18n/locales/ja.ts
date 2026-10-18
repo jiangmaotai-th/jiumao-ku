@@ -38,6 +38,17 @@ const ja: Messages = {
     catalogAria: 'カタログ',
     railAria: 'アプリナビ',
     hotAppsTitle: '今人気のアプリ',
+    hotApps: {
+      yanglaofei: {
+        name: '介護施設の料金コンプライアンス診断',
+        summary:
+          '2026年の介護料金の新規則に照らし、保証金・前払い金・会員費が上限を超えていないかを確認し、退所時にいくら戻るかを計算します。',
+      },
+      quzheng: {
+        name: '離婚の証拠セルフチェック',
+        summary: '手元の録音・録画・チャット記録が裁判所に採用されるか、また合法的に証拠を集める方法を確認できます。',
+      },
+    },
     emptyAll: '新しいプロジェクトを準備中です。',
     emptySoftware: 'ソフトウェアはまだありません。',
     emptyGame: 'ゲームはまだありません。',

@@ -47,6 +47,10 @@ const zhTW: Messages = {
         name: '離婚取證自查',
         summary: '查一查你手裡的錄音、錄影、聊天紀錄法院會不會採納，以及怎樣合法取證。',
       },
+      tuixiu: {
+        name: '退休計算器',
+        summary: '幾年幾月退休、每月能領多少養老金，老人也能一點就懂。',
+      },
     },
     emptyAll: '更多作品即將推出。',
     emptySoftware: '目前沒有軟體。',

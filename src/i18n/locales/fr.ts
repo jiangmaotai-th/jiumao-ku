@@ -49,6 +49,11 @@ const fr: Messages = {
         summary:
           'Voyez si vos enregistrements audio, vidéos et conversations seront admis par le tribunal, et comment recueillir des preuves légalement.',
       },
+      tuixiu: {
+        name: 'Calculateur de retraite et de pension en Chine',
+        summary:
+          'Voyez en quelle année et quel mois partir à la retraite, et combien de pension toucher chaque mois — assez simple pour les personnes âgées.',
+      },
     },
     emptyAll: 'D’autres projets arrivent bientôt.',
     emptySoftware: 'Aucun logiciel pour le moment.',

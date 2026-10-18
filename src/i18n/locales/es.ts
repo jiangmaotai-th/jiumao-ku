@@ -49,6 +49,11 @@ const es: Messages = {
         summary:
           'Comprueba si tus grabaciones, vídeos y chats serán admitidos por el tribunal, y cómo obtener pruebas de forma legal.',
       },
+      tuixiu: {
+        name: 'Calculadora de jubilación y pensión de China',
+        summary:
+          'Averigua en qué año y mes te jubilas y cuánto cobrarás de pensión al mes; tan sencillo que las personas mayores lo entienden de un vistazo.',
+      },
     },
     emptyAll: 'Pronto habrá más proyectos.',
     emptySoftware: 'Todavía no hay software.',

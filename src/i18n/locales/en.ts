@@ -49,6 +49,11 @@ const en: Messages = {
         summary:
           'See whether the audio, video, and chat records you have would be accepted in court, and how to gather evidence lawfully.',
       },
+      tuixiu: {
+        name: 'China Retirement & Pension Calculator',
+        summary:
+          'See which year and month you retire, and how much pension you receive each month—simple enough for older adults.',
+      },
     },
     emptyAll: 'More projects coming soon.',
     emptySoftware: 'No software yet.',

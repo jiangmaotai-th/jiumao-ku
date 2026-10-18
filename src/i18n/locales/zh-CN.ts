@@ -38,6 +38,16 @@ const zhCN: Messages = {
     catalogAria: '作品列表',
     railAria: '应用导航',
     hotAppsTitle: '当下最热应用',
+    hotApps: {
+      yanglaofei: {
+        name: '养老院报价合规体检',
+        summary: '按 2026 养老收费新规检查押金、预收、会员费是否超标，并计算退住能退多少。',
+      },
+      quzheng: {
+        name: '离婚取证自查',
+        summary: '查一查你手里的录音、录像、聊天记录法院会不会采纳，以及怎样合法取证。',
+      },
+    },
     emptyAll: '作品即将上架。',
     emptySoftware: '暂无软件。',
     emptyGame: '暂无游戏。',

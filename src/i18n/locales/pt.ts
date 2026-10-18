@@ -38,6 +38,18 @@ const pt: Messages = {
     catalogAria: 'Catálogo',
     railAria: 'App navigation',
     hotAppsTitle: 'Apps em alta',
+    hotApps: {
+      yanglaofei: {
+        name: 'Verificação de tarifas de lar de idosos',
+        summary:
+          'Confira, pelas novas regras de 2026 para tarifas de lares, se o depósito, os pagamentos antecipados e a taxa de adesão ultrapassam o limite, e calcule o reembolso na saída.',
+      },
+      quzheng: {
+        name: 'Autoverificação de provas de divórcio',
+        summary:
+          'Veja se as gravações, os vídeos e as conversas que você tem serão aceitos pelo tribunal, e como reunir provas legalmente.',
+      },
+    },
     emptyAll: 'Mais projetos em breve.',
     emptySoftware: 'Ainda não há software.',
     emptyGame: 'Ainda não há jogos.',

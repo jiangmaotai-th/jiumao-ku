@@ -72,6 +72,12 @@ type HotApp = {
   href: string
 }
 
+function hotAppText(id: string, field: 'name' | 'summary', fallback: string): string {
+  const key = `home.hotApps.${id}.${field}`
+  const value = t(key)
+  return value === key ? fallback : value
+}
+
 function mountHotApps() {
   const section = document.querySelector<HTMLElement>('#hot-apps')
   const list = document.querySelector<HTMLElement>('#hot-apps-list')
@@ -86,8 +92,8 @@ function mountHotApps() {
       (item) => `
     <li>
       <a class="hot-apps__link" href="${escapeHtml(item.href)}" target="_blank" rel="noopener noreferrer">
-        <span class="hot-apps__name">${escapeHtml(item.name)}</span>
-        <p class="hot-apps__summary">${escapeHtml(item.summary || '')}</p>
+        <span class="hot-apps__name">${escapeHtml(hotAppText(item.id, 'name', item.name))}</span>
+        <p class="hot-apps__summary">${escapeHtml(hotAppText(item.id, 'summary', item.summary || ''))}</p>
       </a>
     </li>`,
     )

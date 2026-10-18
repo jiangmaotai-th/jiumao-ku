@@ -10,5 +10,17 @@
     "name": "museprompt",
     "summary": "Muse Wonder Agent Prompt Gallery",
     "href": "https://museprompt.maotaiworks.com/"
+  },
+  {
+    "id": "yanglaofei",
+    "name": "养老院报价合规体检",
+    "summary": "按 2026 养老收费新规检查押金、预收、会员费是否超标，并计算退住能退多少。",
+    "href": "https://yanglaofei.maotaiworks.com"
+  },
+  {
+    "id": "quzheng",
+    "name": "离婚取证自查",
+    "summary": "查一查你手里的录音、录像、聊天记录法院会不会采纳，以及怎样合法取证。",
+    "href": "https://quzheng.maotaiworks.com"
   }
 ]

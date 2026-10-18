@@ -38,6 +38,18 @@ const es: Messages = {
     catalogAria: 'Catálogo',
     railAria: 'App navigation',
     hotAppsTitle: 'Apps en tendencia',
+    hotApps: {
+      yanglaofei: {
+        name: 'Revisión de tarifas de residencia de mayores',
+        summary:
+          'Comprueba si el depósito, los pagos anticipados y la cuota de socio superan las nuevas normas de 2026, y calcula cuánto se reembolsa al marcharse.',
+      },
+      quzheng: {
+        name: 'Autocomprobación de pruebas de divorcio',
+        summary:
+          'Comprueba si tus grabaciones, vídeos y chats serán admitidos por el tribunal, y cómo obtener pruebas de forma legal.',
+      },
+    },
     emptyAll: 'Pronto habrá más proyectos.',
     emptySoftware: 'Todavía no hay software.',
     emptyGame: 'Todavía no hay juegos.',

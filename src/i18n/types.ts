@@ -61,6 +61,7 @@ export type Messages = {
     hotApps: {
       yanglaofei: { name: string; summary: string }
       quzheng: { name: string; summary: string }
+      tuixiu: { name: string; summary: string }
     }
     emptyAll: string
     emptySoftware: string

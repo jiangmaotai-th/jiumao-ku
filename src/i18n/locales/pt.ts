@@ -49,6 +49,11 @@ const pt: Messages = {
         summary:
           'Veja se as gravações, os vídeos e as conversas que você tem serão aceitos pelo tribunal, e como reunir provas legalmente.',
       },
+      tuixiu: {
+        name: 'Calculadora de aposentadoria e pensão da China',
+        summary:
+          'Veja em que ano e mês você se aposenta e quanto de pensão recebe por mês — simples o bastante para os idosos entenderem de imediato.',
+      },
     },
     emptyAll: 'Mais projetos em breve.',
     emptySoftware: 'Ainda não há software.',

@@ -47,6 +47,10 @@ const zhCN: Messages = {
         name: '离婚取证自查',
         summary: '查一查你手里的录音、录像、聊天记录法院会不会采纳，以及怎样合法取证。',
       },
+      tuixiu: {
+        name: '退休计算器',
+        summary: '几年几月退休、每月能领多少养老金，老人也能一点就懂。',
+      },
     },
     emptyAll: '作品即将上架。',
     emptySoftware: '暂无软件。',

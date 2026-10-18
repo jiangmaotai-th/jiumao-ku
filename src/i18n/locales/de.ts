@@ -49,6 +49,11 @@ const de: Messages = {
         summary:
           'Prüfen Sie, ob Aufnahmen, Videos und Chatverläufe vor Gericht anerkannt werden, und wie Sie Beweise rechtmäßig sichern.',
       },
+      tuixiu: {
+        name: 'China-Renten- und Pensionsrechner',
+        summary:
+          'Sehen Sie, in welchem Jahr und Monat Sie in Rente gehen und wie viel Rente Sie monatlich erhalten — einfach genug für ältere Menschen.',
+      },
     },
     emptyAll: 'Weitere Projekte kommen bald.',
     emptySoftware: 'Noch keine Software.',
